@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <ctime>
 #include "ChunkHandler.h"
+#include "GameServer.h"
 class NetworkSystem
 {
 private:

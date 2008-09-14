@@ -38,8 +38,7 @@ This file is part of OblivionOnline.
 #ifndef _OOFUNCTIONS_H
 #define _OOFUNCTIONS_H
 
-#include "main.h"
-#include "../OblivionOnlineServer/Packets.h"
+#include "../OOCommon/Packets.h"
 extern void RunScriptLine(const char *buf, bool IsTemp);
 extern UINT32 LocalPlayer;
 extern UINT32 GetPlayerNumberFromRefID(UInt32 refID);
@@ -58,5 +57,22 @@ inline USHORT GetSpawnIDFromPlayerID(USHORT  PlayerID) // retrieves a player num
 inline UINT32 GetPlayerFormID(UINT32 PlayerID)
 {
 	return SpawnID[(LocalPlayer >= PlayerID) ? PlayerID : (PlayerID -1)]; // TODO: Revamp this
+}
+inline bool IsPlayerSpawn(UINT32 RefID)
+{
+	for(int i = 0;i < MAXCLIENTS;i++)
+	{
+		if(SpawnID[i] == RefID)
+			return true;
+	}
+	return false;
+}
+inline BYTE GetStatus(TESObjectREFR *refr)
+{
+	if(!refr->IsActor())
+		return STATUS_OBJECT;
+	if(IsPlayerSpawn(refr->refID))
+		return STATUS_PLAYER;
+	return STATUS_NPC;
 }
 #endif

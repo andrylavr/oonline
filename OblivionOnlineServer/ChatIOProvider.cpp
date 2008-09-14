@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Packets.h"
 ChatIOProvider::~ChatIOProvider(void)
 {
+
 }
 
 bool ChatIOProvider::DoOutput( LogLevel LogLevel,std::string Message )

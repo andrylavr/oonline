@@ -159,7 +159,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		m_GS->GetIO()<<Warning<<"Found Packet with wrong size - ignoring"<<endl;
 		return false;
 	}*/
-	InPacket *pkg = new InPacket(this,m_GS,data,size);
+	InPacket *pkg = new InPacket(m_GS->GetEntities(),&m_GS->GetIO(),data,size);
 	pkg->HandlePacket();
 	return true;
  } 
@@ -178,7 +178,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	 m_PlayerAddresses[ID] = addr;
 	 m_AddressPlayer[addr.sin_addr.S_un.S_addr] = ID;
 	 m_TCPSockets[ID] = TCPSock;
-	 m_OutPackets[ID] = new OutPacket(ID);	
+	 m_OutPackets[ID] = new OutPacket();	
 	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(PkgChunk::PlayerID),PlayerID,(BYTE *)&ID);
 	 m_GS->GetIO()<<GameMessage<< "New player" << ID << "joined from address"<< inet_ntoa(addr.sin_addr) << ":" <<ntohs(addr.sin_port)<<endl;
 	 if(m_MasterClientDefined == 0)

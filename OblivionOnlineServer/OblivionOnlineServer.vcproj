@@ -44,6 +44,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\OOCommon&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib curllib.lib"
+				AdditionalDependencies="ws2_32.lib curllib.lib OOCommon_d.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)\Lib\"
@@ -127,6 +128,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\OOCommon&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;CURL_STATICLIB"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -136,6 +138,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				CallingConvention="0"
 				DisableSpecificWarnings="4482"
 			/>
 			<Tool
@@ -149,7 +152,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib curllib.lib"
+				AdditionalDependencies="ws2_32.lib curllib.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)\Lib\"
@@ -198,7 +201,7 @@
 			Name="Netcode"
 			>
 			<File
-				RelativePath=".\InPacket.h"
+				RelativePath=".\MiscChunkHandler.cpp"
 				>
 			</File>
 			<File
@@ -209,38 +212,6 @@
 				RelativePath=".\NetworkSystem.h"
 				>
 			</File>
-			<File
-				RelativePath=".\OutPacket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Packets.h"
-				>
-			</File>
-			<Filter
-				Name="ChunkHandlers"
-				>
-				<File
-					RelativePath=".\ChunkHandler.h"
-					>
-				</File>
-				<File
-					RelativePath=".\MiscChunkHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ObjectChunkHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PositionChunkHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\StatChunkHandler.cpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="GameServer"
@@ -251,18 +222,6 @@
 			</File>
 			<File
 				RelativePath=".\GameServer.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Abstract Classes"
-			>
-			<File
-				RelativePath=".\IOProvider.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NetworkProvider.h"
 				>
 			</File>
 		</Filter>
@@ -286,41 +245,13 @@
 			Name="Entity"
 			>
 			<File
-				RelativePath=".\Entity.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EntityManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EntityManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\EntityUpdateManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EntityUpdateManager.h"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Util"
 			>
-			<Filter
-				Name="HashTable"
-				>
-				<File
-					RelativePath=".\OOHashTable.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OOHashTable.h"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="lua"
 				>
@@ -586,18 +517,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IOSystem.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\IOSystem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LogIOProvider.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ScreenIOProvider.cpp"
 				>
 			</File>
@@ -608,10 +527,6 @@
 		</Filter>
 		<File
 			RelativePath=".\DefaultSettings.h"
-			>
-		</File>
-		<File
-			RelativePath=".\GlobalDefines.h"
 			>
 		</File>
 		<File

@@ -45,8 +45,8 @@ bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosX");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->PosX;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->PosX();
 	return true;
 }
 
@@ -59,8 +59,8 @@ bool Cmd_MPGetPosY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosY");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->PosY;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->PosY();
 	return true;
 }
 
@@ -73,8 +73,8 @@ bool Cmd_MPGetPosZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosZ");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->PosZ;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->PosZ();
 	return true;
 }
 
@@ -87,8 +87,8 @@ bool Cmd_MPGetRotZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotZ");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->RotZ;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->RotZ();
 	return true;
 }
 bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
@@ -100,8 +100,8 @@ bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotY");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->RotY;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->RotY();
 	return true;
 }
 bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
@@ -113,8 +113,8 @@ bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotX");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*result = ent->RotX;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*result = ent->RotX();
 	return true;
 }
 bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
@@ -126,9 +126,9 @@ bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetIsInterior");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
 	//TESObjectCELL *obj = (TESObjectCELL *)Oblivion_DynamicCast(LookupFormByID(ent->CellID),0,RTTI_TESForm,RTTI_TESObjectCELL,0);	
-	*result = ent->IsInInterior ? 1 : 0;
+	*result = ent->IsInInterior() ? 1 : 0;
 	return true;
 }
 
@@ -142,8 +142,8 @@ bool Cmd_MPGetCell_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetCell");
 		return true;
 	}
-	Entity *ent = Entities.GetEntity(thisObj->refID);
-	*(UINT32 *) result = ent->CellID;
+	Entity *ent = Entities.GetEntity(thisObj->refID,GetStatus(thisObj));
+	*(UINT32 *) result = ent->CellID();
 	return true;
 }
 

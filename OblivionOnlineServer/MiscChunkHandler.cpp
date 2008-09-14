@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "NetworkSystem.h"
 #include "InPacket.h"
-size_t HandleChatChunk(GameServer *gs,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE status)
+size_t HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	size_t retval;
 	UINT16 supposedlength = *(unsigned short *)(chunkdata + 2);
-	Entity *ent = gs->GetEntities()->GetEntity(status,FormID);
+	Entity *ent = entities->GetEntity(Status,FormID);
 	std::string message = ent->Name();
 	if(supposedlength > len - 4)
 		retval = len;
@@ -33,25 +33,21 @@ size_t HandleChatChunk(GameServer *gs,InPacket *pkg, BYTE* chunkdata,size_t len 
 		retval = supposedlength;
 	message.append(" :");
 	message.append((char *)(chunkdata + 4),retval);
-	BYTE *buf = (BYTE *)malloc(message.length() + 2);
-	*(UINT16 *) buf = retval;
-	memcpy(buf + 2,message.c_str(),message.length());
-	gs->GetIO()<<PlayerChat<<ent->Name()<<" :"<<message<<endl;
-	for(map<UINT32,Entity *>::const_iterator i =  gs->GetEntities()->GetPlayerList().begin(); i != gs->GetEntities()->GetPlayerList().end() ; i++)
+
+	for(map<UINT32,Entity *>::const_iterator i =  entities->GetPlayerList().begin(); i != entities->GetPlayerList().end() ; i++)
 	{
-		gs->GetNetwork()->SendChunk(i->second->RefID(),FormID,status,message.length() + 2,PkgChunk::Chat,buf);		
+		entities->GetUpdateMgr()->Chat(i->second,message);		
 	}
-	free(buf);
 	return retval + sizeof(unsigned short);
 }
-size_t HandleVersionChunk(GameServer *gs,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE status)
+size_t HandleVersionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if(*(chunkdata + 2) == VERSION_SUPER && *(chunkdata+3) == VERSION_MAJOR && *(chunkdata+4) == VERSION_MINOR )
-		gs->GetIO()<<SystemMessage<<"Client "<<FormID <<" authenticated with the correct version" << endl;
+		(*IO)<<SystemMessage<<"Client "<<FormID <<" authenticated with the correct version" << endl;
 	else
 	{
 		//TODO: kick him
-		gs->GetIO()<<SystemMessage<<"Client "<<FormID <<" tried to authenticate with an incorrect version:"<<*chunkdata<<*(chunkdata+1)<<*(chunkdata+2)<< endl;
+		(*IO)<<SystemMessage<<"Client "<<FormID <<" tried to authenticate with an incorrect version:"<<*chunkdata<<*(chunkdata+1)<<*(chunkdata+2)<< endl;
 	}
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }

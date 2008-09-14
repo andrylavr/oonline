@@ -41,6 +41,7 @@ This file is part of OblivionOnline.
 #include "InPacket.h"
 #include "Commands.h"
 #include "Entity.h"
+
 // Global variables
 extern "C" HINSTANCE OODll;
 bool bIsConnected = false;
@@ -64,8 +65,8 @@ char ServerIP[15];
 bool bFrameRendered = false;
 std::deque<Entity *> UpdateQueue;
 // Prototypes
-
-EntityManager Entities;
+IOSystem gIO;
+EntityManager Entities(&gIO);
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 
 extern  "C" void OpenLog(int bOblivion)

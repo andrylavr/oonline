@@ -48,7 +48,7 @@ bool Cmd_MPGetNewObject_Execute (COMMAND_ARGS)
 	UINT32 *refResult = (UINT32 *)result;
 	if(!UpdateQueue.empty())
 	{
-		*refResult = UpdateQueue.front()->RefID;
+		*refResult = UpdateQueue.front()->RefID();
 		UpdateQueue.pop_front();
 	}
 	else

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "IOSystem.h"
 #include "IOProvider.h"
+class GameServer;
 class ChatIOProvider  : public IOProvider
 {
 protected:

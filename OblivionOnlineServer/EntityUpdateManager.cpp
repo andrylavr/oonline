@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "EntityUpdateManager.h"
 #include "Entity.h"
 #include "NetworkSystem.h"
+#include "Packets.h"
 #include <map>
 using namespace std;
 void EntityUpdateManager::OnRaceUpdate( Entity *ent )
@@ -182,6 +183,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot )
 	BYTE ChunkData[5];
 	ChunkData[0] = slot;
 	*(UINT32 *)(ChunkData +1) = ent->Equip(slot);
+
 	if(ent->Status() < STATUS_PLAYER)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
@@ -227,4 +229,15 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 			}
 		}
 	}
+}
+void EntityUpdateManager::Chat(Entity *ent,std::string Message)
+{
+	BYTE *buf = (BYTE *)malloc(Message.length() + 2);
+	*(UINT16 *) buf = Message.length();
+	memcpy(buf + 2,Message.c_str(),Message.length());
+	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+	{
+		m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),Message.length() + 2,PkgChunk::Chat,buf);
+	}
+	free(buf);
 }

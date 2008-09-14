@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "logIOProvider.h"
 #include "NetworkSystem.h"
 #include "ChatIOProvider.h"
+#include "EventSystem.h"
 #include <string>
 #include <sstream>
 #include "curl/curl.h"
@@ -44,7 +45,7 @@ GameServer::GameServer(void)
 	m_script = new LuaSystem(this);
 	m_script->RunStartupScripts("ServerLaunch.lua");
 	m_Evt = new EventSystem(this);
-	m_IOSys = new IOSystem(m_Evt);
+	m_IOSys = new IOSystem();
 	m_IO = new IOStream(m_IOSys);
 	m_IO->RegisterIOProvider(new ScreenIOProvider(m_IOSys,LogLevel::BootMessage));//TODO : Fix that
 	DisplayBootupMessage();
@@ -52,7 +53,7 @@ GameServer::GameServer(void)
 	*m_IO<<BootMessage<<"Opening Log file" << endl;
 	m_IO->RegisterIOProvider(new LogIOProvider(m_IOSys,LogLevel::BootMessage,m_script->GetString("Logfile")));	
 	m_Netsystem = new NetworkSystem(this);
-	m_Entities = new EntityManager(m_Evt,m_Netsystem);
+	m_Entities = new EntityManager(m_IO,m_Netsystem);
 	m_Netsystem->StartReceiveThreads();
 	m_IO->RegisterIOProvider(new ChatIOProvider(this,m_IOSys));
 	//In this thread we now run the server browser update

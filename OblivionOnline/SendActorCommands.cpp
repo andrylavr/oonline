@@ -40,10 +40,60 @@ forward this exception.
 #include "Entity.h"
 #include "NetSend.h"
 #include <math.h>
+#define MOVE_THRESHOLD 0.2
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
+static void SendActorPosition(TESObjectREFR *act,Entity *ent)
+{	
+	if(abs(act->posX - ent->PosX())> MOVE_THRESHOLD || abs(act->posY - ent->PosY()) > MOVE_THRESHOLD
+		|| abs(act->posZ - ent->PosZ()) > MOVE_THRESHOLD || abs(act->rotZ - ent->RotZ()) > MOVE_THRESHOLD
+		|| abs(act->rotX - ent->RotX())>MOVE_THRESHOLD ||abs(act->rotY - ent->RotY()) > MOVE_THRESHOLD)
+	{
+		ent->SetCell(act->parentCell->refID,act->parentCell->worldSpace == NULL);
+		ent->MoveNRot(act->posX,act->posY,act->posZ,act->rotX,act->rotY,act->rotZ);
+	}
+}
+static void SendActorHealthOnly(Actor *act,Entity *ent)
+{
+	for(BYTE i = 8;i <= 10;i++) // Only 8;9;10
+	{
+		ent->SetActorValue(i,act->GetActorValue(i));
+	}
+}
+static void SendActorValues(Actor *act,Entity *ent)
+{
+	for(BYTE i = 8;i <= 10;i++) // Only 8;9;10
+	{
+		ent->SetActorValue(i,act->GetActorValue(i));
+	}
+}
+static void SendActorEquip(Actor *act,Entity *ent)
+{
+	feGetObject getObject;
+	double itemResult;
+	UInt32* itemRef = (UInt32*)&itemResult;
+	for(BYTE i = 0; i <= 20; i++) // traverse Slots
+	{
+		if(i == 18 || i == 19 || i== 9 || i == 10 || i == 11 || i == 12 || i == 14) // These do not exist 
+			continue;
+		if (!FindEquipped(act, i, &getObject, &itemResult))
+		{
+			ent->SetEquip(i,0);
+		}
+		ent->SetEquip(i,*itemRef);
+	}
+}
+static void SendActorAnimation(Actor *act,Entity *ent)
+{
+	ActorAnimData *animdata = GetActorAnimData(act);
+	for(int i = 0;i < 43;i++)
+	{
+		ent->SetAnimation(i,animdata->FindAnimInRange(i));
+	}
+}
 bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 {
-	
+	Entity *ent; 
+	BYTE Status;
 	if(!bIsInitialized)
 		return true;
 	// A heavy command xD
@@ -52,126 +102,35 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-	feGetObject getObject;		
-	UINT32 i;
-	UINT32 ActorValue;
-	double itemResult;
-	UInt32* itemRef = (UInt32*)&itemResult;
-	Entity *ent = Entities.GetEntity((*g_thePlayer)->refID); //Start off with the player
-	Actor *actor;
-	BYTE Status;
+		
+	ent = Entities.GetEntity(LocalPlayer,STATUS_PLAYER);
 	if(ent == NULL)
-		ent = new Entity((*g_thePlayer)->refID);	
+		ent = new Entity(&Entities,LocalPlayer,STATUS_PLAYER);
 	outnet.Send(); // Prevent Lag
-	/*if((*g_thePlayer)->parentCell->refID != ent->CellID)
-	{
-		ent->CellID = (*g_thePlayer)->parentCell->refID;
-		NetSendCellID((*g_thePlayer)->refID,STATUS_PLAYER,ent->CellID);
-	} */
-	if(abs((*g_thePlayer)->posX - ent->PosX)> 1 || abs((*g_thePlayer)->posY - ent->PosY) > 1
-		|| abs((*g_thePlayer)->posZ - ent->PosZ) > 1 || abs((*g_thePlayer)->rotZ - ent->RotZ) > 1
-		|| abs((*g_thePlayer)->rotX - ent->RotX)>1 ||abs((*g_thePlayer)->rotY - ent->RotY) > 1)
-	{
-		ent->CellID = (*g_thePlayer)->parentCell->refID;
-		ent->IsInInterior = (*g_thePlayer)->parentCell->worldSpace == NULL;
-		NetSendCellID((*g_thePlayer)->refID,STATUS_PLAYER,ent->CellID,ent->IsInInterior);
-		ent->PosX = (*g_thePlayer)->posX;
-		ent->PosY = (*g_thePlayer)->posY;
-		ent->PosZ = (*g_thePlayer)->posZ;
-		ent->RotX = (*g_thePlayer)->rotX;
-		ent->RotY = (*g_thePlayer)->rotY;
-		ent->RotZ = (*g_thePlayer)->rotZ;
-		NetSendPosition((*g_thePlayer)->refID,STATUS_PLAYER,ent->PosX,ent->PosY,ent->PosZ,ent->RotX,ent->RotY,ent->RotZ);
-		
-	}
-	
-	// Health , Magicka , Fatigue
-	ActorValue = (*g_thePlayer)->GetActorValue(8);
-	if(ActorValue != ent->Health)
-	{
-		ent->Health = ActorValue;
-		NetSendActorValue((*g_thePlayer)->refID,STATUS_PLAYER,8,ActorValue);
-	}
-	ActorValue = (*g_thePlayer)->GetActorValue(9);
-	if(ActorValue != ent->Magicka)
-	{
-		ent->Magicka = ActorValue;
-		NetSendActorValue((*g_thePlayer)->refID,STATUS_PLAYER,9,ActorValue);
-	}
-	ActorValue = (*g_thePlayer)->GetActorValue(10);
-	if(ActorValue != ent->Fatigue)
-	{
-		ent->Fatigue = ActorValue;
-		NetSendActorValue((*g_thePlayer)->refID,STATUS_PLAYER,10,ActorValue);
-	}	
-	/*
-	//Now synch animations
-	ActorAnimData *animdata = GetActorAnimData(*g_thePlayer);
-	for(UInt32 i = 0;i < 43u;i++)
-	{
-		bool newValue = animdata->FindAnimInRange(i);
-		if(newValue != ent->m_AnimationStatus[i])
-		{
-			ent->m_AnimationStatus[i] = newValue;
-		}
-		NetSendAnimation((*g_thePlayer)->refID,STATUS_PLAYER,i,newValue);
-	}
-	//player equip
-		
-
-	//TODO: Unroll loop maybe
-	for(i = 0; i <= 20; i++) // traverse Slots
-	{
-		if(i == 18 || i == 19 || i== 9 || i == 10 || i == 11 || i == 12 || i == 14) // These do not exist 
-			continue;
-		if (!FindEquipped((*g_thePlayer), i, &getObject, &itemResult))
-		{
-			*itemRef = 0;
-		}
-		if( ent->Equip[i] != *itemRef)
-		{
-			NetSendEquip((*g_thePlayer)->refID,STATUS_PLAYER,i,*itemRef);				
-			ent->Equip[i] = *itemRef;
-		}
-	}
-	*/
+	SendActorPosition(*g_thePlayer,ent);
+	SendActorValues(*g_thePlayer,ent);
+	SendActorEquip(*g_thePlayer,ent);
+	SendActorAnimation(*g_thePlayer,ent);
 	//Health of the other players
-	for(i = 0;i < MAXCLIENTS ;i++)
+	for(int i = 0;i < MAXCLIENTS ;i++)
 	{
 		if(SpawnID[i] != 0)
 		{
-			ent = Entities.GetEntity(SpawnID[i]); 		
-			if(ent == NULL)
-				ent = new Entity(SpawnID[i]);
+			Actor *actor;
 			actor = (Actor *)LookupFormByID(SpawnID[i]);
-			ActorValue = actor->GetActorValue(8);
-			if(ActorValue != ent->Health)
-			{
-				ent->Health = ActorValue;
-				NetSendActorValue(i,STATUS_PLAYER,8,ActorValue);
-			}
-			ActorValue = actor->GetActorValue(9);
-			if(ActorValue != ent->Magicka)
-			{
-				ent->Magicka = ActorValue;
-				NetSendActorValue(i,STATUS_PLAYER,9,ActorValue);
-			}
-			ActorValue = actor->GetActorValue(10);
-			if(ActorValue != ent->Fatigue)
-			{
-				ent->Fatigue = ActorValue;
-				NetSendActorValue(i,STATUS_PLAYER,10,ActorValue);
-			}	
+			ent = Entities.GetEntity(i,STATUS_PLAYER);
+			if(ent == NULL)
+				ent = new Entity(&Entities,i,STATUS_PLAYER);
+			SendActorHealthOnly(actor,ent);
 		}
 	}
 	if(bIsMasterClient)
 	{
-
 		//rewritten
 		//Just check up on the cells all other players are in
 		std::list <TESObjectCELL *> CellStack;
 		CellStack.push_back((*g_thePlayer)->parentCell);
-		for(i = 0 ; i < MAXCLIENTS;i++)
+		for(int i = 0 ; i < MAXCLIENTS;i++)
 		{
 			bool bInsert = true;
 			if(SpawnID[i])
@@ -195,6 +154,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 		//now we process each cell...
 		for(std::list <TESObjectCELL *>::iterator i = CellStack.begin();i != CellStack.end(); i++)
 		{
+			BYTE Status;
 			TESObjectCELL * Cell = *i;
 			TESObjectCELL::ObjectListEntry * ListIterator = &Cell->objectList;		
 
@@ -210,10 +170,10 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = Entities.GetEntity(ListIterator->refr->refID);
+					ent = Entities.GetEntity(ListIterator->refr->refID,Status);
 					
 					if(ent == NULL)
-						ent = new Entity(ListIterator->refr->refID);
+						ent = new Entity(&Entities,ListIterator->refr->refID,Status);
 					//Sync that object too
 					/*
 					if(ListIterator->refr->parentCell->refID != ent->CellID)
@@ -221,61 +181,13 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 						ent->CellID = ListIterator->refr->parentCell->refID;
 						NetSendCellID(ListIterator->refr->refID,Status,ent->CellID);
 					} */
-					if(abs(ListIterator->refr->posX - ent->PosX) > 1||
-						abs(ListIterator->refr->posY - ent->PosY) > 1 ||
-						abs(ListIterator->refr->posZ - ent->PosZ) > 1 ||
-						abs(ListIterator->refr->rotZ - ent->RotZ) > 1 ||
-						abs(ListIterator->refr->rotX - ent->RotX) > 1 ||
-						abs(ListIterator->refr->rotY - ent->RotY) > 1)
-					{
-						ent->CellID = ListIterator->refr->parentCell->refID;
-						ent->IsInInterior = ListIterator->refr->parentCell->worldSpace == NULL;
-						NetSendCellID(ListIterator->refr->refID,Status,ent->CellID,ent->IsInInterior);
-						ent->PosX = ListIterator->refr->posX;
-						ent->PosY = ListIterator->refr->posY;
-						ent->PosZ = ListIterator->refr->posZ;
-						ent->RotX = ListIterator->refr->rotX;
-						ent->RotY = ListIterator->refr->rotY;
-						ent->RotZ = ListIterator->refr->rotZ;
-						NetSendPosition(ListIterator->refr->refID, Status,ent->PosX,ent->PosY,ent->PosZ,ent->RotX,ent->RotY,ent->RotZ);
-					}
-					
+					SendActorPosition(ListIterator->refr,ent);					
 					if(Status == STATUS_NPC)
 					{
-						actor = (Actor *)LookupFormByID(ListIterator->refr->refID);
-						ActorValue = actor->GetActorValue(8);
-						if(ActorValue != ent->Health)
-						{
-							ent->Health = ActorValue;
-							NetSendActorValue(ListIterator->refr->refID,Status,8,ActorValue);
-						}
-						ActorValue = actor->GetActorValue(9);
-						if(ActorValue != ent->Magicka)
-						{
-							ent->Magicka = ActorValue;
-							NetSendActorValue(ListIterator->refr->refID,Status,9,ActorValue);
-						}
-						ActorValue = actor->GetActorValue(10);
-						if(ActorValue != ent->Fatigue)
-						{
-							ent->Fatigue = ActorValue;
-							NetSendActorValue(ListIterator->refr->refID,Status,10,ActorValue);
-						}	
-						/*
-						animdata = GetActorAnimData(ListIterator->refr);
-						if(animdata != NULL)
-						{for(UInt32 i = 0;i < 43u;i++)
-						{
-							bool newValue = animdata->FindAnimInRange(i);
-							if(newValue != ent->m_AnimationStatus[i])
-							{
-								ent->m_AnimationStatus[i] = newValue;
-							}
-							NetSendAnimation((*g_thePlayer)->refID,STATUS_PLAYER,i,newValue);
-						}
-						*/
-						
-						
+						Actor * actor = (Actor *)LookupFormByID(ListIterator->refr->refID);
+						SendActorValues(actor,ent);
+						SendActorEquip(actor,ent);
+						SendActorAnimation(actor,ent);						
 					}
 				}
 				ListIterator = ListIterator->next;

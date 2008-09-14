@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "../OblivionOnlineServer/packets.h"
+#include "packets.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {

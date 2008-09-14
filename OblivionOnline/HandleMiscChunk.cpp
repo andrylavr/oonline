@@ -34,10 +34,13 @@ The GNU General Public License gives permission to release a modified version wi
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
+#include "main.h"
 #include "InPacket.h"
 #include "ChunkHandler.h"
 #include "UserInterface.h"
 #include "NetSend.h"
+#include "../OOCommon/InPacket.h"
+#include "GameAPI.h"
 size_t HandleVersionChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if(*(chunkdata + 2) == VERSION_SUPER && *(chunkdata+3) == VERSION_MAJOR && *(chunkdata+4) == VERSION_MINOR )
@@ -57,7 +60,7 @@ size_t HandlePlayerIDChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 For
 	bIsInitialized = true;
 	if(bUIInitialized)
 		SetConnectionMessage("Good to go");
-	NetSendName(LocalPlayer,STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
+	NetSendName(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
 	return GetMinChunkSize(PlayerID) + sizeof(unsigned short);
 }
 size_t HandleClientTypeChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)

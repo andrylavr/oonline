@@ -43,18 +43,22 @@ This file is part of OblivionOnline.
 #include <queue>
 #include <stdio.h>
 #include <Windows.h>
-#include "../OblivionOnlineServer/GlobalDefines.h"
+#include "../OOCommon/GlobalDefines.h"
+#include "../OOCommon/IOSystem.h"
+#include "../OOCommon/Entity.h"
 #include "obse/PluginAPI.h"
 #include "obse/CommandTable.h"
 #include "obse/GameAPI.h"
 #include "obse/ParamInfos.h"
 #include "obse/GameObjects.h"
-#include "OBSEFunctions.h"
-#include "OOFunctions.H"
-#include "OutboundNetwork.h"
-#include "EntityManager.h"
 #define MAXCLIENTS 12
 #define MAXSERVERS 8
+#include "OOFunctions.H"
+#include "OBSEFunctions.h"
+
+#include "OutboundNetwork.h"
+#include "EntityManager.h"
+
 
 #define SUPER_VERSION 0 //Not used yet
 #define MAIN_VERSION 5
@@ -63,8 +67,10 @@ This file is part of OblivionOnline.
 #define RELEASE_CODENAME "Release V" // The Name . Can be empty
 #define ADDITIONAL_VERSION_COMMENT "Internal Alpha" // For betas and special builds only
 
-extern std::deque<Entity *> UpdateQueue;
 //Externals
+
+extern std::deque<Entity *> UpdateQueue;
+
 extern IDebugLog gLog;
 extern bool bIsConnected;
 extern bool bIsMasterClient;
@@ -84,4 +90,6 @@ extern int OO_Deinitialize();
 extern EntityManager Entities;
 extern bool bIsInitialized;
 extern "C" HANDLE hEvtSendPacket;
+
+extern IOSystem gIO;
 #endif
