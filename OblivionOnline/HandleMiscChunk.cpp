@@ -41,7 +41,7 @@ forward this exception.
 #include "NetSend.h"
 #include "../OOCommon/InPacket.h"
 #include "GameAPI.h"
-size_t HandleVersionChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t HandleVersionChunk(IOStream *IO,EntityManager*entities,BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if(*(chunkdata + 2) == VERSION_SUPER && *(chunkdata+3) == VERSION_MAJOR && *(chunkdata+4) == VERSION_MINOR )
 		_MESSAGE("Server using the same version as the client");
@@ -52,7 +52,7 @@ size_t HandleVersionChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 Form
 	}
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }
-size_t HandlePlayerIDChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t HandlePlayerIDChunk(IOStream *IO,EntityManager*entities, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	LocalPlayer = *(UINT32 *)(chunkdata + 2);
 	Console_Print("Received Player ID %u",LocalPlayer);
@@ -60,10 +60,10 @@ size_t HandlePlayerIDChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 For
 	bIsInitialized = true;
 	if(bUIInitialized)
 		SetConnectionMessage("Good to go");
-	NetSendName(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
+	//NetSendName(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
 	return GetMinChunkSize(PlayerID) + sizeof(unsigned short);
 }
-size_t HandleClientTypeChunk(InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t HandleClientTypeChunk(IOStream *IO,EntityManager*entities, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if((chunkdata + 2) > 0)
 	{

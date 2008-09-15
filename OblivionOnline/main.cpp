@@ -41,7 +41,7 @@ This file is part of OblivionOnline.
 #include "InPacket.h"
 #include "Commands.h"
 #include "Entity.h"
-
+#include "../OOCommon/InPacket.h"
 // Global variables
 extern "C" HINSTANCE OODll;
 bool bIsConnected = false;
@@ -65,8 +65,9 @@ char ServerIP[15];
 bool bFrameRendered = false;
 std::deque<Entity *> UpdateQueue;
 // Prototypes
-IOSystem gIO;
-EntityManager Entities(&gIO);
+IOSystem gIOSys;
+IOStream gLogStream(&gIOSys);
+EntityManager Entities(&gLogStream);
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 
 extern  "C" void OpenLog(int bOblivion)
@@ -127,7 +128,7 @@ DWORD WINAPI RecvThread(LPVOID Params)
 	while(bIsConnected)
 	{
 		rc = recv(ServerSocket,buf,PACKET_SIZE,0);
-		pkg = new InPacket((BYTE *)buf,rc);
+		pkg = new InPacket(&Entities,&gLogStream,(BYTE *)buf,rc);
 		pkg->HandlePacket();
 		delete pkg;
 	}

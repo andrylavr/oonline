@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetype235.lib zlibstat.lib pcre7.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetype235.lib zlibstat.lib pcre7.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(DXSDK_DIR)Lib\x86&quot;;ceguibin;&quot;$(SolutionDir)\Lib\&quot;"
@@ -154,7 +154,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/SECTION:.HookSection,S"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUITinyXMLParser_Static.lib freetype235.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib zlibstat.lib pcre7.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUITinyXMLParser_Static.lib freetype235.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib zlibstat.lib pcre7.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="0"
 				AdditionalLibraryDirectories="&quot;$(DXSDK_DIR)Lib\x86&quot;;ceguibin;..\CEGUI\lib;&quot;$(SolutionDir)\Lib\&quot;"
@@ -249,7 +249,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/SECTION:.HookSection,S"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetype235.lib zlibstat.lib pcre7.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetype235.lib zlibstat.lib pcre7.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(DXSDK_DIR)Lib\x86&quot;;ceguibin;&quot;$(SolutionDir)\Lib\&quot;"
@@ -329,6 +329,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\EntityUpdateManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -392,270 +396,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="obse"
-				>
-				<File
-					RelativePath="..\obse\obse\GameAPI.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameAPI.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameData.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameData.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameExtraData.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameExtraData.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameForms.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameForms.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameMagicEffects.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameMagicEffects.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameMenus.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameMenus.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameObjects.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameObjects.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameOSDepend.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameOSDepend.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameProcess.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameProcess.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameRTTI.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameRTTI_1_1.inl"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameRTTI_1_2.inl"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameRTTI_1_2_416.inl"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameTiles.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameTiles.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameTypes.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\GameTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiAPI.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiAPI.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiNodes.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiNodes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiRTTI.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\NiRTTI.h"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\Utilities.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\obse\obse\Utilities.h"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="NetCode"
-			>
-			<File
-				RelativePath=".\ChunkHandler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Event.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EventSystem.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EventSystem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\InPacket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OutboundNetwork.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OutboundNetwork.h"
-				>
-			</File>
-			<Filter
-				Name="ChunkHandler"
-				>
-				<File
-					RelativePath=".\HandleAnimationChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleAVChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleCellIDChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleChatChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleClassChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleEquipChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleGenderChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleMiscChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleNameChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleObjectChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandlePositionChunk.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\HandleRaceChunk.cpp"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Commands"
-			>
-			<File
-				RelativePath=".\Commands.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConnectCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DisconnectCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EquipCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MiscCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PositionCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\QueueManagementCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SendActorCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SpawnCommands.cpp"
-				>
-			</File>
 			<Filter
 				Name="Cegui"
 				>
@@ -971,7 +711,207 @@
 					RelativePath=".\cegui\config.h"
 					>
 				</File>
+				<Filter
+					Name="obse"
+					>
+					<File
+						RelativePath="..\obse\obse\GameAPI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameAPI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameData.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameData.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameExtraData.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameExtraData.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameForms.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameForms.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameMagicEffects.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameMagicEffects.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameMenus.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameMenus.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameObjects.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameObjects.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameOSDepend.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameOSDepend.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameProcess.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameProcess.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameRTTI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameRTTI_1_1.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameRTTI_1_2.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameRTTI_1_2_416.inl"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameTiles.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameTiles.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameTypes.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\GameTypes.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiAPI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiAPI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiNodes.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiNodes.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiRTTI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\NiRTTI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\Utilities.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\obse\obse\Utilities.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="NetCode"
+			>
+			<File
+				RelativePath=".\HandleChatChunk.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HandleMiscChunk.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OutboundNetwork.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OutboundNetwork.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Commands"
+			>
+			<File
+				RelativePath=".\Commands.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ConnectCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DisconnectCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EquipCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MiscCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PositionCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\QueueManagementCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SendActorCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SpawnCommands.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Hooks"
@@ -1045,22 +985,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath=".\Entity.h"
-			>
-		</File>
-		<File
-			RelativePath=".\EntityManager.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\EntityManager.h"
-			>
-		</File>
-		<File
-			RelativePath=".\EntityUpdateManager.cpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
