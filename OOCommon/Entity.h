@@ -18,9 +18,11 @@ GNU Affero General Public License for more details.
 #include "EntityManager.h"
 #include "EntityUpdateManager.h"
 #include <vector>
+class ChunkHandler;
 class Entity
 {
 private:
+	friend class ChunkHandler;
 	short m_ActorValues[72];
 	bool m_AnimationStatus[43];
 	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enuf 
@@ -117,90 +119,90 @@ public:
 		memset(m_AnimationStatus,0,43*sizeof(BYTE));
 		m_mgr->RegisterEntity(this);
 	}
-	inline void Move(float X,float Y,float Z)
+	inline void Move(float X,float Y,float Z,bool Inbound = false)
 	{
 
 		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ())
 		{
 			_Move(X,Y,Z);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this);
+			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
 	}
-	inline void Rotate(float rX,float rY,float rZ)
+	inline void Rotate(float rX,float rY,float rZ,bool Inbound = false)
 	{
 		if(m_RotX != RotX ()|| m_RotY != RotY() || m_RotZ != RotZ())
 		{
 			_SetRotation(rX,rY,rZ);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this);
+			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
 	}
-	inline void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ)
+	inline void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false)
 	{
 
 		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ() || m_RotX != RotX() || m_RotY != RotY() || m_RotZ != RotZ() )
 		{
 			_Move(X,Y,Z);
 			_SetRotation(rX,rY,rZ);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this);
+			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
 	}
-	inline void SetFemale(bool value)
+	inline void SetFemale(bool value,bool Inbound = false)
 	{
 		_SetFemale(value);
-		m_mgr->GetUpdateMgr()->OnGenderUpdate(this);
+		m_mgr->GetUpdateMgr()->OnGenderUpdate(this,Inbound);
 	}
-	inline void SetCell(UINT32 value,bool IsInInterior)
+	inline void SetCell(UINT32 value,bool IsInInterior,bool Inbound = false)
 	{
 		if(CellID() != value || m_IsInInterior != IsInInterior)
 		{
 			_SetCell(value,IsInInterior);
-			m_mgr->GetUpdateMgr()->OnCellChange(this);
+			m_mgr->GetUpdateMgr()->OnCellChange(this,Inbound);
 		}
 		
 	}
-	inline void SetGlobalSynch(bool value)
+	inline void SetGlobalSynch(bool value,bool Inbound = false)
 	{
 		_SetGlobalSynch(value);
 		//TODO: Synch object out 
 	}
-	inline void SetRace(UINT32 value)
+	inline void SetRace(UINT32 value,bool Inbound = false)
 	{
 		_SetRace(value);
-		m_mgr->GetUpdateMgr()->OnRaceUpdate(this);
+		m_mgr->GetUpdateMgr()->OnRaceUpdate(this,Inbound);
 	}
-	inline void SetEquip(BYTE slot,UINT32 value)
+	inline void SetEquip(BYTE slot,UINT32 value,bool Inbound = false)
 	{
 		if(Equip(slot) != value)
 		{
 			_SetEquip(slot,value);
-			m_mgr->GetUpdateMgr()->OnEquipUdate(this,slot);
+			m_mgr->GetUpdateMgr()->OnEquipUdate(this,slot,Inbound);
 		}
 		
 	}
-	inline void SetName(std::string Name)
+	inline void SetName(std::string Name,bool Inbound = false)
 	{
 		_SetName(Name);
-		m_mgr->GetUpdateMgr()->OnNameUpdate(this);
+		m_mgr->GetUpdateMgr()->OnNameUpdate(this,Inbound);
 	}
-	inline void SetClassName(std::string Class)
+	inline void SetClassName(std::string Class,bool Inbound = false)
 	{
 		_SetClassName(Class);
-		m_mgr->GetUpdateMgr()->OnClassUpdate(this);
+		m_mgr->GetUpdateMgr()->OnClassUpdate(this,Inbound);
 	}
-	inline void SetActorValue(BYTE ActorValue,short Value)
+	inline void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false)
 	{
 		if(this->ActorValue(ActorValue) != Value)
 		{
 			_SetActorValue(Class,Value);
-			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue);
+			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
 		}		
 	}
-	inline void SetAnimation(BYTE AnimationNo,bool Status)
+	inline void SetAnimation(BYTE AnimationNo,bool Status,bool Inbound = false)
 	{
 		if(AnimationStatus(AnimationNo) != Status)
 		{
 			_SetAnimation(AnimationNo,Status);
-			m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,AnimationNo);
+			m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,AnimationNo,Inbound);
 		}		
 	}
 	inline void ResetEquipChanged(BYTE Slot)

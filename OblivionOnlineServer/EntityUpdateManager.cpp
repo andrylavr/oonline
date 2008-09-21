@@ -23,24 +23,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Packets.h"
 #include <map>
 using namespace std;
-void EntityUpdateManager::OnRaceUpdate( Entity *ent )
+void EntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 {
 	UINT race = ent->Race();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		if(i->second != ent)
+		if(i->second != ent || !Inbound)
 		{
 			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Race),PkgChunk::Race,(BYTE*)&race);
 		}
 	}
 }
 
-void EntityUpdateManager::OnGenderUpdate( Entity *ent )
+void EntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
 {
 	BYTE Gender = ent->Gender();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		if(i->second != ent)
+		if(i->second != ent || !Inbound)
 	{
 
 			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Gender),PkgChunk::Gender,&Gender);
@@ -48,29 +48,29 @@ void EntityUpdateManager::OnGenderUpdate( Entity *ent )
 	}
 }
 
-void EntityUpdateManager::OnClassUpdate( Entity *ent )
+void EntityUpdateManager::OnClassUpdate( Entity *ent ,bool Inbound)
 {
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		if(i->second != ent)
+		if(i->second != ent || !Inbound)
 		{
 			//Send out data
 		}
 	}
 }
 
-void EntityUpdateManager::OnNameUpdate( Entity *ent )
+void EntityUpdateManager::OnNameUpdate( Entity *ent ,bool Inbound)
 {
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		if(i->second != ent)
+		if(i->second != ent || !Inbound)
 		{
 			//Send out data
 		}
 	}
 }
 
-void EntityUpdateManager::GlobalSend( Entity *ent )
+void EntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 {
 	float ChunkData[6] =
 	{
@@ -84,7 +84,7 @@ void EntityUpdateManager::GlobalSend( Entity *ent )
 
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		if(i->second != ent)
+		if(i->second != ent || !Inbound)
 		{
 			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE *)&ChunkData);
 			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
@@ -92,14 +92,14 @@ void EntityUpdateManager::GlobalSend( Entity *ent )
 		}
 	}
 }
-void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode)
+void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	short Value = ent->ActorValue(AVCode);
 	if(ent->Status() < STATUS_PLAYER)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if(i->first != m_net->GetMasterClient())
+			if(i->first != m_net->GetMasterClient()  || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::ActorValue),PkgChunk::ActorValue,(BYTE *)&Value);
 			}
@@ -109,14 +109,14 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if(i->first != ent->RefID())
+			if(i->first != ent->RefID() || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::ActorValue),PkgChunk::ActorValue,(BYTE *)&Value);
 			}
 		}
 	}
 }
-void EntityUpdateManager::OnPositionUpdate( Entity *ent ) /*Triggers Events and network code */
+void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers Events and network code */
 {
 	float ChunkData[6] =
 	{
@@ -132,7 +132,7 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent ) /*Triggers Events and 
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{			
-			if(m_net->GetMasterClient() != i->first && i->second->CellID() == ent->CellID())
+			if((m_net->GetMasterClient() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE*)&ChunkData);
@@ -143,7 +143,7 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent ) /*Triggers Events and 
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{			
-			if(ent->RefID() != i->first && i->second->CellID() == ent->CellID())
+			if((ent->RefID() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE*)&ChunkData);
@@ -151,7 +151,7 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent ) /*Triggers Events and 
 		}
 	}
 }
-void EntityUpdateManager::OnCellChange( Entity *ent )
+void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 {
 	BYTE ChunkData[5];
 	*((UINT32 *)ChunkData) = ent->CellID();
@@ -160,7 +160,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent )
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if( i->first != m_net->GetMasterClient() )
+			if( i->first != m_net->GetMasterClient()  || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
 			}
@@ -170,7 +170,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent )
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if( i->first != ent->RefID() )
+			if( i->first != ent->RefID()  || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
 			}
@@ -178,7 +178,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent )
 	}
 }
 
-void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot )
+void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 {
 	BYTE ChunkData[5];
 	ChunkData[0] = slot;
@@ -188,7 +188,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot )
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if( i->first != m_net->GetMasterClient())
+			if( i->first != m_net->GetMasterClient() || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
 			}
@@ -198,7 +198,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot )
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if(i->first != ent->RefID())
+			if(i->first != ent->RefID() || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
 			}
@@ -206,14 +206,14 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot )
 	}
 }
 
-void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char AnimationID )
+void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char AnimationID ,bool Inbound )
 {
 	BYTE ChunkData[2] = {AnimationID,ent->AnimationStatus(AnimationID)};
 	if(ent->Status() < STATUS_PLAYER)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if( i->first != m_net->GetMasterClient())
+			if( i->first != m_net->GetMasterClient() || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
 			}
@@ -223,14 +223,14 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if(i->first != ent->RefID())
+			if(i->first != ent->RefID() || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
 			}
 		}
 	}
 }
-void EntityUpdateManager::Chat(Entity *ent,std::string Message)
+void EntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
 {
 	BYTE *buf = (BYTE *)malloc(Message.length() + 2);
 	*(UINT16 *) buf = Message.length();

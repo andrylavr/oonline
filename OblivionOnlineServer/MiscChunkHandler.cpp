@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "NetworkSystem.h"
 #include "InPacket.h"
-size_t HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	size_t retval;
 	UINT16 supposedlength = *(unsigned short *)(chunkdata + 2);
@@ -36,11 +36,11 @@ size_t HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE*
 
 	for(map<UINT32,Entity *>::const_iterator i =  entities->GetPlayerList().begin(); i != entities->GetPlayerList().end() ; i++)
 	{
-		entities->GetUpdateMgr()->Chat(i->second,message);		
+		entities->GetUpdateMgr()->Chat(i->second,message,true);		
 	}
 	return retval + sizeof(unsigned short);
 }
-size_t HandleVersionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if(*(chunkdata + 2) == VERSION_SUPER && *(chunkdata+3) == VERSION_MAJOR && *(chunkdata+4) == VERSION_MINOR )
 		(*IO)<<SystemMessage<<"Client "<<FormID <<" authenticated with the correct version" << endl;
@@ -50,4 +50,12 @@ size_t HandleVersionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BY
 		(*IO)<<SystemMessage<<"Client "<<FormID <<" tried to authenticate with an incorrect version:"<<*chunkdata<<*(chunkdata+1)<<*(chunkdata+2)<< endl;
 	}
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
+}
+size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager *entities,InPacket *pkg,BYTE* chunkdata,size_t len,UINT32 FormID,BYTE Status)
+{
+	return GetMinChunkSize(PkgChunk::ClientType);
+}
+size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+{
+	return GetMinChunkSize(PkgChunk::PlayerID);
 }

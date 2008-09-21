@@ -62,35 +62,37 @@ public:
 		switch(chunk)
 		{
 		case	Object:
-			return HandleObjectChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleObjectChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case	Position:
-			return HandlePositionChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandlePositionChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case CellID:
-			return HandleCellIDChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleCellIDChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		
 		case Gender:
-			return HandleGenderChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleGenderChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Race:
-			return HandleRaceChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleRaceChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Class:
-			return HandleClassChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleClassChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Name:
-			return HandleNameChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleNameChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case ActorValue:
-			return HandleActorValueChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleActorValueChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Equip:
-			return HandleEquipChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleEquipChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Chat:
-			return HandleChatChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleChatChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Auth:
 			//return HandleAuthChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 			return GetMinChunkSize(Auth);
 		case ClientType:
-			return GetMinChunkSize(ClientType);
+			return ChunkHandler::HandleClientTypeChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Version:
-			return HandleVersionChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleVersionChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		case Animation:
-			return HandleAnimationChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+			return ChunkHandler::HandleAnimationChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
+		case PlayerID:
+			return ChunkHandler::HandlePlayerIDChunk(m_IO,m_entities,this,chunkdata,maxsize,FormID,Status);
 		default:
 			return 0;
 		}

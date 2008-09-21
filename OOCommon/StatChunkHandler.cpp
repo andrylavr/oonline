@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InPacket.h"
 #include "IOSystem.h"
 
-size_t HandleActorValueChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleActorValueChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -32,7 +32,7 @@ size_t HandleActorValueChunk(IOStream *IO,EntityManager *entities,InPacket *pkg,
 	ent->SetActorValue(*(chunkdata+2),*(INT16 *)(chunkdata + 3));
 	return GetMinChunkSize(PkgChunk::ActorValue) + sizeof(unsigned short);
 }
-size_t HandleGenderChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleGenderChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -43,7 +43,7 @@ size_t HandleGenderChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYT
 	ent->SetFemale(*(chunkdata+2));
 	return GetMinChunkSize(PkgChunk::Gender) + sizeof(unsigned short);
 }
-size_t HandleRaceChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleRaceChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -55,7 +55,7 @@ size_t HandleRaceChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE*
 	return GetMinChunkSize(PkgChunk::Race) + sizeof(unsigned short);
 }
 
-size_t HandleClassChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleClassChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -66,7 +66,7 @@ size_t HandleClassChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE
 	ent->SetClassName(ReadANSIString(chunkdata + 2,len-2));
 	return ent->ClassName().length() + 2 + sizeof(unsigned short);//TODO: think of more clever way to handle strings
 }
-size_t HandleNameChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleNameChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -77,7 +77,7 @@ size_t HandleNameChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE*
 	ent->SetName(ReadANSIString(chunkdata + 2,len-2));
 	return ent->Name().length() + 2 + sizeof(unsigned short);
 }
-size_t HandleEquipChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleEquipChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)

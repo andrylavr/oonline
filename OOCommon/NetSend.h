@@ -37,7 +37,7 @@ forward this exception.
 #pragma once
 class OutPacket;
 bool NetSendEquip(OutPacket *outnet, UINT32 FormID,BYTE Status,BYTE Slot,UINT32 EquipID );
-bool NetSendChat(OutPacket *outnet,BYTE *message,size_t length);
+bool NetSendChat(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE *message,size_t length);
 bool NetSendPosition(OutPacket *outnet, UINT32 FormID,BYTE Status,float PosX,float PosY,float PosZ,float RotX,float RotY,float RotZ );
 bool NetSendCellID(OutPacket *outnet, UINT32 FormID,BYTE Status,UINT32 CellID,bool IsInInterior );
 bool NetSendActorValue(OutPacket *outnet, UINT32 FormID,BYTE Status,BYTE Slot,short Value);

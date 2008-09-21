@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ChunkHandler.h"
 #include "InPacket.h"
 #include "Entity.h"
-size_t HandlePositionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandlePositionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	float *floats = (float *)(chunkdata + 2);
@@ -32,7 +32,7 @@ size_t HandlePositionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, B
 	ent->MoveNRot(floats[0],floats[1],floats[2],floats[3],floats[4],floats[5]);
 	return GetMinChunkSize(PkgChunk::Position) + sizeof(unsigned short);
 }
-size_t HandleCellIDChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleCellIDChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	if(ent == NULL)
@@ -44,7 +44,7 @@ size_t HandleCellIDChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYT
 	return GetMinChunkSize(PkgChunk::CellID) + sizeof(unsigned short);
 }
 
-size_t HandleAnimationChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleAnimationChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	BYTE AnimationID,AnimStatus;
 	AnimationID = *(chunkdata + 2);

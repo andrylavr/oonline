@@ -48,7 +48,7 @@ bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 	char message[512] = "\0";
 	if (!ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &message)) return true;
 	outnet.Send();
-	NetSendChat(outnet.GetPacket(),(BYTE *)message,strlen(message));
+	NetSendChat(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)message,strlen(message));
 	outnet.Send();
 	return true;
 }

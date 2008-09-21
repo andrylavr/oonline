@@ -18,7 +18,7 @@
 #include "InPacket.h"
 #include "ChunkHandler.h"
 #include "UserInterface.h"
-size_t HandleChatChunk(IOStream *IO,EntityManager*entities, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *packet, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 { 
 	(*IO) << (char *)(chunkdata +2 + sizeof(unsigned short));
 	RegisterChatMessage((char *)(chunkdata +2+ sizeof(unsigned short)));

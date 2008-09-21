@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "ChunkHandler.h"
 #include "InPacket.h"
-size_t HandleObjectChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleObjectChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	//DO not advance the header - instead write the object data
 	FormID = pkg->ObjectIDs[GetObject(chunkdata)] = *((UINT32 *)(chunkdata + 2));
