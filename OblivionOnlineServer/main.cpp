@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 	GameServer *testGS;
 	testGS = new GameServer();
 	getc(stdin);
+	
 	return 0;
 }
 

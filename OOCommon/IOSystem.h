@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ctime>
 #include <ostream>
 #include <iostream>
-
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 class IOProvider;
 enum LogLevel
 {
@@ -41,8 +42,9 @@ enum LogLevel
 class IOSystem : public std::streambuf
 {
 public:
+	boost::mutex lock;
 	LogLevel DefaultLogLevel;
-	IOSystem()
+	IOSystem() : lock()
 	{
 		DefaultLogLevel = LogLevel::BootMessage;
 		m_buf = new char[1024];
@@ -69,6 +71,7 @@ private:
 	size_t m_buflen;
 	virtual int sync (void) 
 	{
+		lock.lock();
 		time_t timestamp = time(NULL);
 		std::string Message(ctime(&timestamp),24);
 		switch(DefaultLogLevel)
@@ -107,6 +110,7 @@ private:
 		// reset the buffer
 		m_buf[0] = '\0';
 		setp(pbase(), epptr());
+		lock.unlock();
 		return 0;
 	}
 	int overflow (int c) {

@@ -13,6 +13,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 */
 #pragma once
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include "GlobalDefines.h"
 #include "Packets.h"
 #include "EntityUpdateManager.h"
@@ -28,6 +30,7 @@ typedef std::pair<UINT32,Entity *> IDEntityPair;
 class EntityManager
 {	
 private:
+	boost::mutex lock;
 #ifndef OO_USE_HASHMAP	
 	std::map<UINT32,Entity *> m_objects; //Includes actors
 	std::map<UINT32,Entity *> m_players;
@@ -43,7 +46,7 @@ public:
 	{
 		return m_players;
 	}
-	EntityManager(IOStream *io,NetworkSystem *netsys = NULL)
+	EntityManager(IOStream *io,NetworkSystem *netsys = NULL) : lock()
 	{
 		m_IO = io;
 		m_updatemgr = new EntityUpdateManager(this,netsys);

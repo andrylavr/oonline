@@ -65,15 +65,18 @@ char ServerIP[15];
 bool bFrameRendered = false;
 std::deque<Entity *> UpdateQueue;
 // Prototypes
-IOSystem gIOSys;
-IOStream gLogStream(&gIOSys);
-EntityManager Entities(&gLogStream);
+IOSystem *gIOSys;
+IOStream *gLogStream;
+EntityManager *Entities;
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 
 extern  "C" void OpenLog(int bOblivion)
 {
 	if(bOblivion)
 	{
+		gIOSys = new IOSystem();
+		gLogStream = new IOStream(gIOSys);
+		Entities = new EntityManager(gLogStream,NULL);
 		gLog.Open("OblivionOnline.log");
 		_MESSAGE("Welcome to OblivionOnline %u.%u.%u \"%s\" %s",VERSION_SUPER,VERSION_MAJOR,VERSION_MINOR,VERSION_CODENAME,VERSION_COMMENT);
 	}
@@ -90,7 +93,7 @@ int OO_Initialize()
 	_MESSAGE("OblivionOnline connecting");
 	_MESSAGE("Initializing GUI");
 	InitialiseUI();
-	Entities.DeleteEntities();
+	//Entities->DeleteEntities();
 	TotalPlayers = 0;
 	for(int i=0; i<MAXCLIENTS; i++)
 	{
@@ -109,7 +112,7 @@ int OO_Deinitialize ()
 	TerminateThread(hRecvThread, 0);
 	CloseHandle(hRecvThread);
 	TerminateThread(hPredictionEngine, 0);
-	
+	Entities->DeleteEntities();
 	closesocket(ServerSocket);
 	ServerSocket = INVALID_SOCKET;
 	WSACleanup();
@@ -128,7 +131,7 @@ DWORD WINAPI RecvThread(LPVOID Params)
 	while(bIsConnected)
 	{
 		rc = recv(ServerSocket,buf,PACKET_SIZE,0);
-		pkg = new InPacket(&Entities,&gLogStream,(BYTE *)buf,rc);
+		pkg = new InPacket(Entities,gLogStream,(BYTE *)buf,rc);
 		pkg->HandlePacket();
 		delete pkg;
 	}

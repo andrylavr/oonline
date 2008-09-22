@@ -58,7 +58,7 @@ GameServer::GameServer(void)
 	m_IO->RegisterIOProvider(new ChatIOProvider(this,m_IOSys));
 	//In this thread we now run the server browser update
 	AdvertiseGameServer();
-	*m_IO << BootMessage<<"Server closing"<<endl;
+	
 }
 
 GameServer::~GameServer(void)

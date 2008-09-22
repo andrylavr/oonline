@@ -52,10 +52,10 @@ bool Cmd_MPGetEquipment_Execute (COMMAND_ARGS)
 	if (thisObj->IsActor())
 	{
 		Actor *ActorBuf = (Actor *)thisObj;
-		Entity *ent = Entities.GetEntity(ActorBuf->refID,GetStatus(ActorBuf));
+		Entity *ent = Entities->GetEntity(ActorBuf->refID,GetStatus(ActorBuf));
 		BYTE i = 0;
 		if(ent ==NULL)
-			ent = new Entity(&Entities,thisObj->refID,GetStatus(thisObj));
+			ent = new Entity(Entities,thisObj->refID,GetStatus(thisObj));
 		for(;i < MAX_EQUIPSLOTS;i++)
 		{
 			if(ent->EquipChanged(i))

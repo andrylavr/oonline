@@ -103,9 +103,9 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
 		
-	ent = Entities.GetEntity(LocalPlayer,STATUS_PLAYER);
+	ent = Entities->GetEntity(LocalPlayer,STATUS_PLAYER);
 	if(ent == NULL)
-		ent = new Entity(&Entities,LocalPlayer,STATUS_PLAYER);
+		ent = new Entity(Entities,LocalPlayer,STATUS_PLAYER);
 	outnet.Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
@@ -118,9 +118,9 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 		{
 			Actor *actor;
 			actor = (Actor *)LookupFormByID(SpawnID[i]);
-			ent = Entities.GetEntity(i,STATUS_PLAYER);
+			ent = Entities->GetEntity(i,STATUS_PLAYER);
 			if(ent == NULL)
-				ent = new Entity(&Entities,i,STATUS_PLAYER);
+				ent = new Entity(Entities,i,STATUS_PLAYER);
 			SendActorHealthOnly(actor,ent);
 		}
 	}
@@ -170,10 +170,10 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = Entities.GetEntity(ListIterator->refr->refID,Status);
+					ent = Entities->GetEntity(ListIterator->refr->refID,Status);
 					
 					if(ent == NULL)
-						ent = new Entity(&Entities,ListIterator->refr->refID,Status);
+						ent = new Entity(Entities,ListIterator->refr->refID,Status);
 					//Sync that object too
 					/*
 					if(ListIterator->refr->parentCell->refID != ent->CellID)

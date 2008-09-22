@@ -17,6 +17,7 @@ GNU Affero General Public License for more details.
 #include "IOSystem.h"
 bool EntityManager::RegisterEntity(Entity *Entity)
 {
+	lock.lock();
 	(*m_IO)<<SystemMessage<<"Spawning Entity "<<Entity->RefID()<<endl;
 #ifndef OO_USE_HASHMAP
 	if(Entity->Status() == STATUS_PLAYER)
@@ -29,6 +30,7 @@ bool EntityManager::RegisterEntity(Entity *Entity)
 	else
 		m_objects.Insert(Entity);
 #endif	
+	lock.unlock();
 	return true;
 }
 bool EntityManager::DeleteEntity(Entity *Entity)
@@ -39,7 +41,7 @@ bool EntityManager::DeleteEntity(Entity *Entity)
 bool EntityManager::DeleteEntities()
 {
 	#ifndef OO_USE_HASHMAP
-
+	lock.lock();
 	for(std::map<UINT32,Entity *>::iterator i = m_objects.begin();i != m_objects.end();i++)
 	{
 		delete i->second;
@@ -50,6 +52,7 @@ bool EntityManager::DeleteEntities()
 		delete i->second;
 	}
 	m_players.clear();
+	lock.unlock();
 	#else
 	// TODO
 	printf("SOMEBODY TOLD YOU NOT TO MESS WITH DEVELOPMENT CODE !!! BETTER LISTEN");
@@ -58,7 +61,7 @@ bool EntityManager::DeleteEntities()
 }
 bool EntityManager::DeRegisterEntity(Entity *Entity)
 {
-
+	lock.lock();
 #ifndef OO_USE_HASHMAP
 	if(Entity->Status())
 		m_players.erase(Entity->RefID());
@@ -70,5 +73,6 @@ bool EntityManager::DeRegisterEntity(Entity *Entity)
 	else
 		m_objects.Remove(Entity);
 #endif	
+	lock.lock();
 	return true;	
 }

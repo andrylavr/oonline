@@ -14,15 +14,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 */
 #pragma once
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include "Entity.h"
 #include "EntityManager.h"
 #include "EntityUpdateManager.h"
 #include <vector>
+
 class ChunkHandler;
 class Entity
 {
 private:
-	friend class ChunkHandler;
+	boost::mutex lock;
 	short m_ActorValues[72];
 	bool m_AnimationStatus[43];
 	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enuf 
@@ -93,11 +96,13 @@ private:
 			m_AnimationStatus[AnimationNo] = Status;
 	}
 public:
-	Entity(EntityManager *mgr,UINT32 refID,BYTE Status,bool TriggerEvents = false,bool GlobalSynch= false,
-		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,
+	inline Entity(EntityManager *mgr,UINT32 refID,BYTE Status,bool TriggerEvents = false,bool GlobalSynch= false,
+		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
-		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string(""),bool IsInInterior = false)
+		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
+		lock()
 	{
+		lock.lock();
 		m_mgr = mgr;
 		m_RefID = refID;
 		m_Status = Status;
@@ -115,50 +120,58 @@ public:
 		m_Name = name;
 		m_Class = classname;
 		m_IsInInterior = IsInInterior;
-		memset(m_ActorValues,0,72*sizeof(short));
-		memset(m_AnimationStatus,0,43*sizeof(BYTE));
+		//memset(m_ActorValues,0,72*sizeof(short));
+		//memset(m_AnimationStatus,0,43*sizeof(BYTE));
 		m_mgr->RegisterEntity(this);
+		lock.unlock();
 	}
 	inline void Move(float X,float Y,float Z,bool Inbound = false)
-	{
-
+	{	
+		lock.lock();
 		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ())
 		{
 			_Move(X,Y,Z);
 			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
+		lock.unlock();
 	}
 	inline void Rotate(float rX,float rY,float rZ,bool Inbound = false)
 	{
+		lock.lock();
 		if(m_RotX != RotX ()|| m_RotY != RotY() || m_RotZ != RotZ())
 		{
 			_SetRotation(rX,rY,rZ);
 			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
+		lock.unlock();
 	}
 	inline void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false)
 	{
-
+		lock.lock();
 		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ() || m_RotX != RotX() || m_RotY != RotY() || m_RotZ != RotZ() )
 		{
 			_Move(X,Y,Z);
 			_SetRotation(rX,rY,rZ);
 			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
 		}
+		lock.unlock();
 	}
 	inline void SetFemale(bool value,bool Inbound = false)
 	{
+		lock.lock();
 		_SetFemale(value);
 		m_mgr->GetUpdateMgr()->OnGenderUpdate(this,Inbound);
+		lock.unlock();
 	}
 	inline void SetCell(UINT32 value,bool IsInInterior,bool Inbound = false)
 	{
+		lock.lock();
 		if(CellID() != value || m_IsInInterior != IsInInterior)
 		{
 			_SetCell(value,IsInInterior);
 			m_mgr->GetUpdateMgr()->OnCellChange(this,Inbound);
 		}
-		
+		lock.unlock();
 	}
 	inline void SetGlobalSynch(bool value,bool Inbound = false)
 	{
@@ -167,48 +180,61 @@ public:
 	}
 	inline void SetRace(UINT32 value,bool Inbound = false)
 	{
+		lock.lock();
 		_SetRace(value);
 		m_mgr->GetUpdateMgr()->OnRaceUpdate(this,Inbound);
+		lock.unlock();
 	}
 	inline void SetEquip(BYTE slot,UINT32 value,bool Inbound = false)
 	{
+		lock.lock();
 		if(Equip(slot) != value)
 		{
 			_SetEquip(slot,value);
 			m_mgr->GetUpdateMgr()->OnEquipUdate(this,slot,Inbound);
 		}
-		
+		lock.unlock();
 	}
 	inline void SetName(std::string Name,bool Inbound = false)
 	{
+		lock.lock();
 		_SetName(Name);
 		m_mgr->GetUpdateMgr()->OnNameUpdate(this,Inbound);
+		lock.unlock();
 	}
 	inline void SetClassName(std::string Class,bool Inbound = false)
 	{
+		lock.lock();
 		_SetClassName(Class);
 		m_mgr->GetUpdateMgr()->OnClassUpdate(this,Inbound);
+		lock.unlock();
 	}
 	inline void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false)
 	{
+		lock.lock();
 		if(this->ActorValue(ActorValue) != Value)
 		{
 			_SetActorValue(Class,Value);
 			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
-		}		
+		}
+		lock.unlock();
 	}
 	inline void SetAnimation(BYTE AnimationNo,bool Status,bool Inbound = false)
 	{
+		lock.lock();
 		if(AnimationStatus(AnimationNo) != Status)
 		{
 			_SetAnimation(AnimationNo,Status);
 			m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,AnimationNo,Inbound);
 		}		
+		lock.unlock();
 	}
 	inline void ResetEquipChanged(BYTE Slot)
 	{
+		lock.lock();
 		if(Slot < MAX_EQUIPSLOTS)
 			m_EquipChanged[Slot] = false;
+		lock.unlock();
 	}
 	inline std::string Name()
 	{
