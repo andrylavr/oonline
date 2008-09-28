@@ -41,6 +41,7 @@ This file is part of OblivionOnline.
 #include "InPacket.h"
 #include "Commands.h"
 #include "Entity.h"
+#include "LogIOProvider.h"
 #include "../OOCommon/InPacket.h"
 // Global variables
 extern "C" HINSTANCE OODll;
@@ -74,10 +75,12 @@ extern  "C" void OpenLog(int bOblivion)
 {
 	if(bOblivion)
 	{
+		gLog.Open("OblivionOnline.log");
 		gIOSys = new IOSystem();
 		gLogStream = new IOStream(gIOSys);
 		Entities = new EntityManager(gLogStream,NULL);
-		gLog.Open("OblivionOnline.log");
+		/*gIOSys->RegisterIOProvider(new LogIOProvider(gIOSys,LogLevel::BootMessage,"obliviononline-misc.log"));
+		*/
 		_MESSAGE("Welcome to OblivionOnline %u.%u.%u \"%s\" %s",VERSION_SUPER,VERSION_MAJOR,VERSION_MINOR,VERSION_CODENAME,VERSION_COMMENT);
 	}
 	else

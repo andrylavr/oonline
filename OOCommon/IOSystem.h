@@ -114,6 +114,7 @@ private:
 		return 0;
 	}
 	int overflow (int c) {
+		lock.lock();
 		// allocate a new buffer and copy
 		// our current data into it, then swap
 		// it with the old buffer
@@ -125,6 +126,7 @@ private:
 		setp(m_buf, m_buf + m_buflen);
 		// now we need to stuff c into the buffer
 		sputc(c);
+		lock.unlock();
 		return 0;
 	}
 };

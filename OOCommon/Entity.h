@@ -38,7 +38,7 @@ private:
 	EntityManager *m_mgr;
 	Entity *m_MoveEvent,*m_ActorValueEvent,*CellChangeEvent,*m_DeathEvent;
 	std::string m_Name; // A std::string should not waste TOO much space 
-	std::string m_Class;
+	//std::string m_Class;
 	inline void _Move(float PosX,float PosY,float PosZ)
 	{
 			m_PosX = PosX;
@@ -83,7 +83,7 @@ private:
 	}
 	inline void _SetClassName(std::string Class)
 	{
-		m_Class = Class;
+		//m_Class = Class;
 	}
 	inline void _SetActorValue(BYTE ActorValue,short Value)
 	{
@@ -100,7 +100,7 @@ public:
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
-		lock()
+		lock(),m_Name(name)//,m_Class(classname)
 	{
 		lock.lock();
 		m_mgr = mgr;
@@ -117,8 +117,8 @@ public:
 		m_TriggerEvents = TriggerEvents;
 		m_Female = female;
 		m_Race = race;
-		m_Name = name;
-		m_Class = classname;
+		//m_Name = name;
+		//m_Class = classname;
 		m_IsInInterior = IsInInterior;
 		//memset(m_ActorValues,0,72*sizeof(short));
 		//memset(m_AnimationStatus,0,43*sizeof(BYTE));
@@ -248,7 +248,8 @@ public:
 	}
 	inline std::string ClassName()
 	{
-		return m_Class;
+		return "";
+		//return m_Class;
 	}
 	inline bool Female()
 	{

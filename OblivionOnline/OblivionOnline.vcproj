@@ -985,6 +985,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\GlobalLogIOProvider.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\GlobalLogIOProvider.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
