@@ -44,12 +44,13 @@ class IOSystem : public std::streambuf
 public:
 	boost::mutex lock;
 	LogLevel DefaultLogLevel;
-	IOSystem() : lock()
+	IOSystem() : lock() ,m_providers()
 	{
 		DefaultLogLevel = LogLevel::BootMessage;
 		m_buf = new char[1024];
 		m_buflen = 1024;
 		setp(m_buf, m_buf + 1024);
+		m_providers.clear();
 	}
 	~IOSystem(void);
 	bool DoOutput(LogLevel Level,std::string Message);

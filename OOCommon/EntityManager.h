@@ -46,7 +46,7 @@ public:
 	{
 		return m_players;
 	}
-	EntityManager(IOStream *io,NetworkSystem *netsys = NULL) : lock()
+	EntityManager(IOStream *io,NetworkSystem *netsys = NULL) : lock() , m_objects(),m_players()
 	{
 		m_IO = io;
 		m_updatemgr = new EntityUpdateManager(this,netsys);

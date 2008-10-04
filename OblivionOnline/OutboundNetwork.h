@@ -71,7 +71,7 @@ public:
 	}
 	bool Send()
 	{
-		if(gClient->GetIsConnected())
+		if(gClient && gClient->GetIsConnected())
 		{
 			if(outpacket->Size() <= 3)
 				return false;

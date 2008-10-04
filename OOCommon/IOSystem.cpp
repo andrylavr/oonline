@@ -22,14 +22,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 bool IOSystem::RegisterIOProvider(IOProvider *provider)
 {
+	lock.lock();
 	//so no IO system is contained twice
 	m_providers.remove(provider);//TODO: Not thread-safe
 	m_providers.push_back(provider);
+	lock.unlock();
 	return true;
 }
 bool IOSystem::RemoveIOProvider(IOProvider *system)
 {
+	lock.lock();
 	m_providers.remove(system);
+	lock.unlock();
 	return true;
 }
 

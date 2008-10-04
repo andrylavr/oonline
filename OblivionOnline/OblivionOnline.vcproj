@@ -227,7 +227,7 @@
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\OOCommon&quot;;&quot;$(DXSDK_DIR)\Include\&quot;;&quot;$(SolutionDir)..\OOCommon\&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..&quot;;&quot;$(SolutionDir)\..\obse\obse&quot;;&quot;$(SolutionDir)\..\obse\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;DIRECT3DHOOK_EXPORTS;OBLIVION_VERSION=0x010201A0;CRT_SECURE_NO_WARNINGS;CEGUI_STATIC;OBLIVION;$(NOINHERIT)"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
