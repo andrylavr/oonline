@@ -94,7 +94,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 {
 	Entity *ent; 
 	BYTE Status;
-	if(!bIsInitialized)
+	if(!gClient->GetIsInitialized())
 		return true;
 	// A heavy command xD
 	// 1 - send local player data up .
@@ -102,10 +102,9 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-		
-	ent = Entities->GetEntity(LocalPlayer,STATUS_PLAYER);
+	ent = gClient->GetEntities()->GetEntity(gClient->GetLocalPlayer(),STATUS_PLAYER);
 	if(ent == NULL)
-		ent = new Entity(Entities,LocalPlayer,STATUS_PLAYER);
+		ent = new Entity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
 	outnet.Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
@@ -114,17 +113,17 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	//Health of the other players
 	for(int i = 0;i < MAXCLIENTS ;i++)
 	{
-		if(SpawnID[i] != 0)
+		if(gClient->GetSpawnID(i) != 0)
 		{
 			Actor *actor;
-			actor = (Actor *)LookupFormByID(SpawnID[i]);
-			ent = Entities->GetEntity(i,STATUS_PLAYER);
+			actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i));
+			ent =  gClient->GetEntities()->GetEntity(i,STATUS_PLAYER);
 			if(ent == NULL)
-				ent = new Entity(Entities,i,STATUS_PLAYER);
+				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);
 			SendActorHealthOnly(actor,ent);
 		}
 	}
-	if(bIsMasterClient)
+	if(gClient->GetIsMasterClient())
 	{
 		//rewritten
 		//Just check up on the cells all other players are in
@@ -133,9 +132,9 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 		for(int i = 0 ; i < MAXCLIENTS;i++)
 		{
 			bool bInsert = true;
-			if(SpawnID[i])
+			if(gClient->GetSpawnID(i))
 			{
-				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(SpawnID[i]);
+				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(gClient->GetSpawnID(i));
 				// Look through the list
 				std::list <TESObjectCELL *>::iterator it = CellStack.begin();
 				std::list <TESObjectCELL *>::iterator end = CellStack.end();
@@ -170,10 +169,10 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = Entities->GetEntity(ListIterator->refr->refID,Status);
+					ent = gClient->GetEntities()->GetEntity(ListIterator->refr->refID,Status);
 					
 					if(ent == NULL)
-						ent = new Entity(Entities,ListIterator->refr->refID,Status);
+						ent = new Entity(gClient->GetEntities(),ListIterator->refr->refID,Status);
 					//Sync that object too
 					/*
 					if(ListIterator->refr->parentCell->refID != ent->CellID)

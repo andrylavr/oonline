@@ -16,28 +16,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "main.h"
-
+// Not sure if we need this. 
+/* Rewritten by Julian*/
 bool Cmd_MPGetSpawnedRef_Execute (COMMAND_ARGS)
 {
 	int spawnNumber = 0;
 	if (!ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &spawnNumber)) return true;
-	for(int i=0; i<MAXCLIENTS; i++)
+
+	if (spawnNumber < MAXCLIENTS)
 	{
-		if (spawnNumber == i)
-		{
-			UInt32* refResult = (UInt32*)result;
-			*refResult = SpawnID[i];
-			return true;
-		}
+		UInt32* refResult = (UInt32*)result;
+		*refResult = gClient->GetSpawnID(spawnNumber);
+		return true;
 	}
 	return true;
 }
-
+/* Rewritten by Julian*/
 bool Cmd_MPSpawned_Execute (COMMAND_ARGS)
 {
 	if (!thisObj)
 	{
-		Console_Print("Error, no reference given for MPSpawned");
+		gClient->GetIO() << "Error, no reference given for MPSpawned" << endl;
 		return true;
 	}
 	if (thisObj->IsActor())
@@ -46,20 +45,20 @@ bool Cmd_MPSpawned_Execute (COMMAND_ARGS)
 		UInt32 actorNumber = ActorBuf->refID;
 		for(int i=0; i< MAXCLIENTS ; i++)
 		{
-			if(SpawnID[i] == actorNumber)
+			if(gClient->GetSpawnID(i) == actorNumber)
 			{
 				// conflict here
-				Console_Print("This reference is already used as a controlled actor");
+				gClient->GetIO() << "This reference is already used as a controlled actor" <<endl;
 				return false;
 				break;
 			}
 		}
 		for(int i=0; i<MAXCLIENTS; i++)
 		{
-			if (!SpawnID[i])
+			if (!gClient->GetSpawnID(i))
 			{
-				SpawnID[i] = actorNumber;
-				Console_Print("Spawn %i ID: %u", i, SpawnID[i]);
+				gClient->SetSpawnID(i,actorNumber);
+				gClient->GetIO() << "Spawn "<< i<<" is " << actorNumber <<endl;
 				int actorNum = GetPlayerNumberFromRefID(ActorBuf->refID);
 				PlayerActorList[actorNum] = thisObj;
 				return true;
@@ -69,6 +68,7 @@ bool Cmd_MPSpawned_Execute (COMMAND_ARGS)
 	return true;
 }
 
+/* REwritten by Julian */
 bool Cmd_MPClearSpawn_Execute (COMMAND_ARGS)
 {
 	if (!thisObj)
@@ -81,9 +81,9 @@ bool Cmd_MPClearSpawn_Execute (COMMAND_ARGS)
 		Actor *ActorBuf = (Actor *)thisObj;
 		for(int i=0; i<MAXCLIENTS; i++)
 		{
-			if (SpawnID[i] == (ActorBuf->refID))
+			if (gClient->GetSpawnID(i) == (ActorBuf->refID))
 			{
-				SpawnID[i] = 0;
+				gClient->SetSpawnID(i,0);
 				//Console_Print("SpawnID cleared");
 			}
 		}

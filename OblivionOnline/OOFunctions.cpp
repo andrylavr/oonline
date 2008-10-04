@@ -42,32 +42,32 @@ UINT32 GetPlayerNumberFromRefID(UInt32 refID) // retrieves a player number from 
 	bool foundID = false;
 	if (refID == (*g_thePlayer)->refID)
 	{
-		return  LocalPlayer;
+		return  gClient->GetLocalPlayer();
 		foundID = true;
 	}else{
 		/*
 		modus operandi:
-		We check the spawn list , leaving the localplayer out
+		We check the spawn list , leaving the gClient->GetLocalPlayer() out
 		*/
 		// The player the current spawnID respresents
-		//(0 == LocalPlayer) ? 1 : 0; // If LocalPlayer is 0 we start at 1 ... , because we have to leave him out 
+		//(0 == gClient->GetLocalPlayer()) ? 1 : 0; // If gClient->GetLocalPlayer() is 0 we start at 1 ... , because we have to leave him out 
 		// if not at 0
 		
 		//If not the player, check the SpawnID list
-		//currentspawn += ((i == LocalPlayer)?0:1)
+		//currentspawn += ((i == gClient->GetLocalPlayer())?0:1)
 		//A really complex but fast statement , selectíng the proper player id
 		//translates into 
-		//if(i == LocalPlayer) 
-		//	LocalPlayer ++
-		// more safe than any evaluation of the type currentspawn += (LocalPlayer == i) , this is not dependent on bool int conversion
-		//,currentplayer += ((i == LocalPlayer)?0:1)
-		int currentplayer = ((0 == LocalPlayer) ? 1 : 0);
+		//if(i == gClient->GetLocalPlayer()) 
+		//	gClient->GetLocalPlayer() ++
+		// more safe than any evaluation of the type currentspawn += (gClient->GetLocalPlayer() == i) , this is not dependent on bool int conversion
+		//,currentplayer += ((i == gClient->GetLocalPlayer())?0:1)
+		int currentplayer = ((0 == gClient->GetLocalPlayer()) ? 1 : 0);
 		for (UINT32 currentspawn = 0 ;  currentspawn<MAXCLIENTS; currentplayer++ ,
-			currentspawn += ((currentplayer == LocalPlayer)?0:1))
+			currentspawn += ((currentplayer == gClient->GetLocalPlayer())?0:1))
 		{
-			if(SpawnID[currentspawn] == refID) // we find it quite fast. 12 cmp cycles 12 add cycles
+			if(gClient->GetSpawnID(currentspawn) == refID) // we find it quite fast. 12 cmp cycles 12 add cycles
 			{
-				if(PlayerConnected[currentplayer])
+				if(gClient->GetIsPlayerConnected(currentplayer))
 				{
 					return currentplayer;
 				}

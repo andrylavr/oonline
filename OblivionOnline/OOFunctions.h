@@ -37,32 +37,31 @@ This file is part of OblivionOnline.
 */
 #ifndef _OOFUNCTIONS_H
 #define _OOFUNCTIONS_H
-
+#include "main.h"
+#include "GameClient.h"
 #include "../OOCommon/Packets.h"
 extern void RunScriptLine(const char *buf, bool IsTemp);
-extern UINT32 LocalPlayer;
 extern UINT32 GetPlayerNumberFromRefID(UInt32 refID);
-extern UInt32 SpawnID[];
-
+extern GameClient * gClient;
 inline int GetPlayerNumberFromSpawnNumber(USHORT SpawnNumber) 
 {
-	return ((SpawnNumber < LocalPlayer) ? SpawnNumber : (SpawnNumber +1 ));
+	return ((SpawnNumber < gClient->GetLocalPlayer()) ? SpawnNumber : (SpawnNumber +1 ));
 };
 
 inline USHORT GetSpawnIDFromPlayerID(USHORT  PlayerID) // retrieves a player number from a refID in spawn
 {
-	return ((LocalPlayer >= PlayerID) ? PlayerID : (PlayerID -1));
+	return ((gClient->GetLocalPlayer() >= PlayerID) ? PlayerID : (PlayerID -1));
 };
 
 inline UINT32 GetPlayerFormID(UINT32 PlayerID)
 {
-	return SpawnID[(LocalPlayer >= PlayerID) ? PlayerID : (PlayerID -1)]; // TODO: Revamp this
+	return gClient->GetSpawnID(gClient->GetLocalPlayer() >= PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
 }
 inline bool IsPlayerSpawn(UINT32 RefID)
 {
 	for(int i = 0;i < MAXCLIENTS;i++)
 	{
-		if(SpawnID[i] == RefID)
+		if(gClient->GetSpawnID(i) == RefID)
 			return true;
 	}
 	return false;

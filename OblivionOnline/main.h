@@ -59,7 +59,7 @@ This file is part of OblivionOnline.
 #include "OutboundNetwork.h"
 #include "EntityManager.h"
 
-
+#include "GameClient.h"
 #define SUPER_VERSION 0 //Not used yet
 #define MAIN_VERSION 5
 #define SUB_VERSION 0
@@ -69,27 +69,12 @@ This file is part of OblivionOnline.
 
 //Externals
 
-extern std::deque<Entity *> UpdateQueue;
-
-extern IDebugLog gLog;
-extern bool bIsConnected;
-extern bool bIsMasterClient;
-extern UINT32 LocalPlayer;
-extern UINT32 TotalPlayers;
-extern bool PlayerConnected[MAXCLIENTS];
-extern SOCKET ServerSocket;
-extern HANDLE hRecvThread;
+class OutboundNetwork;
+extern GameClient *gClient;
 extern TESObjectREFR* PlayerActorList[MAXCLIENTS];
-extern UInt32 SpawnID[MAXCLIENTS];
-extern char ServerIP[15];
 extern OutboundNetwork outnet;
 
 extern DWORD WINAPI RecvThread(LPVOID Params);
-extern int OO_Initialize();
-extern int OO_Deinitialize();
-extern EntityManager *Entities;
-extern bool bIsInitialized;
 extern "C" HANDLE hEvtSendPacket;
 
-extern IOStream * gLogStream;
 #endif

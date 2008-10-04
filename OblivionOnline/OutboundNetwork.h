@@ -42,10 +42,7 @@ forward this exception.
 #include "../OOCommon/GlobalDefines.h"
 #include "../OOCommon/OutPacket.h"
 #include "Packets.h"
-extern UINT32 LocalPlayer;
-extern bool bIsConnected;
-extern SOCKET ServerSocket;
-
+#include "main.h"
 void SetConnectionMessage(char *message);
 class OutboundNetwork
 {
@@ -74,20 +71,19 @@ public:
 	}
 	bool Send()
 	{
-		if(bIsConnected)
+		if(gClient->GetIsConnected())
 		{
 			if(outpacket->Size() <= 3)
 				return false;
 			if(outpacket->Reliable())
 			{
-				int retval = send(ServerSocket,(const char *)outpacket->GetData(),outpacket->Size(),0);
+				int retval = send(gClient->GetSocket(),(const char *)outpacket->GetData(),outpacket->Size(),0);
 				if(retval != outpacket->Size())
-					_ERROR("Packet was fragmented: %u instead of %u bytes",retval,outpacket->Size());
+					gClient->GetIO() <<"Packet was fragmented to "<<retval<<"bytes from "<< outpacket->Size()<< " bytes";
 				if(SOCKET_ERROR == retval)
 				{
-					_MESSAGE("Error in TCP/IP dropping connection");
-					SetConnectionMessage("Connection Lost");
-					bIsConnected = false;
+					gClient->GetIO() << Error << "Lost Connection";
+					gClient->Disconnect();
 				}
 			}
 			else

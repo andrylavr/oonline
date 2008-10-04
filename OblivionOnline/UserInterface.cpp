@@ -49,7 +49,7 @@ bool ConnectButton_Click(const CEGUI::EventArgs& e)
 }
 bool SendButton_Click()
 {
-	if(!bIsConnected)
+	if(!gClient->GetIsConnected())
 	{
 		RegisterChatMessage("It helps to be connected when you chat"); 
 		return false;
@@ -58,7 +58,7 @@ bool SendButton_Click()
 	CEGUI::Window *messagewin = CEGUI::WindowManager::getSingleton().getWindow("ChatMessage");
 	if(!chatwin || !messagewin)
 	{
-		_ERROR("Windows are not initialized aborting");
+		gClient->GetIO () <<  "Windows are not initialized aborting" << endl;
 		throw new std::exception("Windows are not initialized aborting");
 	}
 	if(messagewin->getText().length() == 0)
@@ -66,7 +66,7 @@ bool SendButton_Click()
 	/*char Buffer[1033] = "You said:"; //1024 + 8 for "you said"
 	strcat(Buffer,messagewin->getText().c_str()); 
 	RegisterChatMessage(Buffer);*/
-	NetSendChat(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE*)messagewin->getText().c_str(),messagewin->getText().length());
+	NetSendChat(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE*)messagewin->getText().c_str(),messagewin->getText().length());
 	messagewin->setText("");
 	return true;
 }
@@ -85,18 +85,18 @@ DWORD WINAPI InitialiseUI()
 		//we could in theory free ApplicationPath
 		std::string ApplicationPath(_ApplicationPath);
 		//Sleep(20000);// 20 seconds for Oblivion to load
-		_MESSAGE("Loading CEGUI");
+		gClient->GetIO() << BootMessage <<"Loading CEGUI" << endl;
 		if(!OblivionDirect3D9Device)
 		{
-			_ERROR("Device not found - aborting GUI");
+			gClient->GetIO() << Error<<  "Device not found - aborting GUI" <<endl;
 			return false;
 		}
 		if(CEGUI::System::getSingletonPtr() ==NULL)
 		{
 			myRenderer = new CEGUI::DirectX9Renderer(OblivionDirect3D9Device,100);
-			_MESSAGE("Created renderer");
+			gClient->GetIO() << BootMessage << "Created renderer" << endl;
 			CEGUI::Window* myRoot;
-			_MESSAGE("Creating CEGUI::System - view CEGUI.log for further information");
+			gClient->GetIO() << BootMessage << "Creating CEGUI::System - view CEGUI.log for further information" << endl;
 			CEGUI::System *system = new CEGUI::System(myRenderer);
 			CEGUI::DefaultResourceProvider *rp = ((CEGUI::DefaultResourceProvider *)system->getResourceProvider());
 			rp->setResourceGroupDirectory("default",ApplicationPath + "\\OblivionOnline\\GUI\\");
@@ -121,7 +121,7 @@ DWORD WINAPI InitialiseUI()
 			connectbutton->subscribeEvent(connectbutton->EventMouseClick,CEGUI::Event::Subscriber(ConnectButton_Click));
 		}
 		bUIInitialized = true;
-		_MESSAGE("Successfully loaded GUI");
+		gClient->GetIO() << BootMessage << "Successfully loaded GUI" << endl;
 
 	}
 	return 1;
@@ -144,8 +144,7 @@ void RegisterChatMessage(char *text)
 	}
 	else
 	{
-		Console_Print("Could not find CEGUI Window ChatMessage");
-		_ERROR("Could not find ChatMessage");
+		gClient->GetIO() << Error << "Could not find ChatMessage CEGUI Window" << endl;
 	}
 	
 }

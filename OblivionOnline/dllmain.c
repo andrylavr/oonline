@@ -58,6 +58,7 @@ BOOL WINAPI DllMain(
 		if(_strnicmp("Oblivion.exe", proc, 512) == 0)
 		{
 			OpenLog(1);
+
 			D3DHookInit();
 			SetInputHooks();
 		}

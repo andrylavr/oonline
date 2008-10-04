@@ -44,37 +44,34 @@ forward this exception.
 size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager*entities,InPacket *pkg,BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if(*(chunkdata + 2) == VERSION_SUPER && *(chunkdata+3) == VERSION_MAJOR && *(chunkdata+4) == VERSION_MINOR )
-		_MESSAGE("Server using the same version as the client");
+		gClient->GetIO() <<  BootMessage << "Server using the same version as the client" << endl ;
 	else
 	{
-		Console_Print("Incorrect Server Version %u.%u.%u",*(chunkdata + 2),*(chunkdata +3),*(chunkdata + 4));
-		_ERROR("Incorrect Server Version %u.%u.%u",*(chunkdata + 2),*(chunkdata +3),*(chunkdata + 4));
+		gClient->GetIO() <<Error << "Incorrect Server Version " << *(chunkdata + 2) << "." << *(chunkdata +3) << "." <<*(chunkdata + 4) << endl;
 	}
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
-	LocalPlayer = *(UINT32 *)(chunkdata + 2);
-	Console_Print("Received Player ID %u",LocalPlayer);
-	_MESSAGE("Received Player ID %u",LocalPlayer);
-	bIsInitialized = true;
+	gClient->SetPlayerID(*(UINT32 *)(chunkdata + 2));
+	*IO << GameMessage << "Player No " << gClient->GetLocalPlayer() << endl;
 	if(bUIInitialized)
 		SetConnectionMessage("Good to go");
-	//NetSendName(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
+	//NetSendName(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
 	return GetMinChunkSize(PlayerID) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if((chunkdata + 2) > 0)
 	{
-		bIsMasterClient = true;
-		_MESSAGE("Master Client");
+		gClient->SetIsMasterClient(true);
+		gClient->GetIO() << GameMessage<<" Received Master Client" <<endl;
 		Console_Print("Master Client");
 	}
 	else
 	{
-		bIsMasterClient = false;
-		_MESSAGE("Passive Client");
+		gClient->SetIsMasterClient(false);
+		gClient->GetIO() << GameMessage << "Received Passive Client" << endl;
 		Console_Print("Passive Client");
 	}
 	return GetMinChunkSize(ClientType) + sizeof(unsigned short);

@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 bool EntityManager::RegisterEntity(Entity *Entity)
 {
 	lock.lock();
-	(*m_IO)<<SystemMessage<<"Spawning Entity "<<Entity->RefID()<<endl;
+	//(*m_IO)<<SystemMessage<<"Spawning Entity "<<Entity->RefID()<<endl;
 #ifndef OO_USE_HASHMAP
 	if(Entity->Status() == STATUS_PLAYER)
 		m_players.insert(IDEntityPair(Entity->RefID(),Entity));

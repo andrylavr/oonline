@@ -41,14 +41,14 @@ forward this exception.
 #include "NetSend.h"
 bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 {
-	if (!bIsConnected)
+	if (!gClient->GetIsConnected())
 	{
 		return true;
 	}
 	char message[512] = "\0";
 	if (!ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &message)) return true;
 	outnet.Send();
-	NetSendChat(outnet.GetPacket(),LocalPlayer,STATUS_PLAYER,(BYTE *)message,strlen(message));
+	NetSendChat(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)message,strlen(message));
 	outnet.Send();
 	return true;
 }
@@ -61,7 +61,7 @@ bool Cmd_MPGetDebugData_Execute (COMMAND_ARGS)
 
 bool Cmd_MPTotalPlayers_Execute (COMMAND_ARGS)
 {
-	*result = (float)TotalPlayers;
+	*result = (float)gClient->GetTotalPlayers();
 	return true;
 }
 bool Cmd_MPGetMyID_Execute (COMMAND_ARGS)
@@ -80,7 +80,6 @@ bool Cmd_MPShowGUI_Execute(COMMAND_ARGS)
 	if(!bUIInitialized)
 	{
 		InitialiseUI();
-		SetConnectionMessage(ServerIP);
 	}
 	return true;
 }

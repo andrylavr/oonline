@@ -43,128 +43,73 @@ This file is part of OblivionOnline.
 #include "Entity.h"
 #include "LogIOProvider.h"
 #include "../OOCommon/InPacket.h"
+#include "GameClient.h"
 // Global variables
 extern "C" HINSTANCE OODll;
-bool bIsConnected = false;
-bool bIsInitialized = false;
-IDebugLog gLog;
-bool PlayerConnected[MAXCLIENTS];
-UINT32 LocalPlayer;
-UINT32 TotalPlayers;
-bool bIsMasterClient = false;
-UInt32 SpawnID[MAXCLIENTS];
-
-SOCKET ServerSocket;
-
-HANDLE hRecvThread;
-HANDLE hPredictionEngine;
+GameClient *gClient = NULL;
+IDebugLog		gLog;
+PluginHandle gPlugin = 0;
+OBSESerializationInterface * gSerialize;
 
 TESObjectREFR* PlayerActorList[MAXCLIENTS];
 //UserInterface usrInterface;
-char ServerIP[15];
 
 bool bFrameRendered = false;
-std::deque<Entity *> UpdateQueue;
-// Prototypes
-IOSystem *gIOSys;
-IOStream *gLogStream;
-EntityManager *Entities;
+
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 
-extern  "C" void OpenLog(int bOblivion)
-{
-	if(bOblivion)
-	{
-		gLog.Open("OblivionOnline.log");
-		gIOSys = new IOSystem();
-		gLogStream = new IOStream(gIOSys);
-		Entities = new EntityManager(gLogStream,NULL);
-		/*gIOSys->RegisterIOProvider(new LogIOProvider(gIOSys,LogLevel::BootMessage,"obliviononline-misc.log"));
-		*/
-		_MESSAGE("Welcome to OblivionOnline %u.%u.%u \"%s\" %s",VERSION_SUPER,VERSION_MAJOR,VERSION_MINOR,VERSION_CODENAME,VERSION_COMMENT);
-	}
-	else
-		gLog.Open("OblivionOnline_Hook.log");
-}
-int OO_Initialize()
-{
-	
-	long rc;
-	WSADATA wsa;
-	rc = WSAStartup(MAKEWORD(2,0),&wsa);
-	ServerSocket = socket(AF_INET,SOCK_STREAM,0);
-	_MESSAGE("OblivionOnline connecting");
-	_MESSAGE("Initializing GUI");
-	InitialiseUI();
-	//Entities->DeleteEntities();
-	TotalPlayers = 0;
-	for(int i=0; i<MAXCLIENTS; i++)
-	{
-		PlayerConnected[i] = false;
-	}
-	return rc;
-}
 
-int OO_Deinitialize ()
+extern "C" void OpenLog(int i)
 {
-	for(int i=0; i<MAXCLIENTS; i++)
-	{
-		PlayerConnected[i] = false;
-	}
-	TotalPlayers = 0;
-	TerminateThread(hRecvThread, 0);
-	CloseHandle(hRecvThread);
-	TerminateThread(hPredictionEngine, 0);
-	Entities->DeleteEntities();
-	closesocket(ServerSocket);
-	ServerSocket = INVALID_SOCKET;
-	WSACleanup();
-	DeinitialiseUI();
-	D3DHookDeInit();
-
-	return 1;
+	gLog.Open("OblivionOnline_ancient.log"); // Or else all our macros wouldn't work - discard
 }
-
 DWORD WINAPI RecvThread(LPVOID Params)
 {
 	char buf[PACKET_SIZE];
 	int rc;
 	InPacket * pkg;
-	_MESSAGE("Receive thread started");
-	while(bIsConnected)
+	gClient->GetIO() << "Receive thread started" <<endl;
+	while(gClient->GetIsConnected())
 	{
-		rc = recv(ServerSocket,buf,PACKET_SIZE,0);
-		pkg = new InPacket(Entities,gLogStream,(BYTE *)buf,rc);
+		rc = recv(gClient->GetSocket(),buf,PACKET_SIZE,0);
+		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *)buf,rc);
 		pkg->HandlePacket();
 		delete pkg;
 	}
 	return 0;
 }
 
-
 extern "C" {
-
+static void OO_LoadCallback(void * reserved)
+{
+	if(!gClient)
+	{
+		gClient = new GameClient();
+	}
+}
 bool OBSEPlugin_Query(const OBSEInterface * obse, PluginInfo * info)
 {
-	_MESSAGE("Starting plugin query ...");
-
+	//_MESSAGE("Starting plugin query ...");
+	char ErrorBuf[2048]; // Necessary because we do not have an I/O system yet
 	// fill out the info structure
 	info->infoVersion = PluginInfo::kInfoVersion;
 	info->name = "OblivionOnline";
 	info->version = (SUPER_VERSION << 16) &&MAKEWORD(MAIN_VERSION,SUB_VERSION);
-
 	// version checks
 	if(!obse->isEditor)
 	{
 		if(obse->obseVersion < OBSE_VERSION_INTEGER)
 		{
-			_ERROR("OBSE version too old (got %08X expected at least %08X)", obse->obseVersion, OBSE_VERSION_INTEGER);
+			sprintf(ErrorBuf,"OBSE version too old (got %08X expected at least %08X)", obse->obseVersion, OBSE_VERSION_INTEGER);
+			MessageBoxA(NULL,ErrorBuf,"Error loading OblivionOnline",0);
 			return false;
 		}
 
 		if(obse->oblivionVersion != OBLIVION_VERSION)
 		{
-			_ERROR("Incorrect Oblivion version (got %08X need %08X)", obse->oblivionVersion, OBLIVION_VERSION);
+			
+			sprintf(ErrorBuf,"Incorrect Oblivion version (got %08X need %08X)", obse->oblivionVersion, OBLIVION_VERSION);
+			MessageBoxA(NULL,ErrorBuf,"Error loading OblivionOnline",0);
 			return false;
 		}
 	}
@@ -174,14 +119,14 @@ bool OBSEPlugin_Query(const OBSEInterface * obse, PluginInfo * info)
 	}
 
 	// version checks pass
-
+	gSerialize = (OBSESerializationInterface *) obse->QueryInterface(kInterface_Serialization);
 	return true;
 }
 
 bool OBSEPlugin_Load(const OBSEInterface * obse)
 {
-	_MESSAGE("Loading OO Commands");
-
+	//_MESSAGE("Loading OO Commands");
+	gPlugin = obse->GetPluginHandle();
 	obse->SetOpcodeBase(0x22D0); // Our codebase
 
 	//Connection commands
@@ -221,7 +166,11 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 	
 	obse->RegisterCommand(&kMPShowGUICommand);
 	obse->RegisterCommand(&kGetParentCellCommand);
-	_MESSAGE("Done loading OO Commands");
+	//_MESSAGE("Done loading OO Commands");
+	if(!obse->isEditor)
+	{
+		gSerialize->SetLoadCallback(gPlugin,OO_LoadCallback);
+	}
 	return true;
 }
 };

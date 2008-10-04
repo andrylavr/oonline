@@ -23,20 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../OOCommon/NetSend.h"
 inline void SafeAddUpdateQueue(Entity * ent)
 {	
-	if(!UpdateQueue.empty())
+	if(!gClient->GetUpdateQueue()->empty())
 	{
 		deque<Entity *>::iterator UpdateIterator;
-		UpdateIterator = UpdateQueue.begin();
+		UpdateIterator =gClient->GetUpdateQueue()->begin();
 		while(1)
 		{
-			if(UpdateIterator == UpdateQueue.end())
+			if(UpdateIterator == gClient->GetUpdateQueue()->end())
 				break; //really bad , but fixes some crashes ??
 			if((*UpdateIterator) == ent )
 				return;
 			UpdateIterator++;
 		}
 	}
-	UpdateQueue.push_back(ent);
+	gClient->GetUpdateQueue()->push_back(ent);
 }
 void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
 {

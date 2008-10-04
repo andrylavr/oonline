@@ -19,16 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "UserInterface.h"
 bool Cmd_MPDisconnect_Execute (COMMAND_ARGS)
 {
-	if(bIsConnected)
-	{
-		OO_Deinitialize();
-		bIsConnected = false;
-		Console_Print("You have disconnected");
-		if(bUIInitialized)
-			SetConnectionMessage("You have successfully disconnected");
-	}else{
-		Console_Print("You are not connected");
-	}
+	gClient->Disconnect();
+	
 	return true;
 }
 

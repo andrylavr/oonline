@@ -352,6 +352,10 @@
 				RelativePath=".\UserInterface.cpp"
 				>
 			</File>
+			<Filter
+				Name="IO"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headers"
@@ -986,11 +990,11 @@
 			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\GlobalLogIOProvider.cpp"
+			RelativePath=".\GameClient.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\GlobalLogIOProvider.h"
+			RelativePath=".\GameClient.h"
 			>
 		</File>
 	</Files>

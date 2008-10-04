@@ -139,7 +139,7 @@ void D3DInstallHook()
  
 extern "C" void D3DHookInit()
 {
-	 _MESSAGE("Initializing Direct3D hook");
+	_MESSAGE("Initializing Direct3D hook");
 	HookImportedFunctionsByName(GetModuleHandle(0),"KERNEL32.DLL",1,GetProcAddressHook,(PROC *)&RealGetProcAddress,&HookedFunctions);
 
 }

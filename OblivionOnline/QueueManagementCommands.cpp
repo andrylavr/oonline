@@ -46,10 +46,10 @@ forward this exception.
 bool Cmd_MPGetNewObject_Execute (COMMAND_ARGS)
 {
 	UINT32 *refResult = (UINT32 *)result;
-	if(!UpdateQueue.empty())
+	if(!gClient->GetUpdateQueue()->empty())
 	{
-		*refResult = UpdateQueue.front()->RefID();
-		UpdateQueue.pop_front();
+		*refResult = gClient->GetUpdateQueue()->front()->RefID();
+		gClient->GetUpdateQueue()->pop_front();
 	}
 	else
 		*refResult = 0;
