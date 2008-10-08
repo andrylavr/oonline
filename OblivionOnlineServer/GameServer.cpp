@@ -134,5 +134,5 @@ void GameServer::DisplayBootupMessage()
 		"You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE\n" <<
 		"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" << endl;
 	*m_IO << "Please note that you have to offer the source codes to this server software on the web for the users to download" << endl<<
-		"For the official releases this is taken care of at http://sf.net/projects/oo-open/ , however if you modify ANYTHING you have to make the COMPLETE sources(also client, as that client is a derived work of the server) available to the users"<<endl;
+		"For the official releases this is taken care of at http://googlecode.com/p/oonline/ , however if you modify ANYTHING you have to make the COMPLETE sources(also client, as that client is a derived work of the server) available to the users"<<endl;
 }
