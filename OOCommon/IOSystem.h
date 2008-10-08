@@ -50,7 +50,7 @@ public:
 		m_buf = new char[1024];
 		m_buflen = 1024;
 		setp(m_buf, m_buf + 1024);
-		m_providers.clear();
+		//m_providers.clear();
 	}
 	~IOSystem(void);
 	bool DoOutput(LogLevel Level,std::string Message);

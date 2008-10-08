@@ -67,7 +67,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions="/NODEFAULTLIB "
-				OutputFile="$(SolutionDir)\Lib\zlibstat.lib"
+				OutputFile="$(SolutionDir)\Lib\zlibstat_d.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool

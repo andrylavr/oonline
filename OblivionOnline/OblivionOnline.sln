@@ -239,7 +239,6 @@ Global
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Any CPU.ActiveCfg = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Any CPU.Build.0 = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Mixed Platforms.ActiveCfg = Debug
-		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Mixed Platforms.Build.0 = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Win32.ActiveCfg = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Win32.Build.0 = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug|Any CPU.ActiveCfg = Debug

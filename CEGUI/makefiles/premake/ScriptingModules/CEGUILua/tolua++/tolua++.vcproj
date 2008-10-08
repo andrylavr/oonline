@@ -112,7 +112,7 @@
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -132,7 +132,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/tolua++_Static_d.lib"
+				OutputFile="$(SolutionDir)lib\tolua++_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -198,7 +198,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/tolua++.lib"
+				OutputFile="$(SolutionDir)lib\tolua++.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
