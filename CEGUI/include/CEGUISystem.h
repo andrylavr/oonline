@@ -284,10 +284,17 @@ public:
 	\brief
 		Set the timeout used for generation of single-click events.
 
-		A single-click is defined here as a button being pressed and then released.
+		A single-click is defined here as a button being pressed and then
+        released.
 
 	\param timeout
-		double value equal to the single-click timeout value to be used from now onwards.
+		double value equal to the single-click timeout value to be used from now
+        onwards.
+
+    \note
+        A timeout value of 0 indicates infinity and so no timeout occurrs; as
+        long as the mouse is in the prescribed area, a mouse button 'clicked'
+        event will therefore always be raised.
 
 	\return
 		Nothing.
@@ -299,12 +306,18 @@ public:
 	\brief
 		Set the timeout to be used for the generation of multi-click events.
 
-		A multi-click event is a double-click, or a triple-click.  The value returned
-		here is the maximum allowable time between mouse button down events for which
-		a multi-click event will be generated.
+		A multi-click event is a double-click, or a triple-click.  The value
+        returned here is the maximum allowable time between mouse button down
+        events for which a multi-click event will be generated.
 
 	\param timeout
-		double value equal to the multi-click timeout value to be used from now onwards.
+		double value equal to the multi-click timeout value to be used from now
+        onwards.
+
+    \note
+        A timeout value of 0 indicates infinity and so no timeout occurrs; as
+        long as the mouse is in the prescribed area, an appropriate mouse button
+        event will therefore always be raised.
 
 	\return
 		Nothing.
@@ -430,7 +443,7 @@ public:
 
 	\param filename
 		String object holding the filename of the script file that is to be executed
-		
+
 	\param resourceGroup
 		Resource group identifier to be passed to the ResourceProvider when loading the script file.
 	*/
@@ -506,6 +519,39 @@ public:
         uint value representing a combination of the SystemKey bits.
     */
     uint    getSystemKeys(void) const   { return d_sysKeys; }
+
+    /*!
+    \brief
+        Set a new XML parser module to be used.
+
+        The current XMLParser will be cleaned up and, if owned by the system,
+        also deleted, as will any dynamically loaded module associated with the
+        XMLParser object.  The newly created XMLParser object, and the
+        associated module will be owned by the system.
+
+    \param parserName
+        String object describing the name of the XML parser module to be used.
+    */
+    void setXMLParser(const String& parserName);
+
+    /*!
+    \brief
+        Sets the XMLParser object to be used by the system.
+
+        The current XMLParser will be cleaned up and, if owned by the system,
+        also deleted, as will any dynamically loaded module associated with the
+        XMLParser object.
+
+        If the argument passed in the \a parser parameter is 0, the system will
+        cleanup any existing parser as described above, and revert to using
+        the parser provided by the default module (see getDefaultXMLParserName
+        and setDefaultXMLParserName).
+
+    \param parser
+        Pointer to the XMLParser object to be used by the system, or 0 to cause
+        the system to initialise a default parser.
+    */
+    void setXMLParser(XMLParser* parser);
 
     /*!
     \brief
@@ -882,6 +928,9 @@ private:
 
     //! handle cleanup of the XML parser
     void cleanupXMLParser();
+
+    //! common function used for injection of mouse positions and movements
+    bool mouseMoveInjection_impl(MouseEventArgs& ma);
 
 	/*************************************************************************
 		Handlers for System events

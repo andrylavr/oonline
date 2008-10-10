@@ -1,36 +1,46 @@
-EXTRA_DIST = mac/Xcode2/CrazyEddiesGUI/CEGUI-Info.plist \
-             mac/Xcode2/CrazyEddiesGUI/CEGUICoronaImageCodec-Info.plist \
+EXTRA_DIST = mac/Xcode2/CrazyEddiesGUI/CEGUICoronaImageCodec-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIDevILImageCodec-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIExpatParser-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIFalagard-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIFreeImageImageCodec-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/CEGUI-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIIrrlichtRenderer-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUILibxmlParser-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUISILLYImageCodec-Info.plist \
-             mac/Xcode2/CrazyEddiesGUI/CEGUITGAImageCodec-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUITaharezLook-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/CEGUITGAImageCodec-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUITinyXMLParser-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/ceguitolua++-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIWindowsLook-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CEGUIXercesParser-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CrazyEddiesGUI_Prefix.pch \
+             mac/Xcode2/CrazyEddiesGUI/Demo6-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/Demo7-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/Demo8-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/DragDropDemo-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/FalagardDemo1-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/FirstWindow-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/FontDemo-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/InstancedWindows-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/LuaScriptModule-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/Minesweeper-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/OpenGLRenderer-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/ScrollablePaneDemo-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/TabControlDemo-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/TextDemo-Info.plist \
+             mac/Xcode2/CrazyEddiesGUI/TreeDemo-Info.plist \
              mac/Xcode2/CrazyEddiesGUI/CrazyEddiesGUI.xcodeproj/project.pbxproj \
              mac/Xcode2/CrazyEddiesGUI/English.lproj/InfoPlist.strings \
              premake/README \
              premake/build_samples_vs2002.bat \
              premake/build_samples_vs2003.bat \
              premake/build_samples_vs2005.bat \
+             premake/build_samples_vs2008.bat \
              premake/build_vs2002.bat \
              premake/build_vs2003.bat \
              premake/build_vs2005.bat \
+             premake/build_vs2008.bat \
              premake/cegui.lua \
              premake/clean.bat \
              premake/clean_samples.bat \
@@ -43,6 +53,7 @@ EXTRA_DIST = mac/Xcode2/CrazyEddiesGUI/CEGUI-Info.plist \
              premake/ImageCodecModules/FreeImageImageCodec/premake.lua \
              premake/ImageCodecModules/SILLYImageCodec/premake.lua \
              premake/ImageCodecModules/TGAImageCodec/premake.lua \
+             premake/RendererModules/DirectX10GUIRenderer/premake.lua \
              premake/RendererModules/DirectX81GUIRenderer/premake.lua \
              premake/RendererModules/DirectX9GUIRenderer/premake.lua \
              premake/RendererModules/IrrlichtRenderer/premake.lua \
@@ -51,6 +62,7 @@ EXTRA_DIST = mac/Xcode2/CrazyEddiesGUI/CEGUI-Info.plist \
              premake/Samples/Demo6/premake.lua \
              premake/Samples/Demo7/premake.lua \
              premake/Samples/Demo8/premake.lua \
+             premake/Samples/DragDropDemo/premake.lua \
              premake/Samples/FalagardDemo1/premake.lua \
              premake/Samples/FirstWindow/premake.lua \
              premake/Samples/FontDemo/premake.lua \

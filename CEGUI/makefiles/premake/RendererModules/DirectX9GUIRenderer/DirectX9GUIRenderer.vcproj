@@ -3,10 +3,10 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="DirectX9GUIRenderer"
-	ProjectGUID="{8066A41C-63B1-4245-8EFA-3A67B6918634}"
+	ProjectGUID="{169F662B-7A48-754B-8D47-9CC35D82CDED}"
 	RootNamespace="DirectX9GUIRenderer"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -49,7 +49,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -72,8 +71,6 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/DirectX9GUIRenderer_d.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/DirectX9GUIRenderer_d.lib"
 				TargetMachine="1"
 			/>
@@ -124,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -132,7 +129,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -148,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\DirectX9GUIRenderer_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/DirectX9GUIRenderer_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -191,14 +187,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -223,8 +218,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/DirectX9GUIRenderer.lib"
 				TargetMachine="1"
 			/>
@@ -276,14 +269,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -307,8 +299,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/DirectX9GUIRenderer.lib"
 				TargetMachine="1"
 			/>
@@ -360,14 +350,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -383,8 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\DirectX9GUIRenderer_Static.lib"
-				AdditionalLibraryDirectories=""
+				OutputFile="$(SolutionDir)lib/DirectX9GUIRenderer_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

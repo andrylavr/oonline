@@ -35,6 +35,13 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
+@BUILD_USING_INTERNAL_TINYXML_TRUE@am__append_1 = ceguitinyxml/tinystr.cpp \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@                                    ceguitinyxml/tinyxml.cpp \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@                                    ceguitinyxml/tinyxmlerror.cpp \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@                                    ceguitinyxml/tinyxmlparser.cpp
+
+@BUILD_USING_INTERNAL_TINYXML_FALSE@am__append_2 = $(tinyxml_CFLAGS)
+@BUILD_USING_INTERNAL_TINYXML_FALSE@am__append_3 = $(tinyxml_LIBS)
 
 pkgincludedir = $(prefix)/include/CEGUI/XMLParserModules/TinyXMLParser
 ACLOCAL = @ACLOCAL@
@@ -57,6 +64,10 @@ BUILD_OPENGL_RENDERER_FALSE = @BUILD_OPENGL_RENDERER_FALSE@
 BUILD_OPENGL_RENDERER_TRUE = @BUILD_OPENGL_RENDERER_TRUE@
 BUILD_TINYXML_PARSER_FALSE = @BUILD_TINYXML_PARSER_FALSE@
 BUILD_TINYXML_PARSER_TRUE = @BUILD_TINYXML_PARSER_TRUE@
+BUILD_USING_INTERNAL_GLEW_FALSE = @BUILD_USING_INTERNAL_GLEW_FALSE@
+BUILD_USING_INTERNAL_GLEW_TRUE = @BUILD_USING_INTERNAL_GLEW_TRUE@
+BUILD_USING_INTERNAL_TINYXML_FALSE = @BUILD_USING_INTERNAL_TINYXML_FALSE@
+BUILD_USING_INTERNAL_TINYXML_TRUE = @BUILD_USING_INTERNAL_TINYXML_TRUE@
 BUILD_XERCES_PARSER_FALSE = @BUILD_XERCES_PARSER_FALSE@
 BUILD_XERCES_PARSER_TRUE = @BUILD_XERCES_PARSER_TRUE@
 CC = @CC@
@@ -79,6 +90,8 @@ CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE = @CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE@
 CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE = @CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE@
 CEGUI_BUILD_TOLUACEGUI_FALSE = @CEGUI_BUILD_TOLUACEGUI_FALSE@
 CEGUI_BUILD_TOLUACEGUI_TRUE = @CEGUI_BUILD_TOLUACEGUI_TRUE@
+CEGUI_BUILD_TOLUAPPLIB_FALSE = @CEGUI_BUILD_TOLUAPPLIB_FALSE@
+CEGUI_BUILD_TOLUAPPLIB_TRUE = @CEGUI_BUILD_TOLUAPPLIB_TRUE@
 CEGUI_IRRLICHT_VERSION_INFO = @CEGUI_IRRLICHT_VERSION_INFO@
 CEGUI_NULL_CFLAGS = @CEGUI_NULL_CFLAGS@
 CEGUI_NULL_LIBS = @CEGUI_NULL_LIBS@
@@ -136,6 +149,8 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 Lua_CFLAGS = @Lua_CFLAGS@
 Lua_LIBS = @Lua_LIBS@
+MACOSX_BUILD_FALSE = @MACOSX_BUILD_FALSE@
+MACOSX_BUILD_TRUE = @MACOSX_BUILD_TRUE@
 MAKEINFO = @MAKEINFO@
 MINGW32_BUILD_FALSE = @MINGW32_BUILD_FALSE@
 MINGW32_BUILD_TRUE = @MINGW32_BUILD_TRUE@
@@ -184,6 +199,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 cegui_corona_config = @cegui_corona_config@
+cegui_pc_platform_libs = @cegui_pc_platform_libs@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -220,23 +236,23 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+tinyxml_CFLAGS = @tinyxml_CFLAGS@
+tinyxml_LIBS = @tinyxml_LIBS@
+toluapp_CFLAGS = @toluapp_CFLAGS@
+toluapp_LIBS = @toluapp_LIBS@
 xerces_CFLAGS = @xerces_CFLAGS@
 xerces_LIBS = @xerces_LIBS@
-INCLUDES = -I$(top_srcdir)/include
+INCLUDES = -I$(top_srcdir)/include $(am__append_2)
 
 @MINGW32_BUILD_TRUE@libCEGUITinyXMLParser_la_CPPFLAGS = -DCEGUITINYXMLPARSER_EXPORTS
 @MINGW32_BUILD_TRUE@libCEGUITinyXMLParser_la_LDFLAGS = -no-undefined -avoid-version
-@MINGW32_BUILD_TRUE@libCEGUITinyXMLParser_la_LIBADD = -L$(top_builddir)/src -lCEGUIBase
 
 lib_LTLIBRARIES = libCEGUITinyXMLParser.la
+libCEGUITinyXMLParser_la_LIBADD = $(top_builddir)/src/libCEGUIBase.la $(am__append_3)
 
 libCEGUITinyXMLParser_la_SOURCES = CEGUITinyXMLParser.cpp \
-                                   CEGUITinyXMLParserModule.cpp \
-                                   ceguitinyxml/tinystr.cpp \
-                                   ceguitinyxml/tinyxml.cpp \
-                                   ceguitinyxml/tinyxmlerror.cpp \
-                                   ceguitinyxml/tinyxmlparser.cpp
-
+                                   CEGUITinyXMLParserModule.cpp\
+$(am__append_1)
 pkginclude_HEADERS = CEGUITinyXMLParser.h CEGUITinyXMLParserModule.h
 
 noinst_HEADERS = ceguitinyxml/tinystr.h \
@@ -249,15 +265,23 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-@MINGW32_BUILD_TRUE@libCEGUITinyXMLParser_la_DEPENDENCIES =
-@MINGW32_BUILD_FALSE@libCEGUITinyXMLParser_la_DEPENDENCIES =
+@BUILD_USING_INTERNAL_TINYXML_TRUE@libCEGUITinyXMLParser_la_DEPENDENCIES = \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@	$(top_builddir)/src/libCEGUIBase.la
+@BUILD_USING_INTERNAL_TINYXML_FALSE@libCEGUITinyXMLParser_la_DEPENDENCIES = \
+@BUILD_USING_INTERNAL_TINYXML_FALSE@	$(top_builddir)/src/libCEGUIBase.la
+am__libCEGUITinyXMLParser_la_SOURCES_DIST = CEGUITinyXMLParser.cpp \
+	CEGUITinyXMLParserModule.cpp ceguitinyxml/tinystr.cpp \
+	ceguitinyxml/tinyxml.cpp ceguitinyxml/tinyxmlerror.cpp \
+	ceguitinyxml/tinyxmlparser.cpp
+@BUILD_USING_INTERNAL_TINYXML_TRUE@am__objects_1 = \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@	libCEGUITinyXMLParser_la-tinystr.lo \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@	libCEGUITinyXMLParser_la-tinyxml.lo \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@	libCEGUITinyXMLParser_la-tinyxmlerror.lo \
+@BUILD_USING_INTERNAL_TINYXML_TRUE@	libCEGUITinyXMLParser_la-tinyxmlparser.lo
 am_libCEGUITinyXMLParser_la_OBJECTS = \
 	libCEGUITinyXMLParser_la-CEGUITinyXMLParser.lo \
 	libCEGUITinyXMLParser_la-CEGUITinyXMLParserModule.lo \
-	libCEGUITinyXMLParser_la-tinystr.lo \
-	libCEGUITinyXMLParser_la-tinyxml.lo \
-	libCEGUITinyXMLParser_la-tinyxmlerror.lo \
-	libCEGUITinyXMLParser_la-tinyxmlparser.lo
+	$(am__objects_1)
 libCEGUITinyXMLParser_la_OBJECTS = \
 	$(am_libCEGUITinyXMLParser_la_OBJECTS)
 
@@ -279,7 +303,7 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libCEGUITinyXMLParser_la_SOURCES)
+DIST_SOURCES = $(am__libCEGUITinyXMLParser_la_SOURCES_DIST)
 HEADERS = $(noinst_HEADERS) $(pkginclude_HEADERS)
 
 DIST_COMMON = $(noinst_HEADERS) $(pkginclude_HEADERS) \

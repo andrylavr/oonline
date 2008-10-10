@@ -100,7 +100,7 @@ double SimpleTimer::currentTime()
     return timeGetTime() / 1000.0;
 }
 
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 #include <sys/time.h>
 double SimpleTimer::currentTime()
 {
@@ -108,6 +108,8 @@ double SimpleTimer::currentTime()
     gettimeofday(&timeStructure, 0);
     return timeStructure.tv_sec + timeStructure.tv_usec / 1000000.0;
 }
+#else
+#error "SimpleTimer not available for this platform, please implement it"
 #endif
 
 
@@ -679,64 +681,29 @@ void System::setMouseMoveScaling(float scaling)
 *************************************************************************/
 bool System::injectMouseMove(float delta_x, float delta_y)
 {
-	MouseEventArgs ma(0);
-	MouseCursor& mouse = MouseCursor::getSingleton();
+    MouseEventArgs ma(0);
+    MouseCursor& mouse = MouseCursor::getSingleton();
 
-	ma.moveDelta.d_x = delta_x * d_mouseScalingFactor;
-	ma.moveDelta.d_y = delta_y * d_mouseScalingFactor;
-	ma.sysKeys = d_sysKeys;
-	ma.wheelChange = 0;
-	ma.clickCount = 0;
-	ma.button = NoButton;
+    ma.moveDelta.d_x = delta_x * d_mouseScalingFactor;
+    ma.moveDelta.d_y = delta_y * d_mouseScalingFactor;
 
-	// move the mouse cursor & update position in args.
-	mouse.offsetPosition(ma.moveDelta);
-	ma.position = mouse.getPosition();
-
-	Window* dest_window = getTargetWindow(ma.position);
-
-    // has window containing mouse changed?
-    if (dest_window != d_wndWithMouse)
+    // only continue setup and injection if mouse position has changed
+    if ((ma.moveDelta.d_x != 0) || (ma.moveDelta.d_y != 0))
     {
-        // store previous window that contained mouse
-        Window* oldWindow = d_wndWithMouse;
-        // set the new window that contains the mouse.
-        d_wndWithMouse = dest_window;
+        ma.sysKeys = d_sysKeys;
+        ma.wheelChange = 0;
+        ma.clickCount = 0;
+        ma.button = NoButton;
 
-        // inform previous window the mouse has left it
-        if (oldWindow)
-        {
-            ma.window = oldWindow;
-            oldWindow->onMouseLeaves(ma);
-        }
+        // move the mouse cursor & update position in args.
+        mouse.offsetPosition(ma.moveDelta);
+        ma.position = mouse.getPosition();
 
-        // inform window containing mouse that mouse has entered it
-        if (d_wndWithMouse)
-        {
-            ma.window = d_wndWithMouse;
-            ma.handled = false;
-            d_wndWithMouse->onMouseEnters(ma);
-        }
+        return mouseMoveInjection_impl(ma);
     }
-
-    // inform appropriate window of the mouse movement event
-    if (dest_window)
-    {
-        // ensure event starts as 'not handled'
-        ma.handled = false;
-
-        // loop backwards until event is handled or we run out of windows.
-        while ((!ma.handled) && (dest_window != 0))
-        {
-            ma.window = dest_window;
-            dest_window->onMouseMove(ma);
-            dest_window = getNextTargetWindow(dest_window);
-        }
-    }
-
-	return ma.handled;
+    
+    return false;
 }
-
 
 /*************************************************************************
 	Method that injects that the mouse is leaves the application window
@@ -791,7 +758,7 @@ bool System::injectMouseButtonDown(MouseButton button)
 	tkr.d_click_count++;
 
     // if multi-click requirements are not met
-    if ((tkr.d_timer.elapsed() > d_dblclick_timeout) ||
+    if (((d_dblclick_timeout > 0) && (tkr.d_timer.elapsed() > d_dblclick_timeout)) ||
         (!tkr.d_click_area.isPointInRect(ma.position)) ||
         (tkr.d_target_window != dest_window) ||
         (tkr.d_click_count > 3))
@@ -884,7 +851,7 @@ bool System::injectMouseButtonUp(MouseButton button)
 	bool wasUpHandled = ma.handled;
 
     // if requirements for click events are met
-    if ((tkr.d_timer.elapsed() <= d_click_timeout) &&
+    if (((d_click_timeout == 0) || (tkr.d_timer.elapsed() <= d_click_timeout)) &&
         (tkr.d_click_area.isPointInRect(ma.position)) &&
         (tkr.d_target_window == initial_dest_window))
     {
@@ -1027,11 +994,30 @@ bool System::injectMouseWheelChange(float delta)
 *************************************************************************/
 bool System::injectMousePosition(float x_pos, float y_pos)
 {
-	// set new mouse position
-	MouseCursor::getSingleton().setPosition(Point(x_pos, y_pos));
+    Point new_position(x_pos, y_pos);
+    MouseCursor& mouse = MouseCursor::getSingleton();
 
-	// do the real work
-	return injectMouseMove(0, 0);
+    // setup mouse movement event args object.
+    MouseEventArgs ma(0);
+    ma.moveDelta = new_position - mouse.getPosition();
+
+    // only continue setup and injection if mouse position has changed
+    if ((ma.moveDelta.d_x != 0) || (ma.moveDelta.d_y != 0))
+    {
+        ma.sysKeys = d_sysKeys;
+        ma.wheelChange = 0;
+        ma.clickCount = 0;
+        ma.button = NoButton;
+
+        // move mouse cursor to new position
+        mouse.setPosition(new_position);
+        // update position in args (since actual position may be constrained)
+        ma.position = mouse.getPosition();
+
+        return mouseMoveInjection_impl(ma);
+    }
+    
+    return false;
 }
 
 
@@ -1399,6 +1385,11 @@ bool System::handleDisplaySizeChange(const EventArgs& e)
 		d_activeSheet->onParentSized(args);
 	}
 
+    Logger::getSingleton().logEvent(
+        "Display resize:"
+        " w=" + PropertyHelper::floatToString(new_sz.d_width) +
+        " h=" + PropertyHelper::floatToString(new_sz.d_height));
+
 	return true;
 }
 
@@ -1541,79 +1532,153 @@ void System::destroySingletons()
     delete  GlobalEventSet::getSingletonPtr();
 }
 
+//----------------------------------------------------------------------------//
 void System::setupXMLParser()
 {
     // handle creation / initialisation of XMLParser
     if (!d_xmlParser)
     {
-
-#if !defined(CEGUI_STATIC)
-        // load the dynamic module
-        d_parserModule = new DynamicModule(String("CEGUI") + d_defaultXMLParserName);
-        // get pointer to parser creation function
-        XMLParser* (*createFunc)(void) =
-            (XMLParser* (*)(void))d_parserModule->getSymbolAddress("createParser");
-        // create the parser object
-        d_xmlParser = createFunc();
+#ifndef CEGUI_STATIC
+        setXMLParser(d_defaultXMLParserName);
 #else
-		//Static Linking Call
-		d_xmlParser = createParser();
-#endif
+        //Static Linking Call
+        d_xmlParser = createParser();
         // make sure we know to cleanup afterwards.
         d_ourXmlParser = true;
+#endif
     }
-
-    // perform initialisation of XML parser.
-    d_xmlParser->initialise();
+    // parser object already set, just initialise it.
+    else
+        d_xmlParser->initialise();
 }
 
+//----------------------------------------------------------------------------//
 void System::cleanupXMLParser()
 {
-    if (d_xmlParser)
-    {
-        d_xmlParser->cleanup();
+    // bail out if no parser
+    if (!d_xmlParser)
+        return;
 
-        if (d_ourXmlParser && d_parserModule)
-        {
-#if !defined(CEGUI_STATIC)
-            // get pointer to parser deletion function
-            void(*deleteFunc)(XMLParser*) =
-                (void(*)(XMLParser*))d_parserModule->getSymbolAddress("destroyParser");
-            // cleanup the xml parser object
-            deleteFunc(d_xmlParser);
-#else
-			//Static Linking Call
-			destroyParser(d_xmlParser);
-#endif
-            d_xmlParser = 0;
-            // delete the dynamic module for the xml parser
-            delete d_parserModule;
-            d_parserModule = 0;
-        }
+    // get parser object to do whatever cleanup it needs to
+    d_xmlParser->cleanup();
+
+    // exit if we did not create this parser object
+    if (!d_ourXmlParser)
+        return;
+
+    // if parser module loaded, destroy the parser object & cleanup module
+    if (d_parserModule)
+    {
+        // get pointer to parser deletion function
+        void(*deleteFunc)(XMLParser*) = (void(*)(XMLParser*))d_parserModule->
+            getSymbolAddress("destroyParser");
+        // cleanup the xml parser object
+        deleteFunc(d_xmlParser);
+
+        // delete the dynamic module for the xml parser
+        delete d_parserModule;
+        d_parserModule = 0;
     }
+#ifdef CEGUI_STATIC
+    else
+        //Static Linking Call
+        destroyParser(d_xmlParser);
+#endif
+
+    d_xmlParser = 0;
 }
 
+//----------------------------------------------------------------------------//
+void System::setXMLParser(const String& parserName)
+{
+#ifndef CEGUI_STATIC
+    cleanupXMLParser();
+    // load dynamic module
+    d_parserModule = new DynamicModule(String("CEGUI") + parserName);
+    // get pointer to parser creation function
+    XMLParser* (*createFunc)(void) =
+        (XMLParser* (*)(void))d_parserModule->getSymbolAddress("createParser");
+    // create the parser object
+    d_xmlParser = createFunc();
+    // make sure we know to cleanup afterwards.
+    d_ourXmlParser = true;
+    // perform initialisation of XML parser.
+    d_xmlParser->initialise();
+#else
+    Logger::getSingleton().logEvent(
+        "System::setXMLParser(const String& parserName) called from statically "
+        "linked CEGUI library - unable to load dynamic module!", Errors);
+#endif
+}
+
+//----------------------------------------------------------------------------//
+void System::setXMLParser(XMLParser* parser)
+{
+    cleanupXMLParser();
+    d_xmlParser = parser;
+    d_ourXmlParser = false;
+    setupXMLParser();
+}
+
+//----------------------------------------------------------------------------//
 void System::setDefaultXMLParserName(const String& parserName)
 {
-#if !defined(CEGUI_STATIC)
-	if(d_defaultXMLParserName == parserName)
-		return;
-
-	//We do this becuase cleanup and setup aren't static functions
-	if(getSingletonPtr())
-	{
-		System* sys = getSingletonPtr();
-		sys->cleanupXMLParser();
-		d_defaultXMLParserName = parserName;
-		sys->setupXMLParser();
-	} // if(getSingletonPtr())
-#endif
+    d_defaultXMLParserName = parserName;
 }
 
 const String System::getDefaultXMLParserName()
 {
     return d_defaultXMLParserName;
 }
+
+//----------------------------------------------------------------------------//
+bool System::mouseMoveInjection_impl(MouseEventArgs& ma)
+{
+    Window* dest_window = getTargetWindow(ma.position);
+
+    // has window containing mouse changed?
+    if (dest_window != d_wndWithMouse)
+    {
+        // store previous window that contained mouse
+        Window* oldWindow = d_wndWithMouse;
+        // set the new window that contains the mouse.
+        d_wndWithMouse = dest_window;
+
+        // inform previous window the mouse has left it
+        if (oldWindow)
+        {
+            ma.window = oldWindow;
+            oldWindow->onMouseLeaves(ma);
+        }
+
+        // inform window containing mouse that mouse has entered it
+        if (d_wndWithMouse)
+        {
+            ma.window = d_wndWithMouse;
+            ma.handled = false;
+            d_wndWithMouse->onMouseEnters(ma);
+        }
+    }
+
+    // inform appropriate window of the mouse movement event
+    if (dest_window)
+    {
+        // ensure event starts as 'not handled'
+        ma.handled = false;
+
+        // loop backwards until event is handled or we run out of windows.
+        while ((!ma.handled) && (dest_window != 0))
+        {
+            ma.window = dest_window;
+            dest_window->onMouseMove(ma);
+            dest_window = getNextTargetWindow(dest_window);
+        }
+    }
+
+    return ma.handled;
+}
+
+//----------------------------------------------------------------------------//
 
 
 } // End of  CEGUI namespace section

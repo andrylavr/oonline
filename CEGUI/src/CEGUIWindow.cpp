@@ -882,6 +882,11 @@ void Window::setVisible(bool setting)
 *************************************************************************/
 void Window::activate(void)
 {
+    // exit if the window is not visible, since a hidden window may not be the
+    // active window.
+    if (!isVisible())
+        return;
+
 	// force complete release of input capture.
 	// NB: This is not done via releaseCapture() because that has
 	// different behaviour depending on the restoreOldCapture setting.
@@ -2686,6 +2691,10 @@ void Window::onShown(WindowEventArgs& e)
 
 void Window::onHidden(WindowEventArgs& e)
 {
+    // first deactivate window if it is the active window.
+    if (isActive())
+        deactivate();
+
 	requestRedraw();
 	fireEvent(EventHidden, e, EventNamespace);
 }
@@ -3273,5 +3282,25 @@ bool Window::isTopOfZOrder() const
     // return whether the window at the top of the z order is us
     return *pos == this;
 }
+
+//----------------------------------------------------------------------------//
+void Window::insertText(const String& text, const String::size_type position)
+{
+    d_text.insert(position, text);
+
+    WindowEventArgs args(this);
+    onTextChanged(args);
+}
+    
+//----------------------------------------------------------------------------//
+void Window::appendText(const String& text)
+{
+    d_text.append(text);
+
+    WindowEventArgs args(this);
+    onTextChanged(args);
+}
+
+//----------------------------------------------------------------------------//
 
 } // End of  CEGUI namespace section

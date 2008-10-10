@@ -121,16 +121,25 @@ bool CEGuiIrrlichtBaseApplication::execute(CEGuiSample* sampleApp)
 {
     sampleApp->initialiseSample();
 
+    CEGUI::System& guiSystem = CEGUI::System::getSingleton();
+
     // draw everything
     while(d_device->run())
     {
         // draw only if the window is active
         if (d_device->isWindowActive())
         {
+            checkWindowResize();
+
+            // create FPS string
+            char fps_buff[16];
+            int frame_rate = d_driver->getFPS();
+            sprintf(fps_buff , "FPS: %d", frame_rate);
+
             // calculate time elapsed
             irr::u32 currTime = d_device->getTimer()->getRealTime();
             // inject time pulse
-            CEGUI::System::getSingleton().injectTimePulse(static_cast<float>(currTime - d_lastTime) / 1000.0f);
+            guiSystem.injectTimePulse(static_cast<float>(currTime - d_lastTime) / 1000.0f);
             d_lastTime = currTime;
 
             // start rendering
@@ -138,7 +147,16 @@ bool CEGuiIrrlichtBaseApplication::execute(CEGuiSample* sampleApp)
             //draw scene
             d_smgr->drawAll();
             // draw gui
-            CEGUI::System::getSingleton().renderGUI();
+            guiSystem.renderGUI();
+            // render FPS
+            CEGUI::Font* fnt = guiSystem.getDefaultFont();
+            if (fnt)
+            {
+                guiSystem.getRenderer()->setQueueingEnabled(false);
+                fnt->drawText(fps_buff, CEGUI::Vector3(0, 0, 0),
+                    guiSystem.getRenderer()->getRect());
+            }
+
             d_driver->endScene();
         }
 
@@ -172,6 +190,12 @@ bool CEGuiIrrlichtBaseApplication::OnEvent(irr::SEvent event)
     }
 
     return (d_renderer != 0) ? d_renderer->OnEvent(event) : false;
+}
+
+void CEGuiIrrlichtBaseApplication::checkWindowResize()
+{
+    irr::core::dimension2d<irr::s32> cur_size = d_driver->getScreenSize();
+    d_renderer->setDisplaySize(CEGUI::Size(cur_size.Width, cur_size.Height));
 }
 
 #endif

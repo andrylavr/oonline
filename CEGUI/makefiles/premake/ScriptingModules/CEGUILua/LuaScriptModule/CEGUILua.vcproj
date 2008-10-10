@@ -3,10 +3,10 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="CEGUILua"
-	ProjectGUID="{88AAFFBD-1340-B243-9C18-D8B7A63932D2}"
+	ProjectGUID="{C725220D-F8C5-4F4A-AC26-AFDA6F7608EB}"
 	RootNamespace="CEGUILua"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -42,14 +42,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -57,7 +56,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;_DEBUG"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
 			/>
 			<Tool
@@ -72,8 +71,6 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CEGUILua_d.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../../lib/CEGUILua_d.lib"
 				TargetMachine="1"
 			/>
@@ -125,14 +122,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -140,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
 			/>
 			<Tool
@@ -148,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUILua_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/CEGUILua_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -192,13 +188,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -206,7 +201,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
 			/>
 			<Tool
@@ -223,8 +218,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../../lib/CEGUILua.lib"
 				TargetMachine="1"
 			/>
@@ -277,13 +270,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;TOLUA_RELEASE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_RELEASE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -291,7 +283,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;TOLUA_RELEASE"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_RELEASE"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
 			/>
 			<Tool
@@ -307,8 +299,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../../lib/CEGUILua.lib"
 				TargetMachine="1"
 			/>
@@ -361,13 +351,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -375,7 +364,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUILUA_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/include;../../../../../ScriptingModules/CEGUILua/LuaScriptModule/../tolua++"
 			/>
 			<Tool
@@ -383,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUILua_Static.lib"
+				OutputFile="$(SolutionDir)lib/CEGUILua_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

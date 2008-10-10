@@ -124,7 +124,10 @@ void FreeTypeFont::load ()
 
     updateFont ();
 
-    snprintf (tmp, sizeof (tmp), "Succsessfully loaded %d glyphs", d_cp_map.size ());
+    snprintf(tmp, sizeof(tmp),
+             "Succsessfully loaded %d glyphs",
+             static_cast<int>(d_cp_map.size()));
+
     Logger::getSingleton ().logEvent (tmp);
 }
 
@@ -279,10 +282,13 @@ void FreeTypeFont::rasterize (utf32 start_codepoint, utf32 end_codepoint)
                     drawGlyphToBuffer (mem_buffer + (y * texsize) + x, texsize);
 
                     // Create a new image in the imageset
-                    Rect area (float(x), float(y), float(x + glyph_w - INTER_GLYPH_PAD_SPACE),
-                               float(y + glyph_h - INTER_GLYPH_PAD_SPACE));
-                    Point offset (d_fontFace->glyph->metrics.horiBearingX * float(FT_POS_COEF),
-                                  -d_fontFace->glyph->metrics.horiBearingY * float(FT_POS_COEF));
+                    Rect area(static_cast<float>(x),
+                              static_cast<float>(y),
+                              static_cast<float>(x + glyph_w - INTER_GLYPH_PAD_SPACE),
+                              static_cast<float>(y + glyph_h - INTER_GLYPH_PAD_SPACE));
+
+                    Point offset(d_fontFace->glyph->metrics.horiBearingX * static_cast<float>(FT_POS_COEF),
+                                 -d_fontFace->glyph->metrics.horiBearingY * static_cast<float>(FT_POS_COEF));
 
                     String name;
                     name += s->first;

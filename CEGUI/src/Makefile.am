@@ -1,14 +1,16 @@
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir) $(freetype2_CFLAGS) $(pcre_CFLAGS)
 
 libCEGUIBase_la_LDFLAGS =
+libCEGUIBase_la_LIBADD =
 
 if MINGW32_BUILD
 libCEGUIBase_la_CPPFLAGS = -DCEGUIBASE_EXPORTS
 libCEGUIBase_la_LDFLAGS += -shared -no-undefined
+libCEGUIBase_la_LIBADD += -lwinmm
 endif
 
 libCEGUIBase_la_LDFLAGS += -version-info @CEGUI_VERSION_INFO@
-libCEGUIBase_la_LIBADD = $(freetype2_LIBS) $(pcre_LIBS)
+libCEGUIBase_la_LIBADD += $(freetype2_LIBS) $(pcre_LIBS)
 
 lib_LTLIBRARIES=libCEGUIBase.la
 
@@ -161,5 +163,9 @@ libCEGUIBase_la_SOURCES = CEGUIBase.cpp \
                       falagard/CEGUIFalXMLEnumHelper.cpp \
                       falagard/CEGUIFalagard_xmlHandler.cpp
 
-EXTRA_DIST = implementations/mac/macPlugins.cpp \
-             implementations/mac/macPlugins.h
+if MACOSX_BUILD
+INCLUDES += -I$(top_srcdir)/src/implementations/mac
+libCEGUIBase_la_SOURCES += implementations/mac/macPlugins.cpp
+endif
+
+EXTRA_DIST = implementations/mac/macPlugins.h

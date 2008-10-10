@@ -23,19 +23,20 @@ CEGUI_LUA_VER = 50
 -------------
 -- Renderers
 -- this controls which renderer modules are built
-OPENGL_RENDERER = false
+OPENGL_RENDERER = true
 DIRECTX81_RENDERER = false
 DIRECTX9_RENDERER = true
+DIRECTX10_RENDERER = false
 IRRLICHT_RENDERER = false
 
 ----------------
 -- Image Codecs
 -- this controls which image codecs are built
-TGA_IMAGE_CODEC = false
+TGA_IMAGE_CODEC = true
 SILLY_IMAGE_CODEC = true
-DEVIL_IMAGE_CODEC = false
-FREEIMAGE_IMAGE_CODEC = false
-CORONA_IMAGE_CODEC = false
+DEVIL_IMAGE_CODEC = true
+FREEIMAGE_IMAGE_CODEC = true
+CORONA_IMAGE_CODEC = true
 
 -- this setting selects the default image codec module
 -- can be either "tga", "silly", "devil", "freeimage" or "corona"
@@ -57,14 +58,14 @@ DEFAULT_WINDOW_RENDERER = "falagard"
 ---------------
 -- XML parsers
 -- this controls which xml parser modules are built
-EXPAT_PARSER = false
+EXPAT_PARSER = true
 XERCES_PARSER = false
-TINYXML_PARSER = true
+TINYXML_PARSER = false
 LIBXML_PARSER = false
 
 -- this selects the default XML parser module
 -- can be either "expat", "xerces", "tinyxml" or "libxml"
-DEFAULT_XML_PARSER = "tinyxml"
+DEFAULT_XML_PARSER = "expat"
 
 
 -------
@@ -78,16 +79,17 @@ LUA_SCRIPT_MODULE = true
 LUA_SCRIPT_MODULE_SAFE = false
 
 -- enable this to build the bundled tolua++ as a static library
-TOLUA_STATIC = true
+TOLUA_STATIC = false
 
 
 -----------
 -- Samples
 -- remember you have to edit CEGUISamplesConfig.h as well this just controls
 -- dependencies etc. if the renderer is disabled this has no effect
-SAMPLES_GL = false
+SAMPLES_GL = true
 SAMPLES_DX81 = false
-SAMPLES_DX9 = false
+SAMPLES_DX9 = true
+SAMPLES_DX10 = false
 SAMPLES_IRRLICHT = false
 
 -- this setting controls if the samples should be included in the same

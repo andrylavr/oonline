@@ -3,10 +3,10 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="tolua++"
-	ProjectGUID="{952E8A8D-948A-3E4C-B5AA-6CE0D8834A00}"
+	ProjectGUID="{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}"
 	RootNamespace="tolua++"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -18,9 +18,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../../../../lib"
+			OutputDirectory="../../../../../bin"
 			IntermediateDirectory="obj/Debug"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -42,14 +42,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -57,18 +56,29 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;_DEBUG"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/tolua++_d.lib"
+				Name="VCLinkerTool"
+				AdditionalDependencies="lua_d.lib"
+				OutputFile="$(OutDir)/tolua++_d.dll"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="../../../../../lib;../../../../../dependencies/lib"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/tolua++_d.pdb"
+				SubSystem="2"
+				ImportLibrary="../../../../../lib/tolua++_d.lib"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -78,6 +88,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -109,14 +122,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -124,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
 			/>
 			<Tool
@@ -132,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\tolua++_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/tolua++_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -152,9 +164,9 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseWithSymbols|Win32"
-			OutputDirectory="../../../../../lib"
+			OutputDirectory="../../../../../bin"
 			IntermediateDirectory="obj/ReleaseWithSymbols"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -176,13 +188,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -190,18 +201,31 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\tolua++.lib"
+				Name="VCLinkerTool"
+				AdditionalDependencies="lua.lib"
+				OutputFile="$(OutDir)/tolua++.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="../../../../../lib;../../../../../dependencies/lib"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/tolua++.pdb"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="../../../../../lib/tolua++.lib"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -213,14 +237,17 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../../../../lib"
+			OutputDirectory="../../../../../bin"
 			IntermediateDirectory="obj/Release"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -243,13 +270,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -257,18 +283,30 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/tolua++.lib"
+				Name="VCLinkerTool"
+				AdditionalDependencies="lua.lib"
+				OutputFile="$(OutDir)/tolua++.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="../../../../../lib;../../../../../dependencies/lib"
+				GenerateDebugInformation="false"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="../../../../../lib/tolua++.lib"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -278,6 +316,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -310,13 +351,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -324,7 +364,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include"
 			/>
 			<Tool
@@ -332,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/tolua++_Static.lib"
+				OutputFile="$(SolutionDir)lib/tolua++_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

@@ -26,6 +26,12 @@
    glut) */
 #undef CEGUI_SAMPLES_USE_OPENGL
 
+/* Set this to the name of the tinyxml.h file */
+#undef CEGUI_TINYXML_H
+
+/* Set this to the name of the tinyxml namespace */
+#undef CEGUI_TINYXML_NAMESPACE
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 

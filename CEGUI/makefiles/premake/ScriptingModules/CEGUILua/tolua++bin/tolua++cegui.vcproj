@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="tolua++cegui"
-	ProjectGUID="{B3D32D4A-A1FF-FF42-9991-AFAC24F47252}"
+	ProjectGUID="{67C493F5-1EC8-4346-AB7E-03B7E35741E3}"
 	RootNamespace="tolua++cegui"
 	Keyword="Win32Proj"
 	>
@@ -41,14 +41,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -56,7 +55,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;_DEBUG"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
 			/>
 			<Tool
@@ -125,14 +124,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -140,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
 			/>
 			<Tool
@@ -209,13 +207,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -223,7 +220,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
 			/>
 			<Tool
@@ -295,13 +292,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -309,7 +305,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
 			/>
 			<Tool
@@ -380,13 +376,12 @@
 				Optimization="2"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUI_STATIC;TOLUA_STATIC"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -394,7 +389,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;TOLUA_STATIC;CEGUI_STATIC;TOLUA_STATIC"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../../include;../../../../../dependencies/include;../../../../../ScriptingModules/CEGUILua/tolua++bin/../tolua++"
 			/>
 			<Tool
@@ -455,13 +450,16 @@
 					Filter=""
 					>
 					<File
-						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\tolua.c">
+						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\tolua.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\toluabind.c">
+						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\toluabind.c"
+						>
 					</File>
 					<File
-						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\toluabind.h">
+						RelativePath="..\..\..\..\..\ScriptingModules\CEGUILua\tolua++bin\toluabind.h"
+						>
 					</File>
 				</Filter>
 			</Filter>

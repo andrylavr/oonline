@@ -1340,6 +1340,12 @@ public:
         - true to make the Window visible.
         - false to make the Window hidden.
 
+    \note
+        Hiding the active window will cause that window to become deactivated.
+        Showing a window does not, however, automatically cause that window to
+        become the active window (call Window::activate after making the window
+        visible to activate it).
+
     \return
         Nothing
     */
@@ -1347,7 +1353,12 @@ public:
 
     /*!
     \brief
-        show the Window
+        show the Window.
+
+    \note
+        Showing a window does not automatically activate the window.  If you
+        want the window to also become active you will need to call the
+        Window::activate member also.
 
     \return
         Nothing
@@ -1357,6 +1368,9 @@ public:
     /*!
     \brief
         hide the Window.
+    \note
+        If the window is the active window, it will become deactivated as a
+        result of being hidden.
 
     \return
         Nothing
@@ -1429,6 +1443,32 @@ public:
     */
     void setText(const String& text);
 
+    /*!
+    \brief
+        Insert the text string \a text into the current text string for the
+        Window object at the position specified by \a position.
+     
+    \param text
+        String object holding the text that is to be inserted into the Window
+        object's current text string.
+     
+    \param position
+        The characted index position where the string \a text should be
+        inserted.
+    */
+    void insertText(const String& text, const String::size_type position);
+    
+    /*!
+    \brief
+        Append the string \a text to the currect text string for the Window
+        object.
+     
+    \param text
+        String object holding the text that is to be appended to the Window
+        object's current text string.
+    */
+    void appendText(const String& text);
+    
     /*!
     \brief
         Set the font used by this Window.

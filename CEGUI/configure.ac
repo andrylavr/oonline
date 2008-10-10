@@ -7,7 +7,7 @@ dnl we should define these numbers (we could pick up the same info by other mean
 dnl though this leaves nobody in any doubt about where this is being defined).
 m4_define([CEGUI_MAJ_VER], 0)
 m4_define([CEGUI_MIN_VER], 6)
-m4_define([CEGUI_REL_VER], 0)
+m4_define([CEGUI_REL_VER], 1)
 
 dnl Construct the final version number out of the sub-version values specified above
 m4_define([CEGUI_RELEASE_VERSION], [CEGUI_MAJ_VER.CEGUI_MIN_VER.CEGUI_REL_VER])
@@ -32,11 +32,21 @@ AM_PROG_LIBTOOL
 
 # Setup some stuff depending on the system we're running on
 case $host_os in
-    *mingw32* ) MINGW32=yes;;
-            * ) MINGW32=no;;
+    *mingw32* ) MINGW32=yes
+                cegui_pc_platform_libs=-lwinmm
+                ;;
+     *darwin* ) MACOSX=yes
+                cegui_pc_platform_libs=
+                ;;
+            * ) MINGW32=no
+                cegui_pc_platform_libs=
+                ;;
 esac
 
+AC_SUBST(cegui_pc_platform_libs)
+
 AM_CONDITIONAL([MINGW32_BUILD], [test x$MINGW32 = xyes])
+AM_CONDITIONAL([MACOSX_BUILD], [test x$MACOSX = xyes])
 
 # Checks for libraries (skip on mingw32).
 if test x$MINGW32 != xyes; then
@@ -91,23 +101,23 @@ CEGUI_CHECK_LUA
 
 dnl versioning info for libtool
 dnl Note this is the ABI version which is not the same as our actual library version
-CEGUI_CURRENT=1
+CEGUI_CURRENT=2
 CEGUI_REVISION=0
-CEGUI_AGE=0
+CEGUI_AGE=1
 CEGUI_VERSION_INFO=$CEGUI_CURRENT:$CEGUI_REVISION:$CEGUI_AGE
 AC_SUBST(CEGUI_VERSION_INFO)
 
 dnl versioning info for the Irrlicht renderer
-CEGUI_IRRLICHT_CURRENT=0
-CEGUI_IRRLICHT_REVISION=1
-CEGUI_IRRLICHT_AGE=0
+CEGUI_IRRLICHT_CURRENT=1
+CEGUI_IRRLICHT_REVISION=0
+CEGUI_IRRLICHT_AGE=1
 CEGUI_IRRLICHT_VERSION_INFO=$CEGUI_IRRLICHT_CURRENT:$CEGUI_IRRLICHT_REVISION:$CEGUI_IRRLICHT_AGE
 AC_SUBST(CEGUI_IRRLICHT_VERSION_INFO)
 
 dnl versioning info for the OpenGL renderer
-CEGUI_OPENGL_CURRENT=0
-CEGUI_OPENGL_REVISION=1
-CEGUI_OPENGL_AGE=0
+CEGUI_OPENGL_CURRENT=1
+CEGUI_OPENGL_REVISION=0
+CEGUI_OPENGL_AGE=1
 CEGUI_OPENGL_VERSION_INFO=$CEGUI_OPENGL_CURRENT:$CEGUI_OPENGL_REVISION:$CEGUI_OPENGL_AGE
 AC_SUBST(CEGUI_OPENGL_VERSION_INFO)
 
@@ -123,6 +133,7 @@ AC_CONFIG_FILES([Makefile
                  ImageCodecModules/TGAImageCodec/Makefile
                  RendererModules/directx81GUIRenderer/Makefile
                  RendererModules/directx9GUIRenderer/Makefile
+                 RendererModules/directx10GUIRenderer/Makefile
                  RendererModules/IrrlichtRenderer/Makefile
                  RendererModules/Makefile
                  RendererModules/OpenGLGUIRenderer/Makefile
@@ -132,6 +143,7 @@ AC_CONFIG_FILES([Makefile
                  Samples/Demo7/src/Makefile
                  Samples/Demo8/Makefile
                  Samples/Demo8/src/Makefile
+                 Samples/DragDropDemo/Makefile
                  Samples/FalagardDemo1/Makefile
                  Samples/FalagardDemo1/include/Makefile
                  Samples/FalagardDemo1/src/Makefile
@@ -198,7 +210,8 @@ echo "*         Building CEGUI in debug mode:                 ${cegui_enable_deb
 echo "*"
 echo "* Renderer Modules:"
 echo "*         Building OpenGL Renderer:                     ${cegui_enable_opengl-no}"
-echo "*         Building Irrlict Renderer:                    ${cegui_enable_irrlicht-no}"
+echo "*             Using external GLEW library:              ${cegui_found_glew-no}"
+echo "*         Building Irrlicht Renderer:                   ${cegui_enable_irrlicht-no}"
 echo "*"
 if test x"$cegui_enable_opengl" = x"yes"; then
 echo "* Image Loading Codec Modules (currently for OpenGL Renderer only):"
@@ -213,6 +226,9 @@ echo "*"
 fi
 echo "* XML Parser Modules:"
 echo "*         Building TinyXMLParser:                       ${cegui_with_tinyxml-no}"
+if test x$cegui_with_tinyxml = xyes; then
+echo "*             Using external TinyXML library:           ${cegui_found_tinyxml-no}"
+fi
 echo "*         Building ExpatParser:                         ${cegui_with_expat-no}"
 echo "*         Building LibXMLParser:                        ${cegui_with_libxml-no}"
 echo "*         Building XercesParser:                        ${cegui_with_xerces-no}"
@@ -235,12 +251,15 @@ echo "*"
 echo "* Scripting:"
 echo "*         Building Lua scripting module:                ${cegui_with_lua-no}"
 echo "*         Building tolua++cegui generator:              ${cegui_build_toluatool-no}"
+if test x$cegui_with_lua = xyes; then
+echo "*             Using external tolua++ library:           ${cegui_found_toluapp-no}"
+fi
 echo "*"
 echo "* Samples Framework:"
 echo "*         Building Samples:                             ${cegui_build_samples-no}"
 echo "*         GTK2 based dialog for renderer selection:     ${cegui_with_gtk-no}"
 echo "*         OpenGL Renderer available in samples:         ${cegui_samples_use_opengl-no}"
-echo "*         Irrlict Renderer available in samples:        ${cegui_samples_use_irrlicht-no}"
+echo "*         Irrlicht Renderer available in samples:       ${cegui_samples_use_irrlicht-no}"
 echo "*         Ogre3D Renderer available in samples:         ${cegui_samples_use_ogre-no}"
 echo "********************************************************************************"
 echo

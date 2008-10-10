@@ -127,7 +127,7 @@
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../XMLParserModules/TinyXMLParser/"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITINYXMLPARSER_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -148,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUITinyXMLParser_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/CEGUITinyXMLParser_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

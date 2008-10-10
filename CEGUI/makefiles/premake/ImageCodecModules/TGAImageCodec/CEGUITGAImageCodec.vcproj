@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="CEGUITGAImageCodec"
-	ProjectGUID="{C2E936E7-0714-D34D-89B4-B684C9219A56}"
+	ProjectGUID="{A3B40843-8ADA-AD40-8981-85B4FABF2FEF}"
 	RootNamespace="CEGUITGAImageCodec"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -49,7 +48,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -57,6 +55,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITGAIMAGECODEC_EXPORTS;_DEBUG"
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../ImageCodecModules/TGAImageCodec/include"
 			/>
 			<Tool
@@ -71,8 +70,6 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CEGUITGAImageCodec_d.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUITGAImageCodec_d.lib"
 				TargetMachine="1"
 			/>
@@ -93,6 +90,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -131,7 +131,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -139,6 +138,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITGAIMAGECODEC_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../ImageCodecModules/TGAImageCodec/include"
 			/>
 			<Tool
@@ -152,6 +152,9 @@
 				Name="VCALinkTool"
 			/>
 			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
 				Name="VCXDCMakeTool"
 			/>
 			<Tool
@@ -159,6 +162,12 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -196,7 +205,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -204,6 +212,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITGAIMAGECODEC_EXPORTS"
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../ImageCodecModules/TGAImageCodec/include"
 			/>
 			<Tool
@@ -220,8 +229,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUITGAImageCodec.lib"
 				TargetMachine="1"
 			/>
@@ -242,6 +249,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -280,7 +290,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -288,6 +297,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITGAIMAGECODEC_EXPORTS"
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../ImageCodecModules/TGAImageCodec/include"
 			/>
 			<Tool
@@ -303,8 +313,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUITGAImageCodec.lib"
 				TargetMachine="1"
 			/>
@@ -327,12 +335,15 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release_Static|Win32"
-			OutputDirectory="$(SolutionDir)\Lib\"
+			OutputDirectory="../../../../lib"
 			IntermediateDirectory="obj/Release_Static"
 			ConfigurationType="4"
 			CharacterSet="2"
@@ -363,7 +374,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -371,6 +381,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;CEGUITGAIMAGECODEC_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../ImageCodecModules/TGAImageCodec/include"
 			/>
 			<Tool
@@ -384,6 +395,9 @@
 				Name="VCALinkTool"
 			/>
 			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
 				Name="VCXDCMakeTool"
 			/>
 			<Tool
@@ -391,6 +405,12 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -402,20 +422,22 @@
 	<Files>
 		<Filter
 			Name="ImageCodecModules"
+			Filter=""
 			>
 			<Filter
 				Name="TGAImageCodec"
+				Filter=""
 				>
 				<File
 					RelativePath="..\..\..\..\ImageCodecModules\TGAImageCodec\CEGUITGAImageCodec.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\ImageCodecModules\TGAImageCodec\CEGUITGAImageCodec.h"
+					RelativePath="..\..\..\..\ImageCodecModules\TGAImageCodec\CEGUITGAImageCodecModule.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\ImageCodecModules\TGAImageCodec\CEGUITGAImageCodecModule.cpp"
+					RelativePath="..\..\..\..\ImageCodecModules\TGAImageCodec\CEGUITGAImageCodec.h"
 					>
 				</File>
 				<File

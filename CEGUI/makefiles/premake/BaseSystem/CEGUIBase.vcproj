@@ -3,10 +3,10 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="CEGUIBase"
-	ProjectGUID="{278034CC-C2F1-1E48-B109-BEF1A8583264}"
+	ProjectGUID="{9EBB914E-CD46-6244-8299-D7CA00A17506}"
 	RootNamespace="CEGUIBase"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -49,7 +49,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -72,8 +71,6 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CEGUIBase_d.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../lib/CEGUIBase_d.lib"
 				TargetMachine="1"
 			/>
@@ -132,7 +129,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -148,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUIBase_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/CEGUIBase_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -198,7 +194,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -223,8 +218,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../lib/CEGUIBase.lib"
 				TargetMachine="1"
 			/>
@@ -283,7 +276,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -307,8 +299,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../lib/CEGUIBase.lib"
 				TargetMachine="1"
 			/>
@@ -367,7 +357,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -383,8 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="winmm.lib "
-				OutputFile="$(SolutionDir)lib\CEGUIBase_Static.lib"
+				OutputFile="$(SolutionDir)lib/CEGUIBase_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

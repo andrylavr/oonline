@@ -38,6 +38,10 @@ POST_UNINSTALL = :
 host_triplet = @host@
 @MINGW32_BUILD_TRUE@am__append_1 = -DCEGUILUA_EXPORTS
 @MINGW32_BUILD_TRUE@am__append_2 = -no-undefined -avoid-version
+@CEGUI_BUILD_TOLUAPPLIB_TRUE@am__append_3 = -I$(top_srcdir)/ScriptingModules/CEGUILua/tolua++
+@CEGUI_BUILD_TOLUAPPLIB_TRUE@am__append_4 = ../../tolua++/libCEGUItoluapp.la
+@CEGUI_BUILD_TOLUAPPLIB_FALSE@am__append_5 = $(toluapp_CFLAGS)
+@CEGUI_BUILD_TOLUAPPLIB_FALSE@am__append_6 = $(toluapp_LIBS)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
@@ -58,6 +62,10 @@ BUILD_OPENGL_RENDERER_FALSE = @BUILD_OPENGL_RENDERER_FALSE@
 BUILD_OPENGL_RENDERER_TRUE = @BUILD_OPENGL_RENDERER_TRUE@
 BUILD_TINYXML_PARSER_FALSE = @BUILD_TINYXML_PARSER_FALSE@
 BUILD_TINYXML_PARSER_TRUE = @BUILD_TINYXML_PARSER_TRUE@
+BUILD_USING_INTERNAL_GLEW_FALSE = @BUILD_USING_INTERNAL_GLEW_FALSE@
+BUILD_USING_INTERNAL_GLEW_TRUE = @BUILD_USING_INTERNAL_GLEW_TRUE@
+BUILD_USING_INTERNAL_TINYXML_FALSE = @BUILD_USING_INTERNAL_TINYXML_FALSE@
+BUILD_USING_INTERNAL_TINYXML_TRUE = @BUILD_USING_INTERNAL_TINYXML_TRUE@
 BUILD_XERCES_PARSER_FALSE = @BUILD_XERCES_PARSER_FALSE@
 BUILD_XERCES_PARSER_TRUE = @BUILD_XERCES_PARSER_TRUE@
 CC = @CC@
@@ -80,6 +88,8 @@ CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE = @CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE@
 CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE = @CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE@
 CEGUI_BUILD_TOLUACEGUI_FALSE = @CEGUI_BUILD_TOLUACEGUI_FALSE@
 CEGUI_BUILD_TOLUACEGUI_TRUE = @CEGUI_BUILD_TOLUACEGUI_TRUE@
+CEGUI_BUILD_TOLUAPPLIB_FALSE = @CEGUI_BUILD_TOLUAPPLIB_FALSE@
+CEGUI_BUILD_TOLUAPPLIB_TRUE = @CEGUI_BUILD_TOLUAPPLIB_TRUE@
 CEGUI_IRRLICHT_VERSION_INFO = @CEGUI_IRRLICHT_VERSION_INFO@
 CEGUI_NULL_CFLAGS = @CEGUI_NULL_CFLAGS@
 CEGUI_NULL_LIBS = @CEGUI_NULL_LIBS@
@@ -137,6 +147,8 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 Lua_CFLAGS = @Lua_CFLAGS@
 Lua_LIBS = @Lua_LIBS@
+MACOSX_BUILD_FALSE = @MACOSX_BUILD_FALSE@
+MACOSX_BUILD_TRUE = @MACOSX_BUILD_TRUE@
 MAKEINFO = @MAKEINFO@
 MINGW32_BUILD_FALSE = @MINGW32_BUILD_FALSE@
 MINGW32_BUILD_TRUE = @MINGW32_BUILD_TRUE@
@@ -185,6 +197,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 cegui_corona_config = @cegui_corona_config@
+cegui_pc_platform_libs = @cegui_pc_platform_libs@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -221,19 +234,18 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+tinyxml_CFLAGS = @tinyxml_CFLAGS@
+tinyxml_LIBS = @tinyxml_LIBS@
+toluapp_CFLAGS = @toluapp_CFLAGS@
+toluapp_LIBS = @toluapp_LIBS@
 xerces_CFLAGS = @xerces_CFLAGS@
 xerces_LIBS = @xerces_LIBS@
 INCLUDES = -I$(top_srcdir)/include \
-           -I$(top_srcdir)/ScriptingModules/CEGUILua/tolua++ \
-           -I$(top_srcdir)/ScriptingModules/CEGUILua/LuaScriptModule/include
-
+           -I$(top_srcdir)/ScriptingModules/CEGUILua/LuaScriptModule/include\
+$(am__append_3) $(am__append_5)
 
 libCEGUILuaScriptModule_la_LDFLAGS = $(am__append_2) -version-info @CEGUI_VERSION_INFO@
 libCEGUILuaScriptModule_la_CPPFLAGS = $(Lua_CFLAGS) $(am__append_1)
-@MINGW32_BUILD_TRUE@libCEGUILuaScriptModule_la_LIBADD = -L$(top_builddir)/src/ \
-@MINGW32_BUILD_TRUE@                                    -L$(top_builddir)/ScriptingModules/CEGUILua/tolua++ \
-@MINGW32_BUILD_TRUE@                                    -lCEGUIBase -lCEGUItoluapp $(Lua_LIBS)
-
 
 lib_LTLIBRARIES = libCEGUILuaScriptModule.la
 
@@ -242,6 +254,9 @@ libCEGUILuaScriptModule_la_SOURCES = lua_CEGUI.cpp \
                                      CEGUILuaFunctor.cpp \
                                      required.cpp
 
+libCEGUILuaScriptModule_la_LIBADD = $(top_builddir)/src/libCEGUIBase.la \
+                                    $(Lua_LIBS)\
+$(am__append_4) $(am__append_6)
 
 noinst_HEADERS = required.h
 subdir = ScriptingModules/CEGUILua/LuaScriptModule/src
@@ -251,8 +266,11 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-@MINGW32_BUILD_TRUE@libCEGUILuaScriptModule_la_DEPENDENCIES =
-@MINGW32_BUILD_FALSE@libCEGUILuaScriptModule_la_DEPENDENCIES =
+@CEGUI_BUILD_TOLUAPPLIB_TRUE@libCEGUILuaScriptModule_la_DEPENDENCIES = \
+@CEGUI_BUILD_TOLUAPPLIB_TRUE@	$(top_builddir)/src/libCEGUIBase.la \
+@CEGUI_BUILD_TOLUAPPLIB_TRUE@	../../tolua++/libCEGUItoluapp.la
+@CEGUI_BUILD_TOLUAPPLIB_FALSE@libCEGUILuaScriptModule_la_DEPENDENCIES = \
+@CEGUI_BUILD_TOLUAPPLIB_FALSE@	$(top_builddir)/src/libCEGUIBase.la
 am_libCEGUILuaScriptModule_la_OBJECTS = \
 	libCEGUILuaScriptModule_la-lua_CEGUI.lo \
 	libCEGUILuaScriptModule_la-CEGUILua.lo \

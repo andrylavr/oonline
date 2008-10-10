@@ -37,6 +37,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 @MINGW32_BUILD_TRUE@am__append_1 = -shared -no-undefined
+@MINGW32_BUILD_TRUE@am__append_2 = -lwinmm
+@MACOSX_BUILD_TRUE@am__append_3 = -I$(top_srcdir)/src/implementations/mac
+@MACOSX_BUILD_TRUE@am__append_4 = implementations/mac/macPlugins.cpp
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
@@ -57,6 +60,10 @@ BUILD_OPENGL_RENDERER_FALSE = @BUILD_OPENGL_RENDERER_FALSE@
 BUILD_OPENGL_RENDERER_TRUE = @BUILD_OPENGL_RENDERER_TRUE@
 BUILD_TINYXML_PARSER_FALSE = @BUILD_TINYXML_PARSER_FALSE@
 BUILD_TINYXML_PARSER_TRUE = @BUILD_TINYXML_PARSER_TRUE@
+BUILD_USING_INTERNAL_GLEW_FALSE = @BUILD_USING_INTERNAL_GLEW_FALSE@
+BUILD_USING_INTERNAL_GLEW_TRUE = @BUILD_USING_INTERNAL_GLEW_TRUE@
+BUILD_USING_INTERNAL_TINYXML_FALSE = @BUILD_USING_INTERNAL_TINYXML_FALSE@
+BUILD_USING_INTERNAL_TINYXML_TRUE = @BUILD_USING_INTERNAL_TINYXML_TRUE@
 BUILD_XERCES_PARSER_FALSE = @BUILD_XERCES_PARSER_FALSE@
 BUILD_XERCES_PARSER_TRUE = @BUILD_XERCES_PARSER_TRUE@
 CC = @CC@
@@ -79,6 +86,8 @@ CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE = @CEGUI_BUILD_TGA_IMAGE_CODEC_FALSE@
 CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE = @CEGUI_BUILD_TGA_IMAGE_CODEC_TRUE@
 CEGUI_BUILD_TOLUACEGUI_FALSE = @CEGUI_BUILD_TOLUACEGUI_FALSE@
 CEGUI_BUILD_TOLUACEGUI_TRUE = @CEGUI_BUILD_TOLUACEGUI_TRUE@
+CEGUI_BUILD_TOLUAPPLIB_FALSE = @CEGUI_BUILD_TOLUAPPLIB_FALSE@
+CEGUI_BUILD_TOLUAPPLIB_TRUE = @CEGUI_BUILD_TOLUAPPLIB_TRUE@
 CEGUI_IRRLICHT_VERSION_INFO = @CEGUI_IRRLICHT_VERSION_INFO@
 CEGUI_NULL_CFLAGS = @CEGUI_NULL_CFLAGS@
 CEGUI_NULL_LIBS = @CEGUI_NULL_LIBS@
@@ -136,6 +145,8 @@ LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 Lua_CFLAGS = @Lua_CFLAGS@
 Lua_LIBS = @Lua_LIBS@
+MACOSX_BUILD_FALSE = @MACOSX_BUILD_FALSE@
+MACOSX_BUILD_TRUE = @MACOSX_BUILD_TRUE@
 MAKEINFO = @MAKEINFO@
 MINGW32_BUILD_FALSE = @MINGW32_BUILD_FALSE@
 MINGW32_BUILD_TRUE = @MINGW32_BUILD_TRUE@
@@ -184,6 +195,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 cegui_corona_config = @cegui_corona_config@
+cegui_pc_platform_libs = @cegui_pc_platform_libs@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -220,14 +232,18 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+tinyxml_CFLAGS = @tinyxml_CFLAGS@
+tinyxml_LIBS = @tinyxml_LIBS@
+toluapp_CFLAGS = @toluapp_CFLAGS@
+toluapp_LIBS = @toluapp_LIBS@
 xerces_CFLAGS = @xerces_CFLAGS@
 xerces_LIBS = @xerces_LIBS@
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir) $(freetype2_CFLAGS) $(pcre_CFLAGS)
+INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir) $(freetype2_CFLAGS) $(pcre_CFLAGS) $(am__append_3)
 
 libCEGUIBase_la_LDFLAGS = $(am__append_1) -version-info @CEGUI_VERSION_INFO@
+libCEGUIBase_la_LIBADD = $(am__append_2) $(freetype2_LIBS) $(pcre_LIBS)
 
 @MINGW32_BUILD_TRUE@libCEGUIBase_la_CPPFLAGS = -DCEGUIBASE_EXPORTS
-libCEGUIBase_la_LIBADD = $(freetype2_LIBS) $(pcre_LIBS)
 
 lib_LTLIBRARIES = libCEGUIBase.la
 
@@ -378,12 +394,10 @@ libCEGUIBase_la_SOURCES = CEGUIBase.cpp \
                       falagard/CEGUIFalWidgetLookFeel.cpp \
                       falagard/CEGUIFalWidgetLookManager.cpp \
                       falagard/CEGUIFalXMLEnumHelper.cpp \
-                      falagard/CEGUIFalagard_xmlHandler.cpp
+                      falagard/CEGUIFalagard_xmlHandler.cpp\
+$(am__append_4)
 
-
-EXTRA_DIST = implementations/mac/macPlugins.cpp \
-             implementations/mac/macPlugins.h
-
+EXTRA_DIST = implementations/mac/macPlugins.h
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -391,7 +405,104 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libCEGUIBase_la_DEPENDENCIES =
+@MINGW32_BUILD_TRUE@libCEGUIBase_la_DEPENDENCIES =
+@MINGW32_BUILD_FALSE@libCEGUIBase_la_DEPENDENCIES =
+am__libCEGUIBase_la_SOURCES_DIST = CEGUIBase.cpp CEGUIBoundSlot.cpp \
+	CEGUIColourRect.cpp CEGUIConfig_xmlHandler.cpp \
+	CEGUICoordConverter.cpp CEGUIDataContainer.cpp \
+	CEGUIDefaultLogger.cpp CEGUIDefaultResourceProvider.cpp \
+	CEGUIDynamicModule.cpp CEGUIEvent.cpp CEGUIEventArgs.cpp \
+	CEGUIEventSet.cpp CEGUIEventSignal.cpp CEGUIEventSignalSet.cpp \
+	CEGUIExceptions.cpp CEGUIFactoryModule.cpp CEGUIFont.cpp \
+	CEGUIFontManager.cpp CEGUIFontProperties.cpp \
+	CEGUIFont_xmlHandler.cpp CEGUIFreeTypeFont.cpp \
+	CEGUIGlobalEventSet.cpp CEGUIGUILayout_xmlHandler.cpp \
+	CEGUIImage.cpp CEGUIImageCodec.cpp CEGUIImageset.cpp \
+	CEGUIImagesetManager.cpp CEGUIImageset_xmlHandler.cpp \
+	CEGUILogger.cpp CEGUIMouseCursor.cpp CEGUIPixmapFont.cpp \
+	CEGUIProperty.cpp CEGUIPropertyHelper.cpp CEGUIPropertySet.cpp \
+	CEGUIRect.cpp CEGUIRenderCache.cpp CEGUIRenderer.cpp \
+	CEGUIScheme.cpp CEGUISchemeManager.cpp \
+	CEGUIScheme_xmlHandler.cpp CEGUIScriptModule.cpp \
+	CEGUIScriptWindowHelper.cpp CEGUISize.cpp CEGUIString.cpp \
+	CEGUISubscriberSlot.cpp CEGUISystem.cpp CEGUITextUtils.cpp \
+	CEGUITexture.cpp CEGUIWindow.cpp CEGUIWindowFactory.cpp \
+	CEGUIWindowFactoryManager.cpp CEGUIWindowManager.cpp \
+	CEGUIWindowProperties.cpp CEGUIWindowRenderer.cpp \
+	CEGUIWindowRendererManager.cpp CEGUIXMLAttributes.cpp \
+	CEGUIXMLHandler.cpp CEGUIXMLParser.cpp CEGUIXMLSerializer.cpp \
+	CEGUIcolour.cpp elements/CEGUIBaseFactories.cpp \
+	elements/CEGUIButtonBase.cpp elements/CEGUICheckbox.cpp \
+	elements/CEGUIClippedContainer.cpp \
+	elements/CEGUICheckboxProperties.cpp elements/CEGUICombobox.cpp \
+	elements/CEGUIComboboxProperties.cpp \
+	elements/CEGUIComboDropList.cpp elements/CEGUIDragContainer.cpp \
+	elements/CEGUIDragContainerProperties.cpp \
+	elements/CEGUIEditbox.cpp elements/CEGUIEditboxProperties.cpp \
+	elements/CEGUIFrameWindow.cpp \
+	elements/CEGUIFrameWindowProperties.cpp \
+	elements/CEGUIGroupBox.cpp elements/CEGUIGUISheet.cpp \
+	elements/CEGUIItemEntry.cpp \
+	elements/CEGUIItemEntryProperties.cpp \
+	elements/CEGUIItemListBase.cpp \
+	elements/CEGUIItemListBaseProperties.cpp \
+	elements/CEGUIItemListbox.cpp \
+	elements/CEGUIItemListboxProperties.cpp \
+	elements/CEGUIListbox.cpp elements/CEGUIListboxItem.cpp \
+	elements/CEGUIListboxProperties.cpp \
+	elements/CEGUIListboxTextItem.cpp elements/CEGUIListHeader.cpp \
+	elements/CEGUIListHeaderProperties.cpp \
+	elements/CEGUIListHeaderSegment.cpp \
+	elements/CEGUIListHeaderSegmentProperties.cpp \
+	elements/CEGUIMenubar.cpp elements/CEGUIMenuBase.cpp \
+	elements/CEGUIMenuBaseProperties.cpp elements/CEGUIMenuItem.cpp \
+	elements/CEGUIMultiColumnList.cpp \
+	elements/CEGUIMultiColumnListProperties.cpp \
+	elements/CEGUIMultiLineEditbox.cpp \
+	elements/CEGUIMultiLineEditboxProperties.cpp \
+	elements/CEGUIPopupMenu.cpp \
+	elements/CEGUIPopupMenuProperties.cpp \
+	elements/CEGUIProgressBar.cpp \
+	elements/CEGUIProgressBarProperties.cpp \
+	elements/CEGUIPushButton.cpp elements/CEGUIRadioButton.cpp \
+	elements/CEGUIRadioButtonProperties.cpp \
+	elements/CEGUIScrollablePane.cpp \
+	elements/CEGUIScrollablePaneProperties.cpp \
+	elements/CEGUIScrollbar.cpp \
+	elements/CEGUIScrollbarProperties.cpp \
+	elements/CEGUIScrolledContainer.cpp \
+	elements/CEGUIScrolledContainerProperties.cpp \
+	elements/CEGUIScrolledItemListBase.cpp \
+	elements/CEGUIScrolledItemListBaseProperties.cpp \
+	elements/CEGUISlider.cpp elements/CEGUISliderProperties.cpp \
+	elements/CEGUISpinner.cpp elements/CEGUISpinnerProperties.cpp \
+	elements/CEGUITabButton.cpp elements/CEGUITabControl.cpp \
+	elements/CEGUITabControlProperties.cpp elements/CEGUIThumb.cpp \
+	elements/CEGUIThumbProperties.cpp elements/CEGUITitlebar.cpp \
+	elements/CEGUITitlebarProperties.cpp elements/CEGUITooltip.cpp \
+	elements/CEGUITooltipProperties.cpp elements/CEGUITree.cpp \
+	elements/CEGUITreeProperties.cpp elements/CEGUITreeItem.cpp \
+	falagard/CEGUIFalComponentBase.cpp \
+	falagard/CEGUIFalDimensions.cpp \
+	falagard/CEGUIFalFrameComponent.cpp \
+	falagard/CEGUIFalImageryComponent.cpp \
+	falagard/CEGUIFalImagerySection.cpp \
+	falagard/CEGUIFalLayerSpecification.cpp \
+	falagard/CEGUIFalNamedArea.cpp \
+	falagard/CEGUIFalPropertyDefinition.cpp \
+	falagard/CEGUIFalPropertyDefinitionBase.cpp \
+	falagard/CEGUIFalPropertyLinkDefinition.cpp \
+	falagard/CEGUIFalPropertyInitialiser.cpp \
+	falagard/CEGUIFalSectionSpecification.cpp \
+	falagard/CEGUIFalStateImagery.cpp \
+	falagard/CEGUIFalTextComponent.cpp \
+	falagard/CEGUIFalWidgetComponent.cpp \
+	falagard/CEGUIFalWidgetLookFeel.cpp \
+	falagard/CEGUIFalWidgetLookManager.cpp \
+	falagard/CEGUIFalXMLEnumHelper.cpp \
+	falagard/CEGUIFalagard_xmlHandler.cpp \
+	implementations/mac/macPlugins.cpp
+@MACOSX_BUILD_TRUE@am__objects_1 = libCEGUIBase_la-macPlugins.lo
 am_libCEGUIBase_la_OBJECTS = libCEGUIBase_la-CEGUIBase.lo \
 	libCEGUIBase_la-CEGUIBoundSlot.lo \
 	libCEGUIBase_la-CEGUIColourRect.lo \
@@ -535,7 +646,7 @@ am_libCEGUIBase_la_OBJECTS = libCEGUIBase_la-CEGUIBase.lo \
 	libCEGUIBase_la-CEGUIFalWidgetLookFeel.lo \
 	libCEGUIBase_la-CEGUIFalWidgetLookManager.lo \
 	libCEGUIBase_la-CEGUIFalXMLEnumHelper.lo \
-	libCEGUIBase_la-CEGUIFalagard_xmlHandler.lo
+	libCEGUIBase_la-CEGUIFalagard_xmlHandler.lo $(am__objects_1)
 libCEGUIBase_la_OBJECTS = $(am_libCEGUIBase_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/include
@@ -688,7 +799,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-CEGUIXMLHandler.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-CEGUIXMLParser.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-CEGUIXMLSerializer.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-CEGUIcolour.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-CEGUIcolour.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libCEGUIBase_la-macPlugins.Plo
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -697,7 +809,7 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libCEGUIBase_la_SOURCES)
+DIST_SOURCES = $(am__libCEGUIBase_la_SOURCES_DIST)
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am
 SOURCES = $(libCEGUIBase_la_SOURCES)
 
@@ -895,6 +1007,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCEGUIBase_la-CEGUIXMLParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCEGUIBase_la-CEGUIXMLSerializer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCEGUIBase_la-CEGUIcolour.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libCEGUIBase_la-macPlugins.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -5812,6 +5925,39 @@ libCEGUIBase_la-CEGUIFalagard_xmlHandler.lo: falagard/CEGUIFalagard_xmlHandler.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libCEGUIBase_la-CEGUIFalagard_xmlHandler.Plo' tmpdepfile='$(DEPDIR)/libCEGUIBase_la-CEGUIFalagard_xmlHandler.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCEGUIBase_la-CEGUIFalagard_xmlHandler.lo `test -f 'falagard/CEGUIFalagard_xmlHandler.cpp' || echo '$(srcdir)/'`falagard/CEGUIFalagard_xmlHandler.cpp
+
+libCEGUIBase_la-macPlugins.o: implementations/mac/macPlugins.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libCEGUIBase_la-macPlugins.o -MD -MP -MF "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o libCEGUIBase_la-macPlugins.o `test -f 'implementations/mac/macPlugins.cpp' || echo '$(srcdir)/'`implementations/mac/macPlugins.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" "$(DEPDIR)/libCEGUIBase_la-macPlugins.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='implementations/mac/macPlugins.cpp' object='libCEGUIBase_la-macPlugins.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.Po' tmpdepfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCEGUIBase_la-macPlugins.o `test -f 'implementations/mac/macPlugins.cpp' || echo '$(srcdir)/'`implementations/mac/macPlugins.cpp
+
+libCEGUIBase_la-macPlugins.obj: implementations/mac/macPlugins.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libCEGUIBase_la-macPlugins.obj -MD -MP -MF "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o libCEGUIBase_la-macPlugins.obj `if test -f 'implementations/mac/macPlugins.cpp'; then $(CYGPATH_W) 'implementations/mac/macPlugins.cpp'; else $(CYGPATH_W) '$(srcdir)/implementations/mac/macPlugins.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" "$(DEPDIR)/libCEGUIBase_la-macPlugins.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='implementations/mac/macPlugins.cpp' object='libCEGUIBase_la-macPlugins.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.Po' tmpdepfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCEGUIBase_la-macPlugins.obj `if test -f 'implementations/mac/macPlugins.cpp'; then $(CYGPATH_W) 'implementations/mac/macPlugins.cpp'; else $(CYGPATH_W) '$(srcdir)/implementations/mac/macPlugins.cpp'; fi`
+
+libCEGUIBase_la-macPlugins.lo: implementations/mac/macPlugins.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libCEGUIBase_la-macPlugins.lo -MD -MP -MF "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o libCEGUIBase_la-macPlugins.lo `test -f 'implementations/mac/macPlugins.cpp' || echo '$(srcdir)/'`implementations/mac/macPlugins.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo" "$(DEPDIR)/libCEGUIBase_la-macPlugins.Plo"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/libCEGUIBase_la-macPlugins.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='implementations/mac/macPlugins.cpp' object='libCEGUIBase_la-macPlugins.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.Plo' tmpdepfile='$(DEPDIR)/libCEGUIBase_la-macPlugins.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCEGUIBase_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libCEGUIBase_la-macPlugins.lo `test -f 'implementations/mac/macPlugins.cpp' || echo '$(srcdir)/'`implementations/mac/macPlugins.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

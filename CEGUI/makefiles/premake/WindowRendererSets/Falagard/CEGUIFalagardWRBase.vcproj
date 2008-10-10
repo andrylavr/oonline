@@ -3,10 +3,10 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="CEGUIFalagardWRBase"
-	ProjectGUID="{F5CA338F-45F7-EA49-A503-1D3081A0D5EE}"
+	ProjectGUID="{4301571F-29A7-124D-81EC-BAEBD76D1C5D}"
 	RootNamespace="CEGUIFalagardWRBase"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -49,7 +49,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -66,14 +65,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../../lib/CEGUIBase_d.lib"
-				OutputFile="$(SolutionDir)lib\CEGUIFalagardWRBase_d.dll"
+				OutputFile="$(OutDir)/CEGUIFalagardWRBase_d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../../../lib;../../../../dependencies/lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CEGUIFalagardWRBase_d.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUIFalagardWRBase_d.lib"
 				TargetMachine="1"
 			/>
@@ -132,7 +129,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -148,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUIFalagardWRBase_Static_d.lib"
+				OutputFile="$(SolutionDir)lib/CEGUIFalagardWRBase_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -198,7 +194,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -223,8 +218,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUIFalagardWRBase.lib"
 				TargetMachine="1"
 			/>
@@ -283,7 +276,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -307,8 +299,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="../../../../lib/CEGUIFalagardWRBase.lib"
 				TargetMachine="1"
 			/>
@@ -367,7 +357,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 			/>
 			<Tool
@@ -383,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib\CEGUIFalagardWRBase_Static.lib"
+				OutputFile="$(SolutionDir)lib/CEGUIFalagardWRBase_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
