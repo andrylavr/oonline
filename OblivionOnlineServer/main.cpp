@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 	//TODO : Add multiple instancing here
 	GameServer *testGS;
 	testGS = new GameServer();
+	testGS->RunServer(); // that would advertise it, and perform GC on lua, etc
 	getc(stdin);
 	
 	return 0;

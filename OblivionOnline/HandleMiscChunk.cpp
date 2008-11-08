@@ -49,6 +49,10 @@ size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager*entities,InPa
 	{
 		gClient->GetIO() <<Error << "Incorrect Server Version " << *(chunkdata + 2) << "." << *(chunkdata +3) << "." <<*(chunkdata + 4) << endl;
 	}
+	if(*(chunkdata + 5) != GAME_OBLIVION)
+	{
+		gClient->GetIO() <<Error << "Server is not hosting an Oblivion game" <<*(chunkdata + 4) << endl;
+	}
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)

@@ -25,6 +25,8 @@ extern "C"
 	#include"lua/lauxlib.h"
 }
 #include "GameServer.h"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #define STARTUP_SCRIPT "ServerLaunch.lua"
 class LuaSystem
 {
@@ -44,4 +46,5 @@ private:
 	void DefaultSettings();
 	lua_State *m_Lua;
 	GameServer *m_GS;
+	boost::mutex lock;
 };

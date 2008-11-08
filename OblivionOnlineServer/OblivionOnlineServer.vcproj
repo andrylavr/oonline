@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="OblivionOnlineServer"
 	ProjectGUID="{9CEB2A39-13F4-499A-995C-2077F44177DF}"
 	RootNamespace="OblivionOnlineServer"
@@ -70,7 +70,7 @@
 				AdditionalDependencies="ws2_32.lib curllib_d.lib OOCommon_d.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(SolutionDir)\Lib\"
+				AdditionalLibraryDirectories="$(SolutionDir)\Lib\;&quot;$(BoostLibs)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -156,7 +156,7 @@
 				AdditionalDependencies="ws2_32.lib curllib.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)\Lib\"
+				AdditionalLibraryDirectories="$(SolutionDir)\Lib\;&quot;$(BoostLibs)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -190,9 +190,6 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
-		/>
-		<ProjectReference
 			ReferencedProjectIdentifier="{D398CA15-23DF-4207-9A4B-539BC8C8DFEC}"
 			RelativePathToProject="..\curl\curl-7.18.2\lib\curllib.vcproj"
 		/>
@@ -225,6 +222,26 @@
 				RelativePath=".\GameServer.h"
 				>
 			</File>
+			<Filter
+				Name="IO"
+				>
+				<File
+					RelativePath=".\ChatIOProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ChatIOProvider.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ScreenIOProvider.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ScreenIOProvider.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Scripting"
@@ -474,6 +491,10 @@
 			Name="Event"
 			>
 			<File
+				RelativePath=".\Event.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Event.h"
 				>
 			</File>
@@ -485,44 +506,60 @@
 				RelativePath=".\EventSystem.h"
 				>
 			</File>
-			<Filter
-				Name="Extendibility"
-				>
-				<File
-					RelativePath=".\Module.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Module.h"
-					>
-				</File>
-				<File
-					RelativePath=".\ModuleManager.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ModuleManager.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
-			Name="IO"
+			Name="Extendibility"
 			>
 			<File
-				RelativePath=".\ChatIOProvider.cpp"
+				RelativePath=".\ExternInterface.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ChatIOProvider.h"
+				RelativePath=".\Module.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ScreenIOProvider.cpp"
+				RelativePath=".\Module.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ScreenIOProvider.h"
+				RelativePath=".\ModuleManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ModuleManager.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="RemoteAdmin"
+			>
+			<File
+				RelativePath=".\AuthentificationProvider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CoreAdminModules.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ModuleAdminModule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerAdminModule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RemoteAdminModule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RemoteAdminServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RemoteAdminServer.h"
 				>
 			</File>
 		</Filter>

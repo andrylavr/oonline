@@ -63,7 +63,7 @@ TYPE#	Description
 14		Chat	. ANSI string
 15		Auth	. ANSI string Username , 512 bit SHA-512 
 16		Client Type. BYTE : 0 if passive , 1 if master client. Passive is assumed until further notice ;)
-17		Version .	SUPER , MAJOR AND MINOR as bytes
+17		Version .	SUPER , MAJOR AND MINOR as bytes. BYTE: GameID
 18		PlayerID . UINT32 Player ID - sent only by server
 19		Animation. BYTE Animation Group BYTE IsPlaying
 */
@@ -156,7 +156,7 @@ inline size_t GetMinChunkSize(PkgChunk type)
 	case ClientType:
 		return sizeof(BYTE);
 	case Version:
-		return 3*sizeof(BYTE);
+		return 4*sizeof(BYTE);
 	case PlayerID:
 		return sizeof(UINT32);
 	case Animation:
@@ -181,3 +181,6 @@ inline std::string ReadANSIString(BYTE* BaseStream,size_t maxlen)
 #define STATUS_OBJECT 0
 #define STATUS_NPC 1
 #define STATUS_PLAYER 2
+
+#define GAME_OBLIVION 1
+#define GAME_FALLOUT3 2

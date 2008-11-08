@@ -19,15 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "EventSystem.h"
 #include "GameServer.h"
-EventSystem::EventSystem(GameServer *GS)
+#include "Event.h"
+EventSystem::EventSystem(GameServer *GS) : DefaultEvents()
 {
 	m_server = GS;
 } 
 
 EventSystem::~EventSystem(void)
 {
-}
-Event * EventSystem::GetEventFromID(UINT32 Id)
-{
-	return NULL;
 }

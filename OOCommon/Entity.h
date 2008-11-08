@@ -16,11 +16,14 @@ GNU Affero General Public License for more details.
 #pragma once
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/signal.hpp>
 #include "Entity.h"
 #include "EntityManager.h"
 #include "EntityUpdateManager.h"
 #include <vector>
-
+#define AV_HEALTH 8
+#define AV_MAGICKA 9
+#define AV_FATIGUE 10
 class ChunkHandler;
 class Entity
 {
@@ -36,7 +39,6 @@ private:
 	bool m_TriggerEvents,m_IsInInterior;
 	BYTE  m_Status;
 	EntityManager *m_mgr;
-	Entity *m_MoveEvent,*m_ActorValueEvent,*CellChangeEvent,*m_DeathEvent;
 	std::string m_Name; // A std::string should not waste TOO much space 
 	//std::string m_Class;
 	inline void _Move(float PosX,float PosY,float PosZ)
@@ -96,11 +98,12 @@ private:
 			m_AnimationStatus[AnimationNo] = Status;
 	}
 public:
-	inline Entity(EntityManager *mgr,UINT32 refID,BYTE Status,bool TriggerEvents = false,bool GlobalSynch= false,
+	inline Entity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
-		lock(),m_Name(name)//,m_Class(classname)
+		lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
+		EventLifeChange()//,m_Class(classname)
 	{
 		lock.lock();
 		m_mgr = mgr;
@@ -216,6 +219,24 @@ public:
 		{
 			_SetActorValue(Class,Value);
 			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
+			if(ActorValue == AV_HEALTH)
+			{
+				EventLifeChange(this);
+				if(Value <= 0)
+					EventDeath(this);
+			}
+			else if(ActorValue == AV_MAGICKA)
+			{
+				EventMagicka(this);
+				if(Value <= 0)
+					EventMagickaEmpty(this);
+			}
+			else if(ActorValue == AV_FATIGUE)
+			{
+				EventFatigue(this);
+				if(Value <= 0)
+					EventFatigueEmpty(this);
+			}
 		}
 		lock.unlock();
 	}
@@ -327,6 +348,12 @@ public:
 	{
 		m_mgr->DeRegisterEntity(this);
 	}
-	bool TriggerEvents;//Used for script controlling NPCs
+	boost::signal<void(Entity *)>		EventLifeChange; //   value of Life
+	boost::signal<void(Entity *)>		EventDeath; 
+	boost::signal<void(Entity *)>		EventMagicka; // same as above
+	boost::signal<void(Entity *)>		EventMagickaEmpty; // same as above 
+	boost::signal<void(Entity *)>		EventFatigue; // same as above
+	boost::signal<void(Entity *)>		EventFatigueEmpty; // same as above
+	boost::signal<void(Entity *,std::string *)>	EventChat; // On Chat
 
 };

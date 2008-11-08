@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "NetworkSystem.h"
 #include "ChatIOProvider.h"
 #include "EventSystem.h"
+#include "ModuleManager.h"
+#include "RemoteAdminServer.h"
 #include <string>
 #include <sstream>
 #include "curl/curl.h"
@@ -39,8 +41,13 @@ GameServer::GameServer(void)
 	7. Entity Manager
 	8. ChatIOProvider Done
 	9. PartyLine ---
+	10. Module Manager
+	11. LUA OnLoad call
+	
+
 
 	Perhaps some other stuff
+	Finish of with a onload event
 	*/
 	m_script = new LuaSystem(this);
 	m_script->RunStartupScripts("ServerLaunch.lua");
@@ -57,7 +64,12 @@ GameServer::GameServer(void)
 	m_Netsystem->StartReceiveThreads();
 	m_IO->RegisterIOProvider(new ChatIOProvider(this,m_IOSys));
 	//In this thread we now run the server browser update
-	AdvertiseGameServer();
+	m_Modules = new ModuleManager(this);
+	m_Admin = new RemoteAdminServer(this);
+	m_script->RunScriptLine("OnLoad()");
+	m_Evt->DefaultEvents.EventBoot();
+	//m_script->PrintStatistics();
+	//AdvertiseGameServer();
 	
 }
 
@@ -66,13 +78,22 @@ GameServer::~GameServer(void)
 	/*
 	inverse order from construction
 	*/
+	delete m_Modules;
 	delete m_Netsystem;
 	delete m_Entities;
 	delete m_IO;
 	delete m_Evt;
 	delete m_script;
 }
-
+void GameServer::RunServer()
+{
+	while(1)
+	{
+		m_script->PrintStatistics();
+		Sleep(120000);// 2 minutes
+	}
+	//AdvertiseGameServer();
+}
 void GameServer::AdvertiseGameServer()
 {
 	return;
@@ -106,7 +127,8 @@ void GameServer::AdvertiseGameServer()
 				{
 					GetIO() << Error<< "CURL error" <<endl;
 				}
-				Sleep(120000);
+				m_script->PrintStatistics(); // performs garbage collection
+				Sleep(120000); //2 minutes
 			}
 			curl_easy_cleanup(curl);
 

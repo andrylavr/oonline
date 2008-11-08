@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "IOSystem.h"
 #include "GlobalDefines.h"
 #include "EntityManager.h"
+
 class LuaSystem;
 class NetworkSystem;
-
+class  ModuleManager;
+class RemoteAdminServer;
 class GameServer
 {
 public:
@@ -49,6 +51,10 @@ public:
 	{
 		return m_Netsystem;
 	}
+	ModuleManager *GetModules()
+	{
+		return m_Modules;
+	}
 	void DisplayBootupMessage();
 	void AdvertiseGameServer();
 protected:
@@ -58,4 +64,6 @@ protected:
 	EventSystem *m_Evt;
 	EntityManager *m_Entities;
 	NetworkSystem *m_Netsystem;
+	ModuleManager *m_Modules;
+	RemoteAdminServer *m_Admin;
 };

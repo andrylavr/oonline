@@ -63,7 +63,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	{
 		netsys->GetGS()->GetIO()<<BootMessage<<"TCP Bound to port " << port <<endl;
 	}
-	rc = listen(acceptSocket,4)==SOCKET_ERROR;
+	rc = listen(acceptSocket,4);
 	if(rc == SOCKET_ERROR)
 	{
 
@@ -102,8 +102,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 				rc = recv(i->second,(char *)data,PACKET_SIZE,0);
 				if(rc==0 || rc==SOCKET_ERROR)
 				{
-					netsys->PlayerDisconnect(i->first);
-					return; // These sockets will be read after the next select()
+					netsys->PlayerDisconnect(i->first); // These sockets will be read after the next select()
 				}	
 				else
 				{
@@ -251,6 +250,7 @@ bool NetworkSystem::PlayerDisconnect( UINT32 ID )
 		{
 			m_MasterClient = m_OutPackets.begin()->first;
 			m_OutPackets.begin()->second->AddChunk(m_MasterClient,true,GetMinChunkSize(ClientType),ClientType,&masterclient);
+			Send( m_OutPackets.begin()->first);
 			m_GS->GetIO()<<GameMessage<<"Selected new master client"<<m_MasterClient<<endl;
 		}
 		else

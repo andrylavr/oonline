@@ -34,6 +34,10 @@ public:
 		m_mgr = mgr;
 		m_net = netsys;
 	};
+	NetworkSystem *GetNetsys()
+	{
+		return m_net;
+	}
 	void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
 	void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
 	void GlobalSend(Entity *ent,bool Inbound );
