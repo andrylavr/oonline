@@ -21,10 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include "ioprovider.h"
 #include "GlobalDefines.h"
+void SetStdOutColor(int color);
 class ScreenIOProvider :
 	public IOProvider
 {
 public:
+	int TextColour[MaxLogLevel + 1];
 	ScreenIOProvider(IOSystem *parent,LogLevel LogTreshold);
 	~ScreenIOProvider(void);
 	static OO_TPROC_RET QueryProc(ScreenIOProvider *thisptr);
@@ -32,6 +34,7 @@ public:
 	{
 		if(LogLevel < m_threshold)
 			return false;
+		SetStdOutColor(TextColour[LogLevel]);
 		std::cout << Message ;
 		return true;
 	}

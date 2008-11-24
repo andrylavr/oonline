@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="PluginSample"
 	ProjectGUID="{A69D3D23-679D-4472-8312-2D9D0FCDC185}"
 	RootNamespace="PluginSample"
@@ -61,9 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				UseLibraryDependencyInputs="true"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\mod$(ProjectName).dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(BoostLibs)&quot;;&quot;$(SolutionDir)Libs\&quot;"
+				AdditionalLibraryDirectories="&quot;$(BoostLibs)&quot;;&quot;$(SolutionDir)Lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -136,9 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(SolutionDir)\bin\$(ProjectName).dll"
+				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\mod$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(BoostLibs)&quot;;&quot;$(SolutionDir)Libs\&quot;"
+				AdditionalLibraryDirectories="&quot;$(BoostLibs)&quot;;&quot;$(SolutionDir)Lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

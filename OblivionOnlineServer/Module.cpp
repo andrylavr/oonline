@@ -14,7 +14,20 @@ Module::Module(ModuleManager*mm, GameServer * gs,std::string Filename )
 	//(sizeof(void *) == sizeof(HMODULE)); //static assert to verify the Win32 define of HMODULE
 	Filename += ".dll";
 	m_data = (void *)LoadLibraryA(Filename.c_str());
+	if(!m_data)
+	{
+		m_gs->GetIO() << FatalError << "Cannot load .dll file"<< Filename <<endl;
+		TerminateProcess(GetCurrentProcess(),1);
+	}
 	callback = (InitialiseCallback) GetProcAddress((HMODULE)m_data,"OnLoad");
+	if(!callback)
+	{
+		if(!m_data)
+		{
+			m_gs->GetIO() << FatalError << "Cannot load function OnLoad from"<< Filename <<endl;
+			TerminateProcess(GetCurrentProcess(),1);
+		}
+	}
 #endif
 	plugin = callback(gs,VERSION_SUPER,VERSION_MAJOR,VERSION_MINOR);
 	m_gs->GetEventSys()->DefaultEvents.EventLoadModule(this); 

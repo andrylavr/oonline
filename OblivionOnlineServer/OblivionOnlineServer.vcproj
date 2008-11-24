@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="OblivionOnlineServer"
 	ProjectGUID="{9CEB2A39-13F4-499A-995C-2077F44177DF}"
 	RootNamespace="OblivionOnlineServer"
@@ -222,26 +222,6 @@
 				RelativePath=".\GameServer.h"
 				>
 			</File>
-			<Filter
-				Name="IO"
-				>
-				<File
-					RelativePath=".\ChatIOProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ChatIOProvider.h"
-					>
-				</File>
-				<File
-					RelativePath=".\ScreenIOProvider.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ScreenIOProvider.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Scripting"
@@ -563,6 +543,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="IO"
+			>
+			<File
+				RelativePath=".\ChatIOProvider.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ChatIOProvider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScreenIOProvider.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ScreenIOProvider.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\DefaultSettings.h"
 			>
@@ -570,6 +570,21 @@
 		<File
 			RelativePath=".\main.cpp"
 			>
+		</File>
+		<File
+			RelativePath=".\ServerLaunch.lua"
+			DeploymentContent="true"
+			FileType="5"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Copying File"
+					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

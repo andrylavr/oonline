@@ -37,7 +37,9 @@ enum LogLevel
 	Error,
 	FatalError,
 	PlayerChat,
-	AdminChat
+	AdminChat,
+	AdminCommand,
+	MaxLogLevel
 };
 class IOSystem : public std::streambuf
 {
@@ -72,6 +74,8 @@ private:
 	size_t m_buflen;
 	virtual int sync (void) 
 	{
+		if(m_buf[0] == '\0')
+			return 0;
 		lock.lock();
 		time_t timestamp = time(NULL);
 		std::string Message(ctime(&timestamp),24);
@@ -96,7 +100,7 @@ private:
 			Message +="[FatalError]";
 			break;
 		case PlayerChat:
-			Message +="";
+			Message +="[PlayerChat]";
 			break;
 		case AdminChat:
 			Message +="[Admin]";

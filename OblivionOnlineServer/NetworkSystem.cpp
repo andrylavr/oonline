@@ -33,9 +33,12 @@ NetworkSystem::~NetworkSystem(void)
 bool NetworkSystem::StartReceiveThreads()
 {
 	m_GS->GetIO()<<BootMessage<<"Starting receive threads"<< endl;
+	//TODO: Implement synchback
 #ifdef WIN32
 	_beginthread(TCPProc,0,(LPVOID) this);
+	Sleep(200); // allows TCP to bind
 	_beginthread(UDPProc,0,(LPVOID) this);
+	Sleep(200);
 #endif
 	m_MasterClient = 0;
 	return true;

@@ -20,6 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ScreenIOProvider::ScreenIOProvider(IOSystem *parent,LogLevel LogThreshold) : IOProvider(parent)
 {
 	m_threshold = LogThreshold;
+	TextColour[BootMessage] = FOREGROUND_BLUE | FOREGROUND_GREEN| FOREGROUND_RED | FOREGROUND_INTENSITY;
+	TextColour[SystemMessage] = FOREGROUND_BLUE | FOREGROUND_GREEN; // cyan
+	TextColour[GameMessage] = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY; // strong cyan
+	TextColour[Warning] = FOREGROUND_RED;
+	TextColour[Error] = FOREGROUND_RED | FOREGROUND_INTENSITY;
+	TextColour[FatalError] = FOREGROUND_RED | FOREGROUND_INTENSITY;
+	TextColour[PlayerChat] = FOREGROUND_GREEN;
+	TextColour[AdminChat] = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+	TextColour[AdminCommand] = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY;
+	TextColour[MaxLogLevel] = FOREGROUND_BLUE | FOREGROUND_GREEN| FOREGROUND_RED | FOREGROUND_INTENSITY;
+}
+void SetStdOutColor(int clr)
+{
+#ifdef WIN32
+	WORD color;
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO buf;
+	if(GetConsoleScreenBufferInfo(console,&buf))
+	{
+		color = (buf.wAttributes & 0xF0) + (clr & 0x0F);
+		SetConsoleTextAttribute(console,clr);
+	}
+	return;
+#else
+#warning "your platform does not support coloured output"
+#endif
 }
 OO_TPROC_RET ScreenIOProvider::QueryProc(ScreenIOProvider *thisptr)
 {
