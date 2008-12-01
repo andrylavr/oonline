@@ -250,6 +250,10 @@
 		<Filter
 			Name="Util"
 			>
+			<File
+				RelativePath=".\DefaultSettings.h"
+				>
+			</File>
 			<Filter
 				Name="lua"
 				>
@@ -564,7 +568,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\DefaultSettings.h"
+			RelativePath=".\ChangeLog.txt"
 			>
 		</File>
 		<File
@@ -573,7 +577,6 @@
 		</File>
 		<File
 			RelativePath=".\ServerLaunch.lua"
-			DeploymentContent="true"
 			FileType="5"
 			>
 			<FileConfiguration
@@ -581,8 +584,19 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					Description="Copying File"
-					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua"
+					Description="Copying Server startup"
+					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua&#x0D;&#x0A;"
+					Outputs="$(TargetDir)ServerLaunch.lua"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Copying Server startup"
+					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua&#x0D;&#x0A;"
+					Outputs="$(TargetDir)ServerLaunch.lua"
 				/>
 			</FileConfiguration>
 		</File>

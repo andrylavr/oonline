@@ -33,7 +33,7 @@ size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPack
 		retval = supposedlength;
 	message.append(" :");
 	message.append((char *)(chunkdata + 4),retval);
-
+	*IO << PlayerChat << message << endl;
 	for(map<UINT32,Entity *>::const_iterator i =  entities->GetPlayerList().begin(); i != entities->GetPlayerList().end() ; i++)
 	{
 		entities->GetUpdateMgr()->Chat(i->second,message,true);		
