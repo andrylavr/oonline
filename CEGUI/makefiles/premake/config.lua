@@ -18,7 +18,7 @@ CEGUI_IRR_SDK_VERSION = 14
 
 --- Lua version
 --- 50 is 5.0.x series.  51 is 5.1 (and above?)
-CEGUI_LUA_VER = 50
+CEGUI_LUA_VER = 51
 
 -------------
 -- Renderers

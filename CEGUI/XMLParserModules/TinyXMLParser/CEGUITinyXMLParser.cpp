@@ -35,6 +35,7 @@
 #include "CEGUIXMLHandler.h"
 #include "CEGUIXMLAttributes.h"
 #include "CEGUILogger.h"
+#include "CEGUIExceptions.h"
 #include CEGUI_TINYXML_H
 
 // Start of CEGUI namespace section
@@ -63,31 +64,47 @@ namespace CEGUI
         RawDataContainer rawXMLData;
         System::getSingleton().getResourceProvider()->loadRawDataContainer(filename, rawXMLData, resourceGroup);
 
-        // Create a buffer with the missing extra byte
+        // Create a buffer with extra bytes for a newline and a terminating null
         size_t size = rawXMLData.getSize();
-        char* buf = new char[size + 1];
+        char* buf = new char[size + 2];
         memcpy(buf, rawXMLData.getDataPtr(), size);
-        buf[size] = 0;
+        // PDT: The addition of the newline is a kludge to resolve an issue
+        // whereby parse returns 0 if the xml file has no newline at the end but
+        // is otherwise well formed.
+        buf[size] = '\n';
+        buf[size+1] = 0;
 
-		try
-		{
-			// Parse the document
-			CEGUI_TINYXML_NAMESPACE::TiXmlDocument doc;
-			doc.Parse((const char*)buf);
-			const CEGUI_TINYXML_NAMESPACE::TiXmlElement* currElement = doc.RootElement();
-			if (currElement)
-			{
-				// function called recursively to parse xml data
-				processElement(currElement);
-			} // if (currElement)
-		}
-		catch(...)
-		{
-			delete [] buf;
-			System::getSingleton().getResourceProvider()->unloadRawDataContainer(rawXMLData);
-			throw;
-		}
-		// Free memory
+        // Parse the document
+        CEGUI_TINYXML_NAMESPACE::TiXmlDocument doc;
+        if (!doc.Parse((const char*)buf))
+        {
+            // error detected, cleanup out buffers
+            delete[] buf;
+            System::getSingleton().getResourceProvider()->
+                unloadRawDataContainer(rawXMLData);
+            // throw exception
+            throw FileIOException("TinyXMLParser: an error occurred while "
+                                  "parsing the XML document '" + filename +
+                                  "' - check it for potential errors!.");
+        }
+
+        const CEGUI_TINYXML_NAMESPACE::TiXmlElement* currElement = doc.RootElement();
+        if (currElement)
+        {
+            try
+            {
+                // function called recursively to parse xml data
+                processElement(currElement);
+            }
+            catch(...)
+            {
+                delete [] buf;
+                System::getSingleton().getResourceProvider()->unloadRawDataContainer(rawXMLData);
+                throw;
+            }
+        } // if (currElement)
+
+        // Free memory
         delete [] buf;
         System::getSingleton().getResourceProvider()->unloadRawDataContainer(rawXMLData);
     }

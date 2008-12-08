@@ -12,6 +12,9 @@
    or later. */
 #undef CEGUI_IRR_SDK_VERSION
 
+/* Define to have the DirectFB CEGUI renderer available in the samples */
+#undef CEGUI_SAMPLES_USE_DIRECTFB
+
 /* Define to have a GTK2 based dialog used for renderer selection in the
    samples */
 #undef CEGUI_SAMPLES_USE_GTK2

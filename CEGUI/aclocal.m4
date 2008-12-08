@@ -25,7 +25,7 @@ AC_DEFUN([CEGUI_CHECK_WANTS_SAMPLES],[
         [cegui_enable_samples=$enableval],[cegui_enable_samples=yes])
 
     if test x$cegui_enable_samples = xyes; then
-        if test x$cegui_samples_use_ogre = xyes || test x$cegui_samples_use_irrlicht = xyes || test x$cegui_samples_use_opengl = xyes; then
+        if test x$cegui_samples_use_ogre = xyes || test x$cegui_samples_use_irrlicht = xyes || test x$cegui_samples_use_opengl = xyes || test x$cegui_samples_use_directfb; then
             cegui_build_samples=yes
             AC_MSG_NOTICE([Samples framework and applications are enabled.])
             CEGUI_SAMPLES_CFLAGS='-DCEGUI_SAMPLE_DATAPATH="\"$(datadir)/$(PACKAGE)"\"'
@@ -217,6 +217,33 @@ AC_DEFUN([CEGUI_ENABLE_OGRE_RENDERER], [
 	AC_SUBST(OIS_LIBS)
     AC_SUBST(CEGUIOGRE_CFLAGS)
     AC_SUBST(CEGUIOGRE_LIBS)
+])
+
+AC_DEFUN([CEGUI_ENABLE_DIRECTFB_RENDERER], [
+    PKG_CHECK_MODULES(directfb, directfb >= 1.0.0, [cegui_found_directfb=yes], [cegui_found_directfb=no])
+    AC_ARG_ENABLE([directfb-renderer], AC_HELP_STRING([--disable-directfb-renderer], [Disable the DirectFB renderer]),
+        [cegui_enable_directfb=$enableval],[cegui_enable_directfb=yes])
+
+    dnl decide if we will actually build the DirectFB Renderer
+    if test x$cegui_enable_directfb = xyes && test x$cegui_found_directfb = xyes; then
+        cegui_enable_directfb=yes
+    else
+        cegui_enable_directfb=no
+    fi
+
+    if test x$cegui_enable_directfb = xyes; then
+        cegui_samples_use_directfb=yes
+        AC_DEFINE(CEGUI_SAMPLES_USE_DIRECTFB, [], [Define to have the DirectFB CEGUI renderer available in the samples])
+        AC_MSG_NOTICE([Use of DirectFB in Samples is enabled])
+    else
+        cegui_samples_use_directfb=no
+        AC_MSG_NOTICE([DirectFB renderer disabled])
+    fi
+
+    AM_CONDITIONAL([BUILD_DIRECTFB_RENDERER], [test x$cegui_enable_directfb = xyes])
+    AM_CONDITIONAL([CEGUI_SAMPLES_USE_DIRECTFB], [test x$cegui_samples_use_directfb = xyes])
+    AC_SUBST(directfb_CFLAGS)
+    AC_SUBST(directfb_LIBS)
 ])
 
 AC_DEFUN([CEGUI_ENABLE_IRRLICHT_RENDERER], [
@@ -426,19 +453,19 @@ to load a custom made image codec module as the default.]),
         AC_SEARCH_LIBS(glutInit, glut, cegui_found_lib_glut=yes, cegui_found_lib_glut=no)
         OpenGL_CFLAGS="$X_CFLAGS"
         OpenGL_LIBS=$LIBS
-
-        dnl Deal with possibility / option for external GLEW lib
-        AC_ARG_ENABLE([external-glew], AC_HELP_STRING([--disable-external-glew], [Disables the use of any external GLEW library, forcing the use of the version that accompanies CEGUI.]),
-            [cegui_use_external_glew=$enableval], [cegui_use_external_glew=yes])
-        if test x$cegui_use_external_glew = xyes; then
-            CEGUI_CHECK_GLEW([GLEW],
-                [cegui_found_glew=yes; OpenGL_CFLAGS="$OpenGL_CFLAGS $GLEW_CFLAGS"; OpenGL_LIBS="OpenGL_LIBS $GLEW_LIBS"],
-                [cegui_found_glew=no])
-        else
-            cegui_found_glew=no
-        fi
         ;;
     esac
+
+    dnl Deal with possibility / option for external GLEW lib
+    AC_ARG_ENABLE([external-glew], AC_HELP_STRING([--disable-external-glew], [Disables the use of any external GLEW library, forcing the use of the version that accompanies CEGUI.]),
+        [cegui_use_external_glew=$enableval], [cegui_use_external_glew=yes])
+    if test x$cegui_use_external_glew = xyes; then
+        CEGUI_CHECK_GLEW([GLEW],
+            [cegui_found_glew=yes; OpenGL_CFLAGS="$OpenGL_CFLAGS $GLEW_CFLAGS"; OpenGL_LIBS="OpenGL_LIBS $GLEW_LIBS"],
+            [cegui_found_glew=no])
+    else
+        cegui_found_glew=no
+    fi
 
     LIBS="$cegui_saved_LIBS"
     CFLAGS="$cegui_saved_CFLAGS"
@@ -1039,16 +1066,14 @@ fi])
 # _PKG_CONFIG([VARIABLE], [COMMAND], [MODULES])
 # ---------------------------------------------
 m4_define([_PKG_CONFIG],
-[if test -n "$PKG_CONFIG"; then
-    if test -n "$$1"; then
-        pkg_cv_[]$1="$$1"
-    else
-        PKG_CHECK_EXISTS([$3],
-                         [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`],
-			 [pkg_failed=yes])
-    fi
-else
-	pkg_failed=untried
+[if test -n "$$1"; then
+    pkg_cv_[]$1="$$1"
+ elif test -n "$PKG_CONFIG"; then
+    PKG_CHECK_EXISTS([$3],
+                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`],
+		     [pkg_failed=yes])
+ else
+    pkg_failed=untried
 fi[]dnl
 ])# _PKG_CONFIG
 
@@ -1092,9 +1117,9 @@ See the pkg-config man page for more details.])
 if test $pkg_failed = yes; then
         _PKG_SHORT_ERRORS_SUPPORTED
         if test $_pkg_short_errors_supported = yes; then
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "$2"`
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "$2" 2>&1`
         else 
-	        $1[]_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "$2"`
+	        $1[]_PKG_ERRORS=`$PKG_CONFIG --print-errors "$2" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$$1[]_PKG_ERRORS" >&AS_MESSAGE_LOG_FD
