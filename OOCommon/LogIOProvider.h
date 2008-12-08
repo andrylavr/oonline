@@ -34,6 +34,7 @@ public:
 			fwrite(ctime(&timestamp),24,1,File);
 			fputc((int)'\t',File);
 			fprintf(File,"Opened Log File");
+			fclose(File);
 		}
 		m_filename = FileName;
 		m_threshold = threshold;
@@ -48,9 +49,10 @@ public:
 			fputc((int)'\t',File);
 			fprintf(File,"Closing Log");
 			fputc((int)'\n',File);
+			fclose(File);
 		}
 	}
-	bool DoOutput(LogLevel LogLevel,std::string Message)
+	bool DoOutput(LogLevel LogLevel,std::string & Message)
 	{
 		if(LogLevel < m_threshold)
 			return false;
@@ -59,6 +61,7 @@ public:
 		{
 			fwrite(Message.c_str(),Message.length(),1,File);
 			fputc((int)'\n',File);
+			fclose(File);
 		}
 		return true;
 	}

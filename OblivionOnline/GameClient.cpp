@@ -63,7 +63,7 @@ int GameClient::Deinitialize()
 	return 1;
 }
 
-int GameClient::Connect()
+bool GameClient::Connect()
 {
 
 	char IP[15] = "";
@@ -79,7 +79,7 @@ int GameClient::Connect()
 		if(!Realmlist)
 		{
 			*IO << Error << "File realmlist.wth could not be found" << endl;
-			return -1;
+			return false;
 		}
 		while(!feof(Realmlist))
 		{
@@ -95,6 +95,7 @@ int GameClient::Connect()
 			if(rc == SOCKET_ERROR)
 			{
 				*IO << "Error" << WSAGetLastError() << " establishing connection " <<endl;
+				return false;
 			}
 			else 
 			{
@@ -113,7 +114,7 @@ int GameClient::Connect()
 	return true;
 }
 
-int GameClient::Disconnect()
+bool GameClient::Disconnect()
 {
 	if(bIsConnected)
 	{
@@ -123,5 +124,5 @@ int GameClient::Disconnect()
 	}else{
 		*IO << BootMessage << " You are not connected" << endl;
 	}
-	return 0;
+	return true;
 }

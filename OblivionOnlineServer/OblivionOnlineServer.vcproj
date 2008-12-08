@@ -577,6 +577,7 @@
 		</File>
 		<File
 			RelativePath=".\ServerLaunch.lua"
+			DeploymentContent="true"
 			FileType="5"
 			>
 			<FileConfiguration
@@ -585,7 +586,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying Server startup"
-					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua&#x0D;&#x0A;"
+					CommandLine="copy &quot;$(InputPath)&quot; &quot;$(TargetDir)ServerLaunch.lua&quot;"
 					Outputs="$(TargetDir)ServerLaunch.lua"
 				/>
 			</FileConfiguration>
@@ -595,7 +596,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying Server startup"
-					CommandLine="cp $(InputPath) $(TargetDir)ServerLaunch.lua&#x0D;&#x0A;"
+					CommandLine="copy &quot;$(InputPath)&quot; &quot;$(TargetDir)ServerLaunch.lua&quot;"
 					Outputs="$(TargetDir)ServerLaunch.lua"
 				/>
 			</FileConfiguration>

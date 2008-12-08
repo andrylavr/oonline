@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "UserInterface.h"
 bool Cmd_MPConnect_Execute(COMMAND_ARGS)
 {
-	gClient->Connect();	
-	return false;
+	
+	return gClient->Connect();	
 }
 
 CommandInfo kMPConnectCommand =

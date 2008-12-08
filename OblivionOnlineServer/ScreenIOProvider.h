@@ -30,7 +30,7 @@ public:
 	ScreenIOProvider(IOSystem *parent,LogLevel LogTreshold);
 	~ScreenIOProvider(void);
 	static OO_TPROC_RET QueryProc(ScreenIOProvider *thisptr);
-	virtual bool DoOutput(LogLevel LogLevel,std::string Message)
+	virtual bool DoOutput(LogLevel LogLevel,std::string & Message)
 	{
 		if(LogLevel < m_threshold)
 			return false;

@@ -30,8 +30,8 @@ public:
 	~GameClient(void);
 	int Initialize();
 	int Deinitialize();
-	int Connect();
-	int Disconnect();
+	bool Connect();
+	bool Disconnect();
 	IOStream &GetIO() 
 	{
 		return *IO;

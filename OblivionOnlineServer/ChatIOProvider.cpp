@@ -27,7 +27,7 @@ ChatIOProvider::~ChatIOProvider(void)
 
 }
 
-bool ChatIOProvider::DoOutput( LogLevel LogLevel,std::string Message )
+bool ChatIOProvider::DoOutput( LogLevel LogLevel,std::string  & Message )
 {
 	BYTE * data = new BYTE[Message.length()+ 2];
 	*(UINT16 *)data = (UINT16)Message.length(); 

@@ -46,7 +46,7 @@ class IOSystem : public std::streambuf
 public:
 	boost::mutex lock;
 	LogLevel DefaultLogLevel;
-	IOSystem() : lock() ,m_providers()
+	IOSystem() : lock() ,m_providers(),std::streambuf()
 	{
 		DefaultLogLevel = LogLevel::BootMessage;
 		m_buf = new char[1024];
@@ -55,7 +55,7 @@ public:
 		//m_providers.clear();
 	}
 	~IOSystem(void);
-	bool DoOutput(LogLevel Level,std::string Message);
+	bool DoOutput(LogLevel Level,std::string & Message);
 	bool DoOutput(LogLevel Level,char * Message)
 	{
 		return DoOutput(Level,std::string(Message));
@@ -72,52 +72,7 @@ protected:
 private:
 	char *m_buf;
 	size_t m_buflen;
-	virtual int sync (void) 
-	{
-		if(m_buf[0] == '\0')
-			return 0;
-		lock.lock();
-		time_t timestamp = time(NULL);
-		std::string Message(ctime(&timestamp),24);
-		switch(DefaultLogLevel)
-		{
-		case BootMessage:
-			Message +="[BootMessage]";
-			break;
-		case Error:
-			Message +="[Error]";
-			break;
-		case SystemMessage:
-			Message +="[SystemMessage]";
-			break;
-		case GameMessage:
-			Message +="[GameMessage]";
-			break;
-		case Warning:
-			Message +="[Warning]";
-			break;
-		case FatalError:
-			Message +="[FatalError]";
-			break;
-		case PlayerChat:
-			Message +="[PlayerChat]";
-			break;
-		case AdminChat:
-			Message +="[Admin]";
-			break;
-		default:
-			Message +="[unknown]";
-			break;
-		}
-		Message.append(pbase(),pptr() - pbase());
-		int ret = (int) DoOutput(DefaultLogLevel,Message);
-		DefaultLogLevel = LogLevel::SystemMessage;
-		// reset the buffer
-		m_buf[0] = '\0';
-		setp(pbase(), epptr());
-		lock.unlock();
-		return 0;
-	}
+	virtual int sync (void);
 	int overflow (int c) {
 		lock.lock();
 		// allocate a new buffer and copy
