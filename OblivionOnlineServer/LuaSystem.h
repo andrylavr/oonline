@@ -38,6 +38,8 @@ public:
 	lua_Number GetNumeric(std::string Name);
 	lua_Integer GetInteger(std::string Name);
 	std::string GetString(std::string Name);
+	lua_CFunction GetCFunction(std::string Name);
+	void SetFunction(std::string Name,lua_CFunction value);
 	void SetNumeric(std::string Name,lua_Number value);
 	void SetInteger(std::string Name,lua_Integer value);	
 	void SetString(std::string Name,std::string Value);

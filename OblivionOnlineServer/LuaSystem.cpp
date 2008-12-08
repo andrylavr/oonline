@@ -72,6 +72,13 @@ lua_Integer LuaSystem::GetInteger(std::string Name)
 	lock.unlock();
 	return lua_tointeger(m_Lua,lua_gettop(m_Lua));
 }
+lua_CFunction LuaSystem::GetFunction(std::Name)
+{
+	lock.lock();
+	lua_getglobal(m_Lua,Name.c_str());
+	lock.unlock();
+	return lua_tocfunction(m_Lua,lua_gettop(m_Lua));
+}
 std::string LuaSystem::GetString(std::string Name)
 {
 	//TODO: Locking here. 
@@ -104,6 +111,13 @@ void LuaSystem::SetString(std::string Name, std::string value)
 {
 	lock.lock();
 	lua_pushstring(m_Lua,value.c_str());
+	lua_setglobal(m_Lua,Name.c_str());
+	lock.unlock();
+}
+void LuaSystem::SetFunction(std::string Name,lua_CFunction value);
+{
+	lock.lock();
+	lua_pushcfunction(m_Lua,value);
 	lua_setglobal(m_Lua,Name.c_str());
 	lock.unlock();
 }
