@@ -7,7 +7,7 @@ class ConfigurationNode
 public:
 	
 };
-class Configuration : ConfigurationNode[]
+class Configuration : ConfigurationNode
 {
 public:
 	Configuration(void);

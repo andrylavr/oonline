@@ -29,7 +29,7 @@ size_t ChunkHandler::HandleActorValueChunk(IOStream *IO,EntityManager *entities,
 		(*IO)<<Error<<"Error handling actor value chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetActorValue(*(chunkdata+2),*(INT16 *)(chunkdata + 3));
+	ent->SetActorValue(*(chunkdata+2),*(INT16 *)(chunkdata + 3),true);
 	return GetMinChunkSize(PkgChunk::ActorValue) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleGenderChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
@@ -40,7 +40,7 @@ size_t ChunkHandler::HandleGenderChunk(IOStream *IO,EntityManager *entities,InPa
 		(*IO)<<Error<<"Error handling gender chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetFemale(*(chunkdata+2));
+	ent->SetFemale(*(chunkdata+2),true);
 	return GetMinChunkSize(PkgChunk::Gender) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleRaceChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
@@ -51,7 +51,7 @@ size_t ChunkHandler::HandleRaceChunk(IOStream *IO,EntityManager *entities,InPack
 		(*IO)<<Error<<"Error handling race chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetRace(*(UINT32 *)(chunkdata + 2));
+	ent->SetRace(*(UINT32 *)(chunkdata + 2),true);
 	return GetMinChunkSize(PkgChunk::Race) + sizeof(unsigned short);
 }
 
@@ -63,7 +63,7 @@ size_t ChunkHandler::HandleClassChunk(IOStream *IO,EntityManager *entities,InPac
 		(*IO)<<Error<<"Error handling class chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetClassName(ReadANSIString(chunkdata + 2,len-2));
+	ent->SetClassName(ReadANSIString(chunkdata + 2,len-2),true);
 	return ent->ClassName().length() + 2 + sizeof(unsigned short);//TODO: think of more clever way to handle strings
 }
 size_t ChunkHandler::HandleNameChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
@@ -74,7 +74,7 @@ size_t ChunkHandler::HandleNameChunk(IOStream *IO,EntityManager *entities,InPack
 		(*IO)<<Error<<"Error handling name chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetName(ReadANSIString(chunkdata + 2,len-2));
+	ent->SetName(ReadANSIString(chunkdata + 2,len-2),true);
 	return ent->Name().length() + 2 + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleEquipChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
@@ -85,6 +85,6 @@ size_t ChunkHandler::HandleEquipChunk(IOStream *IO,EntityManager *entities,InPac
 		(*IO)<<Error<<"Error handling Equip chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetEquip(*(BYTE*)(chunkdata + 2),*(UINT32 *)(chunkdata + 3));
+	ent->SetEquip(*(BYTE*)(chunkdata + 2),*(UINT32 *)(chunkdata + 3),true);
 	return GetMinChunkSize(PkgChunk::Equip)  + sizeof(unsigned short);
 }

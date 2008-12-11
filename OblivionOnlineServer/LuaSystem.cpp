@@ -72,7 +72,7 @@ lua_Integer LuaSystem::GetInteger(std::string Name)
 	lock.unlock();
 	return lua_tointeger(m_Lua,lua_gettop(m_Lua));
 }
-lua_CFunction LuaSystem::GetFunction(std::Name)
+lua_CFunction LuaSystem::GetFunction(std::string Name)
 {
 	lock.lock();
 	lua_getglobal(m_Lua,Name.c_str());
@@ -114,7 +114,7 @@ void LuaSystem::SetString(std::string Name, std::string value)
 	lua_setglobal(m_Lua,Name.c_str());
 	lock.unlock();
 }
-void LuaSystem::SetFunction(std::string Name,lua_CFunction value);
+void LuaSystem::SetFunction(std::string Name,lua_CFunction value)
 {
 	lock.lock();
 	lua_pushcfunction(m_Lua,value);

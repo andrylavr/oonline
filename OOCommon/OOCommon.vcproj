@@ -150,6 +150,10 @@
 			Name="src"
 			>
 			<File
+				RelativePath=".\Configuration.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EntityManager.cpp"
 				>
 			</File>
@@ -165,6 +169,10 @@
 		<Filter
 			Name="include"
 			>
+			<File
+				RelativePath=".\Configuration.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Entity.h"
 				>

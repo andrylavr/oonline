@@ -29,7 +29,7 @@ size_t ChunkHandler::HandlePositionChunk(IOStream *IO,EntityManager *entities,In
 		return 0;
 	}	
 	//(*IO)<<GameMessage<<"Entity "<<FormID<<" updated its position to "<<floats[0]<<' '<<floats[1]<<' '<<floats[2]<<' '<<floats[3]<<' '<<floats[4]<<' '<<floats[5]<<"in cell "<<ent->CellID()<<endl;
-	ent->MoveNRot(floats[0],floats[1],floats[2],floats[3],floats[4],floats[5]);
+	ent->MoveNRot(floats[0],floats[1],floats[2],floats[3],floats[4],floats[5],true);
 	return GetMinChunkSize(PkgChunk::Position) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleCellIDChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
@@ -40,7 +40,7 @@ size_t ChunkHandler::HandleCellIDChunk(IOStream *IO,EntityManager *entities,InPa
 		(*IO)<<Error<<"Error handling CellID chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetCell(*(UINT32*)(chunkdata +2),(*(chunkdata + 6)) == 1);
+	ent->SetCell(*(UINT32*)(chunkdata +2),(*(chunkdata + 6)) == 1,true);
 	return GetMinChunkSize(PkgChunk::CellID) + sizeof(unsigned short);
 }
 
@@ -55,7 +55,7 @@ size_t ChunkHandler::HandleAnimationChunk(IOStream *IO,EntityManager *entities,I
 		(*IO)<<Error<<"Error handling Animation chunk: Entity not registered"<< endl;
 		return 0;
 	}	
-	ent->SetAnimation(AnimationID,AnimStatus);
+	ent->SetAnimation(AnimationID,AnimStatus,true);
 	//(*IO)<<LogLevel::SystemMessage<<"Animation State changed Entity : " << FormID<<" Status "<< (unsigned short)Status<< "animation "<< AnimationID << " On /Off " << AnimStatus;  
 	return GetMinChunkSize(PkgChunk::Animation) + sizeof(unsigned short);
 }
