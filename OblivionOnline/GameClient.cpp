@@ -35,6 +35,7 @@ int GameClient::Initialize()
 	*IO << "OblivionOnline connecting" <<endl;
 	*IO <<"Initializing GUI" <<endl;
 	InitialiseUI();
+	bIsInitialized = true;
 	//Entities->DeleteEntities();
 	TotalPlayers = 0;
 	for(int i=0; i<MAXCLIENTS; i++)

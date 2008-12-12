@@ -240,30 +240,30 @@
 					RelativePath=".\StatChunkHandler.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="NetSend"
-				>
-				<File
-					RelativePath=".\NetSend.h"
+				<Filter
+					Name="NetSend"
 					>
-				</File>
-				<File
-					RelativePath=".\NetSendActorValue.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendChat.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendEquip.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendPosition.cpp"
-					>
-				</File>
+					<File
+						RelativePath=".\NetSend.h"
+						>
+					</File>
+					<File
+						RelativePath=".\NetSendActorValue.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\NetSendChat.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\NetSendEquip.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\NetSendPosition.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<File

@@ -39,7 +39,7 @@ bool NetSendEquip( OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE Slot,UINT32 
 {
 	BYTE data[5];
 	data[0] = Slot;
-	*(( UINT32 *)data + 1) = EquipID;
+	*(( UINT32 *)(data + 1)) = EquipID;
 	outnet->AddChunk(FormID,Status,GetMinChunkSize(Equip),Equip,data);
 	return true;
 }
