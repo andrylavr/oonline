@@ -145,226 +145,222 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="lua_src"
 			>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lapi.c"
+				RelativePath="..\OOCommon\lua\lapi.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lauxlib.c"
+				RelativePath="..\OOCommon\lua\lapi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lbaselib.c"
+				RelativePath="..\OOCommon\lua\lauxlib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lcode.c"
+				RelativePath="..\OOCommon\lua\lauxlib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldblib.c"
+				RelativePath="..\OOCommon\lua\lbaselib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldebug.c"
+				RelativePath="..\OOCommon\lua\lcode.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldo.c"
+				RelativePath="..\OOCommon\lua\lcode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldump.c"
+				RelativePath="..\OOCommon\lua\ldblib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lfunc.c"
+				RelativePath="..\OOCommon\lua\ldebug.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lgc.c"
+				RelativePath="..\OOCommon\lua\ldebug.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\linit.c"
+				RelativePath="..\OOCommon\lua\ldo.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\liolib.c"
+				RelativePath="..\OOCommon\lua\ldo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\llex.c"
+				RelativePath="..\OOCommon\lua\ldump.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lmathlib.c"
+				RelativePath="..\OOCommon\lua\lfunc.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lmem.c"
+				RelativePath="..\OOCommon\lua\lfunc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\loadlib.c"
+				RelativePath="..\OOCommon\lua\lgc.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lobject.c"
+				RelativePath="..\OOCommon\lua\lgc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lopcodes.c"
+				RelativePath="..\OOCommon\lua\linit.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\loslib.c"
+				RelativePath="..\OOCommon\lua\liolib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lparser.c"
+				RelativePath="..\OOCommon\lua\llex.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lstate.c"
+				RelativePath="..\OOCommon\lua\llex.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lstring.c"
+				RelativePath="..\OOCommon\lua\llimits.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lstrlib.c"
+				RelativePath="..\OOCommon\lua\lmathlib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ltable.c"
+				RelativePath="..\OOCommon\lua\lmem.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ltablib.c"
+				RelativePath="..\OOCommon\lua\lmem.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ltm.c"
+				RelativePath="..\OOCommon\lua\loadlib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lundump.c"
+				RelativePath="..\OOCommon\lua\lobject.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lvm.c"
+				RelativePath="..\OOCommon\lua\lobject.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lzio.c"
+				RelativePath="..\OOCommon\lua\lopcodes.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\print.c"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-			<File
-				RelativePath="..\OblivionOnlineServer\lua\lapi.h"
+				RelativePath="..\OOCommon\lua\lopcodes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lauxlib.h"
+				RelativePath="..\OOCommon\lua\loslib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lcode.h"
+				RelativePath="..\OOCommon\lua\lparser.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldebug.h"
+				RelativePath="..\OOCommon\lua\lparser.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ldo.h"
+				RelativePath="..\OOCommon\lua\lstate.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lfunc.h"
+				RelativePath="..\OOCommon\lua\lstate.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lgc.h"
+				RelativePath="..\OOCommon\lua\lstring.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\llex.h"
+				RelativePath="..\OOCommon\lua\lstring.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\llimits.h"
+				RelativePath="..\OOCommon\lua\lstrlib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lmem.h"
+				RelativePath="..\OOCommon\lua\ltable.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lobject.h"
+				RelativePath="..\OOCommon\lua\ltable.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lopcodes.h"
+				RelativePath="..\OOCommon\lua\ltablib.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lparser.h"
+				RelativePath="..\OOCommon\lua\ltm.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lstate.h"
+				RelativePath="..\OOCommon\lua\ltm.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lstring.h"
+				RelativePath="..\OOCommon\lua\lua.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ltable.h"
+				RelativePath="..\OOCommon\lua\luaconf.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\ltm.h"
+				RelativePath="..\OOCommon\lua\lualib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lua.h"
+				RelativePath="..\OOCommon\lua\lundump.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\luaconf.h"
+				RelativePath="..\OOCommon\lua\lundump.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lualib.h"
+				RelativePath="..\OOCommon\lua\lvm.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lundump.h"
+				RelativePath="..\OOCommon\lua\lvm.h"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lvm.h"
+				RelativePath="..\OOCommon\lua\lzio.c"
 				>
 			</File>
 			<File
-				RelativePath="..\OblivionOnlineServer\lua\lzio.h"
+				RelativePath="..\OOCommon\lua\lzio.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OOCommon\lua\Makefile"
+				>
+			</File>
+			<File
+				RelativePath="..\OOCommon\lua\print.c"
 				>
 			</File>
 		</Filter>
