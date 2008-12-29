@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUIFalagardWRBase_Static_d.lib"
+				OutputFile="$(OutDir)/CEGUIFalagardWRBase_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -372,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUIFalagardWRBase_Static.lib"
+				OutputFile="$(OutDir)/CEGUIFalagardWRBase_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

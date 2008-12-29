@@ -1,23 +1,27 @@
-Fri Dec 12 20:23:17 2008	Opened Log FileFri Dec 12 20:23:17 2008[BootMessage]Starting receive threads
+Sun Dec 28 14:48:32 2008	Opened Log FileSun Dec 28 14:48:32 2008[BootMessage]Starting receive threads
 
-Fri Dec 12 20:23:17 2008[BootMessage]TCP Bound to port 41805
+Sun Dec 28 14:48:32 2008[BootMessage]TCP Bound to port 41805
 
-Fri Dec 12 20:23:17 2008[BootMessage]TCP listening
+Sun Dec 28 14:48:32 2008[BootMessage]TCP listening
 
-Fri Dec 12 20:23:17 2008[BootMessage]UDP Bound to port 41805
+Sun Dec 28 14:48:32 2008[BootMessage]UDP Bound to port 41805
 
-Fri Dec 12 20:23:18 2008[BootMessage]and we can also use the real IO system
+Sun Dec 28 14:48:32 2008[BootMessage]Loading Remote Admin ServerTCP listening on Remote Admin
 
-Fri Dec 12 20:23:18 2008[BootMessage]Module OblivionOnline Test mod Version 1 (useless release ) by Masterfreek64 doesn't want to admit itsuccessfully loaded from file modPluginSample.dll
+Sun Dec 28 14:48:32 2008[SystemMessage]
+Sun Dec 28 14:48:32 2008[BootMessage]Module OblivionOnline Test mod Version 1 (useless release ) by Masterfreek64 doesn't want to admit itsuccessfully loaded from file modPluginSample.dll
 
-Fri Dec 12 20:23:18 2008[GameMessage]Module is really ready----
+Sun Dec 28 14:48:32 2008[GameMessage]Module is really ready----
 
-Fri Dec 12 20:23:18 2008[SystemMessage]
-Fri Dec 12 20:23:18 2008[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7665
+Sun Dec 28 14:48:32 2008[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7665
 
-Fri Dec 12 20:25:18 2008[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7665
+Sun Dec 28 14:50:32 2008[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7665
 
-Fri Dec 12 20:25:19 2008[GameMessage]New player0joined from address127.0.0.1:51112
+Sun Dec 28 14:51:21 2008[GameMessage]New player0joined from address127.0.0.1:50368
 
-Fri Dec 12 20:25:19 2008[GameMessage]Selected new master client0
+Sun Dec 28 14:51:21 2008[GameMessage]Selected new master client0
+
+Sun Dec 28 14:51:32 2008[GameMessage]Client 0disconnected
+
+Sun Dec 28 14:51:32 2008[GameMessage]We now have0players
 

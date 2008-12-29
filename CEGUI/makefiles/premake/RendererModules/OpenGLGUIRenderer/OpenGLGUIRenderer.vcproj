@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="OpenGLGUIRenderer"
-	ProjectGUID="{BBD7B061-4842-6B46-B6B1-AF847A845B70}"
+	ProjectGUID="{F0024367-1751-A341-B590-A571421A13FC}"
 	RootNamespace="OpenGLGUIRenderer"
 	Keyword="Win32Proj"
 	>

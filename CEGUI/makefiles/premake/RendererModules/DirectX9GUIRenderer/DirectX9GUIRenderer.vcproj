@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -121,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;_DEBUG;CEGUI_STATIC;TOLUA_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/DirectX9GUIRenderer_Static_d.lib"
+				OutputFile="$(OutDir)/DirectX9GUIRenderer_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -187,7 +187,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -269,7 +269,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -350,7 +350,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)include/&quot;"
+				AdditionalIncludeDirectories="../../../../include;../../../../dependencies/include;../../../../RendererModules/DirectX9GUIRenderer/;&quot;$(DXSDK_DIR)/include/&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H;DIRECTX9_GUIRENDERER_EXPORTS;CEGUI_STATIC;TOLUA_STATIC"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -372,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/DirectX9GUIRenderer_Static.lib"
+				OutputFile="$(OutDir)/DirectX9GUIRenderer_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

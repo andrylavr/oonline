@@ -123,8 +123,8 @@ public:
 		//m_Name = name;
 		//m_Class = classname;
 		m_IsInInterior = IsInInterior;
-		//memset(m_ActorValues,0,72*sizeof(short));
-		//memset(m_AnimationStatus,0,43*sizeof(BYTE));
+		memset(m_ActorValues,0,72*sizeof(short));
+		memset(m_AnimationStatus,0,43*sizeof(BYTE));
 		m_mgr->RegisterEntity(this);
 		lock.unlock();
 	}

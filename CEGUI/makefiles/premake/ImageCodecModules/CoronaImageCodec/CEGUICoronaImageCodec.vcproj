@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="CEGUICoronaImageCodec"
-	ProjectGUID="{B8BB0878-EEA5-0348-A3DC-30A7E394B646}"
+	ProjectGUID="{6AA626D4-F7A0-C140-80F5-10140C6CDD33}"
 	RootNamespace="CEGUICoronaImageCodec"
 	Keyword="Win32Proj"
 	>

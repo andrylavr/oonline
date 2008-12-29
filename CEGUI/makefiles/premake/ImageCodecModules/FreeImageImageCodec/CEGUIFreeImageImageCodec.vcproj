@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="CEGUIFreeImageImageCodec"
-	ProjectGUID="{1929F8E9-4D4C-244C-B661-7F18EE3D4E82}"
+	ProjectGUID="{97C2B38D-789F-B64D-BA67-D0F6B778DF42}"
 	RootNamespace="CEGUIFreeImageImageCodec"
 	Keyword="Win32Proj"
 	>

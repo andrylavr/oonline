@@ -18,7 +18,7 @@ CEGUI_IRR_SDK_VERSION = 14
 
 --- Lua version
 --- 50 is 5.0.x series.  51 is 5.1 (and above?)
-CEGUI_LUA_VER = 51
+CEGUI_LUA_VER = 50
 
 -------------
 -- Renderers
@@ -58,14 +58,14 @@ DEFAULT_WINDOW_RENDERER = "falagard"
 ---------------
 -- XML parsers
 -- this controls which xml parser modules are built
-EXPAT_PARSER = true
+EXPAT_PARSER = false
 XERCES_PARSER = false
-TINYXML_PARSER = false
+TINYXML_PARSER = true
 LIBXML_PARSER = false
 
 -- this selects the default XML parser module
 -- can be either "expat", "xerces", "tinyxml" or "libxml"
-DEFAULT_XML_PARSER = "expat"
+DEFAULT_XML_PARSER = "tinyxml"
 
 
 -------

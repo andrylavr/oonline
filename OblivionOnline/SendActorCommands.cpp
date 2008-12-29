@@ -61,10 +61,11 @@ static void SendActorHealthOnly(Actor *act,Entity *ent)
 }
 static void SendActorValues(Actor *act,Entity *ent)
 {
-	for(BYTE i = 8;i <= 10;i++) // Only 8;9;10
-	{
-		ent->SetActorValue(i,act->GetActorValue(i));
-	}
+	if(!ent)
+		return;
+	ent->SetActorValue(8,act->GetActorValue(8));
+	ent->SetActorValue(9,act->GetActorValue(9));
+	ent->SetActorValue(10,act->GetActorValue(10));
 }
 static void SendActorEquip(Actor *act,Entity *ent)
 {
@@ -115,12 +116,19 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	{
 		if(gClient->GetSpawnID(i) != 0)
 		{
-			Actor *actor;
+			Actor *actor = NULL;
 			actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i));
+			if(!actor)
+			{
+				continue; 
+			}
 			ent =  gClient->GetEntities()->GetEntity(i,STATUS_PLAYER);
 			if(ent == NULL)
 				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);
-			SendActorHealthOnly(actor,ent);
+			if(!ent)
+				throw "This should never happen, however release seems to run out of memory sometimes";
+			//SendActorHealthOnly(actor,ent);
+			SendActorValues(actor,ent);
 		}
 	}
 	if(gClient->GetIsMasterClient())
@@ -135,6 +143,8 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			if(gClient->GetSpawnID(i))
 			{
 				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(gClient->GetSpawnID(i));
+				if(!form)
+					continue;
 				// Look through the list
 				std::list <TESObjectCELL *>::iterator it = CellStack.begin();
 				std::list <TESObjectCELL *>::iterator end = CellStack.end();
@@ -157,7 +167,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			TESObjectCELL * Cell = *i;
 			TESObjectCELL::ObjectListEntry * ListIterator = &Cell->objectList;		
 
-			while(ListIterator->next) // Iterate the loop
+			while(ListIterator) // Iterate the loop
 			{
 				if(ListIterator->refr->IsActor())
 					Status = STATUS_NPC; // We ignore player objects - so

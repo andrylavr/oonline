@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUILua_Static_d.lib"
+				OutputFile="$(OutDir)/CEGUILua_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -372,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUILua_Static.lib"
+				OutputFile="$(OutDir)/CEGUILua_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

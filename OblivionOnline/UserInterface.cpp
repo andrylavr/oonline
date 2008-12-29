@@ -93,7 +93,7 @@ DWORD WINAPI InitialiseUI()
 		}
 		if(CEGUI::System::getSingletonPtr() ==NULL)
 		{
-			myRenderer = new CEGUI::DirectX9Renderer(OblivionDirect3D9Device,100);
+			myRenderer = new CEGUI::DirectX9Renderer(OblivionDirect3D9Device,0);
 			gClient->GetIO() << BootMessage << "Created renderer" << endl;
 			CEGUI::Window* myRoot;
 			gClient->GetIO() << BootMessage << "Creating CEGUI::System - view CEGUI.log for further information" << endl;

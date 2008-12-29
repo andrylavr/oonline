@@ -107,7 +107,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 				{
 					netsys->PlayerDisconnect(i->first); // These sockets will be read after the next select()
 					i = netsys->m_TCPSockets.begin();
-					continue;
+					break;
 				}	
 				else
 				{

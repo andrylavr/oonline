@@ -129,10 +129,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
-				InlineFunctionExpansion="2"
+				Optimization="0"
+				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
+				FavorSizeOrSpeed="0"
 				AdditionalIncludeDirectories="&quot;$(DXSDK_DIR)\Include\&quot;;&quot;$(SolutionDir)..\OOCommon\&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..&quot;;&quot;$(SolutionDir)\..\obse\obse&quot;;&quot;$(SolutionDir)\..\obse\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;DIRECT3DHOOK_EXPORTS;OBLIVION;OBLIVION_VERSION=0x010201A0;CRT_SECURE_NO_WARNINGS;CEGUI_STATIC;$(NOINHERIT)"
 				StringPooling="true"
@@ -165,12 +165,12 @@
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMT"
 				ModuleDefinitionFile="exports.def"
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="1"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
+				DataExecutionPrevention="1"
 				TargetMachine="1"
 			/>
 			<Tool

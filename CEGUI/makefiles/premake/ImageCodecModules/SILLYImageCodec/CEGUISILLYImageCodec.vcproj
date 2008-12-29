@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUISILLYImageCodec_Static_d.lib"
+				OutputFile="$(OutDir)/CEGUISILLYImageCodec_Static_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -372,7 +372,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)lib/CEGUISILLYImageCodec_Static.lib"
+				OutputFile="$(OutDir)/CEGUISILLYImageCodec_Static.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

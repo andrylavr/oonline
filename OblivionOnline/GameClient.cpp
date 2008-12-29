@@ -34,7 +34,7 @@ int GameClient::Initialize()
 	ServerSocket = socket(AF_INET,SOCK_STREAM,0);
 	*IO << "OblivionOnline connecting" <<endl;
 	*IO <<"Initializing GUI" <<endl;
-	InitialiseUI();
+	//InitialiseUI();
 	bIsInitialized = true;
 	//Entities->DeleteEntities();
 	TotalPlayers = 0;
@@ -96,7 +96,7 @@ bool GameClient::Connect()
 			if(rc == SOCKET_ERROR)
 			{
 				*IO << "Error" << WSAGetLastError() << " establishing connection " <<endl;
-				return false;
+				continue;
 			}
 			else 
 			{

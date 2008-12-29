@@ -216,7 +216,7 @@ do
 	config_h.CEGUI_TINYXML_H = '"ceguitinyxml/tinyxml.h"'
 	config_h.CEGUI_TINYXML_NAMESPACE = "CEGUITinyXML"
 
-    local filename = "../../include/config.h"
+    local filename = "include/config.h"
     local f,err = io.open(filename, "w+")
 
     if not f then error("Unable to write config.h: "..err) end
