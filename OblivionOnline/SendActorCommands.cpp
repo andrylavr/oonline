@@ -103,7 +103,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-	ent = gClient->GetEntities()->GetEntity(gClient->GetLocalPlayer(),STATUS_PLAYER);
+	ent = gClient->GetEntities()->GetEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
 	if(ent == NULL)
 		ent = new Entity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
 	outnet.Send(); // Prevent Lag

@@ -64,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="freetype_D.lib pcre_d.lib Winmm.lib"
+				AdditionalDependencies="freetype_D.lib pcre7_d.lib Winmm.lib"
 				OutputFile="$(OutDir)/CEGUIBase_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../../lib;../../../dependencies/lib"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)/Lib/&quot;;../../../lib;../../../dependencies/lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/CEGUIBase_d.pdb"
 				SubSystem="2"
@@ -98,7 +98,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug_Static|Win32"
-			OutputDirectory="../../../lib"
+			OutputDirectory="$(SolutionDir)/lib"
 			IntermediateDirectory="obj/Debug_Static"
 			ConfigurationType="4"
 			CharacterSet="2"

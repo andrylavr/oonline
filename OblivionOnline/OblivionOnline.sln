@@ -41,6 +41,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUIBase", "..\CEGUI\makef
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUISILLYImageCodec", "..\CEGUI\makefiles\premake\ImageCodecModules\SILLYImageCodec\CEGUISILLYImageCodec.vcproj", "{159D47CB-47E1-A04F-A493-56F52DBBF834}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9EBB914E-CD46-6244-8299-D7CA00A17506} = {9EBB914E-CD46-6244-8299-D7CA00A17506}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX9GUIRenderer", "..\CEGUI\makefiles\premake\RendererModules\DirectX9GUIRenderer\DirectX9GUIRenderer.vcproj", "{169F662B-7A48-754B-8D47-9CC35D82CDED}"
 EndProject
@@ -74,8 +77,15 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginSample", "..\PluginSample\PluginSample.vcproj", "{A69D3D23-679D-4472-8312-2D9D0FCDC185}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUITinyXMLParser", "..\CEGUI\makefiles\premake\XMLParserModules\TinyXMLParser\CEGUITinyXMLParser.vcproj", "{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9EBB914E-CD46-6244-8299-D7CA00A17506} = {9EBB914E-CD46-6244-8299-D7CA00A17506}
+	EndProjectSection
 EndProject
 Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Static|Any CPU = Debug_Static|Any CPU
 		Debug_Static|Mixed Platforms = Debug_Static|Mixed Platforms
@@ -168,7 +178,6 @@ Global
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug_Static|Win32.ActiveCfg = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug|Any CPU.ActiveCfg = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug|Mixed Platforms.ActiveCfg = Debug
-		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug|Mixed Platforms.Build.0 = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Debug|Win32.ActiveCfg = Debug
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Release_debug|Any CPU.ActiveCfg = Release
 		{5F7C8062-9DC2-4367-997F-A914B5EA4073}.Release_debug|Mixed Platforms.ActiveCfg = Release
@@ -361,13 +370,11 @@ Global
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug_Static|Win32.Build.0 = Debug_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug|Win32.ActiveCfg = Debug_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Debug|Win32.Build.0 = Debug_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Any CPU.ActiveCfg = Release_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Any CPU.Build.0 = Release_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Mixed Platforms.ActiveCfg = Debug_Static|Win32
-		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Mixed Platforms.Build.0 = Debug_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Win32.ActiveCfg = Release_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_debug|Win32.Build.0 = Release_Static|Win32
 		{1D07078F-B2B5-C04D-A124-7C6BCA72EE51}.Release_Static|Any CPU.ActiveCfg = Release_Static|Win32
@@ -443,8 +450,8 @@ Global
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release_Static|Win32.Build.0 = Release Singlethreaded|Win32
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Any CPU.ActiveCfg = Release|Win32
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Any CPU.Build.0 = Release|Win32
-		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Mixed Platforms.ActiveCfg = Release Singlethreaded|Win32
-		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Mixed Platforms.Build.0 = Release Singlethreaded|Win32
+		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Win32.ActiveCfg = Release|Win32
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.Release|Win32.Build.0 = Release|Win32
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}.ReleaseWithSymbols|Any CPU.ActiveCfg = Release Singlethreaded|Win32
@@ -704,8 +711,8 @@ Global
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release_Static|Win32.ActiveCfg = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release_Static|Win32.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Any CPU.ActiveCfg = Release|Win32
-		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.ActiveCfg = Release_Static|Win32
+		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Win32.ActiveCfg = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Win32.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.ReleaseWithSymbols|Any CPU.ActiveCfg = ReleaseWithSymbols|Win32

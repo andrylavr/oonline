@@ -64,10 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../../../lib/CEGUIBase_d.lib dxerr9.lib d3dx9d.lib"
+				AdditionalDependencies="CEGUIBase_d.lib dxerr9.lib d3dx9d.lib"
 				OutputFile="$(OutDir)/DirectX9GUIRenderer_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../../../lib;../../../../dependencies/lib"
+				AdditionalLibraryDirectories="../../../../lib;../../../../dependencies/lib;$(SolutionDir)/lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/DirectX9GUIRenderer_d.pdb"
 				SubSystem="2"
@@ -98,7 +98,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug_Static|Win32"
-			OutputDirectory="../../../../lib"
+			OutputDirectory="$(SolutionDir)/lib"
 			IntermediateDirectory="obj/Debug_Static"
 			ConfigurationType="4"
 			CharacterSet="2"
@@ -294,7 +294,7 @@
 				AdditionalDependencies="../../../../lib/CEGUIBase.lib dxerr9.lib d3dx9.lib"
 				OutputFile="$(OutDir)/DirectX9GUIRenderer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../../../lib;../../../../dependencies/lib"
+				AdditionalLibraryDirectories="../../../../lib;../../../../dependencies/lib;$(SolutionDir)/lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"

@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)\Lib\freetype235.lib"
+				OutputFile="$(SolutionDir)\Lib\freetype.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -293,7 +293,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)\Lib\freetype235_D.lib"
+				OutputFile="$(SolutionDir)\Lib\freetype_D.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool

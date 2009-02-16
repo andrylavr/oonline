@@ -98,7 +98,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug_Static|Win32"
-			OutputDirectory="../../../../lib"
+			OutputDirectory="$(SolutionDir)/lib"
 			IntermediateDirectory="obj/Debug_Static"
 			ConfigurationType="4"
 			CharacterSet="2"
