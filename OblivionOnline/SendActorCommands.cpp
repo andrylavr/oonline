@@ -122,7 +122,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			{
 				continue; 
 			}
-			ent =  gClient->GetEntities()->GetEntity(i,STATUS_PLAYER);
+			ent =  gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
 			if(ent == NULL)
 				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);
 			if(!ent)
@@ -179,7 +179,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = gClient->GetEntities()->GetEntity(ListIterator->refr->refID,Status);
+					ent = gClient->GetEntities()->GetEntity(Status,ListIterator->refr->refID);
 					
 					if(ent == NULL)
 						ent = new Entity(gClient->GetEntities(),ListIterator->refr->refID,Status);

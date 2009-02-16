@@ -52,7 +52,7 @@ bool Cmd_MPGetEquipment_Execute (COMMAND_ARGS)
 	if (thisObj->IsActor())
 	{
 		Actor *ActorBuf = (Actor *)thisObj;
-		Entity *ent = gClient->GetEntities()->GetEntity(ActorBuf->refID,GetStatus(ActorBuf));
+		Entity *ent = gClient->GetEntities()->GetEntity(GetStatus(ActorBuf),ActorBuf->refID);
 		BYTE i = 0;
 		if(ent ==NULL)
 			ent = new Entity(gClient->GetEntities(),thisObj->refID,GetStatus(thisObj));
