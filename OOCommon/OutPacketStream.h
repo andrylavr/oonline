@@ -1,6 +1,7 @@
 /*
 
 Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+
 This file is part of OblivionOnline.
 
 OblivionOnline is free software; you can redistribute it and/or modify
@@ -35,11 +36,28 @@ exception; this exception also makes it possible to release a modified version w
 forward this exception.
 */
 #include "OutPacket.h"
-bool NetSendActorValue(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE Slot,short Value)
+
+
+// Provides an abstract way to send data both via UDP and via TCP
+class OutPacketStream
 {
-	BYTE Data[3];
-	Data[0] = Slot;
-	*(short *)(Data+1) = Value;
-	outnet->AddChunk(FormID,Status,GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Data);
-	return true;
+private:
+	SOCKADDR_IN RemoteAddress;
+	SOCKET SocketUDP;
+	SOCKET SocketTCP;
+	OutPacket * packet;
+public:	
+	OutPacketStream(SOCKET SockUDP,SOCKET SockTCP,SOCKADDR_IN SockAddr)
+	{
+		packet = new OutPacket();
+	}
+	~OutPacketStream()
+	{
+		delete OutPacket;
+	}
+	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
+	{
+		packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data);
+	}
+	bool Send();
 }

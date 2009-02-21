@@ -53,8 +53,6 @@ private:
 public:	
 	OutboundNetwork()
 	{
-		WSADATA data;
-		WSAStartup(MAKEWORD(2,2),&data);
 		outpacket = new OutPacket();
 	}
 	~OutboundNetwork(void)
