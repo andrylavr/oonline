@@ -52,6 +52,7 @@ public:
 	{
 		return bIsConnected;
 	}
+	/*returns if the client is ready for operation, a.k.a. player ID received*/
 	bool GetIsInitialized()
 	{
 		return bIsInitialized;
