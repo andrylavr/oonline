@@ -40,6 +40,6 @@ bool NetSendActorValue(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE Slot,sho
 	BYTE Data[3];
 	Data[0] = Slot;
 	*(short *)(Data+1) = Value;
-	outnet->AddChunk(FormID,Status,GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Value);
+	outnet->AddChunk(FormID,Status,GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Data);
 	return true;
 }

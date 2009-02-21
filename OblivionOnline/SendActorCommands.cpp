@@ -95,7 +95,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 {
 	Entity *ent; 
 	BYTE Status;
-	if(!gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized() )
 		return true;
 	// A heavy command xD
 	// 1 - send local player data up .
@@ -167,13 +167,13 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			TESObjectCELL * Cell = *i;
 			TESObjectCELL::ObjectListEntry * ListIterator = &Cell->objectList;		
 
-			while(ListIterator) // Iterate the loop
+			while(ListIterator) // Iterate the loopds
 			{
 				if(ListIterator->refr->IsActor())
 					Status = STATUS_NPC; // We ignore player objects - so
 				else
 				{
-					ListIterator = ListIterator->next;
+					ListIterator = ListIterator->next; //TODO: Add syncing for non-actor objects
 					continue;
 				}
 

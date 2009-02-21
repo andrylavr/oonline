@@ -38,6 +38,7 @@ int GameClient::Initialize()
 	bIsInitialized = true;
 	//Entities->DeleteEntities();
 	TotalPlayers = 0;
+	LocalPlayer = MAXCLIENTS;
 	for(int i=0; i<MAXCLIENTS; i++)
 	{
 		bPlayersConnected[i] = false;

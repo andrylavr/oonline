@@ -131,7 +131,7 @@ public:
 	inline void Move(float X,float Y,float Z,bool Inbound = false)
 	{	
 		lock.lock();
-		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ())
+		if(m_PosX != X || m_PosY != Y || m_PosZ != Z)
 		{
 			_Move(X,Y,Z);
 			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
@@ -141,7 +141,7 @@ public:
 	inline void Rotate(float rX,float rY,float rZ,bool Inbound = false)
 	{
 		lock.lock();
-		if(m_RotX != RotX ()|| m_RotY != RotY() || m_RotZ != RotZ())
+		if(m_RotX != rX || m_RotY != rY || m_RotZ != rZ)
 		{
 			_SetRotation(rX,rY,rZ);
 			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
@@ -151,7 +151,7 @@ public:
 	inline void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false)
 	{
 		lock.lock();
-		if(m_PosX != PosX() || m_PosY != PosY() || m_PosZ != PosZ() || m_RotX != RotX() || m_RotY != RotY() || m_RotZ != RotZ() )
+		if(m_PosX != X || m_PosY != Y || m_PosZ != Z || m_RotX != rX || m_RotY != rY || m_RotZ != rZ )
 		{
 			_Move(X,Y,Z);
 			_SetRotation(rX,rY,rZ);
@@ -217,7 +217,7 @@ public:
 		lock.lock();
 		if(this->ActorValue(ActorValue) != Value)
 		{
-			_SetActorValue(Class,Value);
+			_SetActorValue(ActorValue,Value);
 			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
 			if(ActorValue == AV_HEALTH)
 			{
