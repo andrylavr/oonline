@@ -34,8 +34,8 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
-#include "OutPacket.h"
-bool NetSendChat(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE *message,size_t len)
+#include "OutPacketStream.h"
+bool NetSendChat(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE *message,size_t len)
 {
 	//TODO: Fix up memory
 	byte *buf = new BYTE[len + 2];
@@ -45,7 +45,7 @@ bool NetSendChat(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE *message,size_
 	delete buf;
 	return true;
 }
-bool NetSendName(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE *name,size_t len)
+bool NetSendName(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE *name,size_t len)
 {
 	byte *buf = new BYTE[len + 2];
 	*(UINT16 *)buf = (UINT16)len;

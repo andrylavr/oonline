@@ -36,9 +36,10 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
-#include "main.h"
 #include "Entity.h"
+#include "main.h"
 #include "NetSend.h"
+#include "outpacketstream.h"
 #include <math.h>
 #define MOVE_THRESHOLD 0.2
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
@@ -61,8 +62,8 @@ static void SendActorHealthOnly(Actor *act,Entity *ent)
 }
 static void SendActorValues(Actor *act,Entity *ent)
 {
-	if(!ent)
-		return;
+	ASSERT(ent);
+	ASSERT(act);
 	ent->SetActorValue(8,act->GetActorValue(8));
 	ent->SetActorValue(9,act->GetActorValue(9));
 	ent->SetActorValue(10,act->GetActorValue(10));
@@ -93,7 +94,8 @@ static void SendActorAnimation(Actor *act,Entity *ent)
 }
 bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 {
-	Entity *ent; 
+	Entity *ent;  // TODO: this seems to make problems, maybe use volatile?
+	Actor *actor = NULL;
 	BYTE Status;
 	if(!gClient->GetIsInitialized() )
 		return true;
@@ -106,17 +108,18 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	ent = gClient->GetEntities()->GetEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
 	if(ent == NULL)
 		ent = new Entity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
-	outnet.Send(); // Prevent Lag
+	//gClient->GetServerStream()->Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
 	SendActorEquip(*g_thePlayer,ent);
 	SendActorAnimation(*g_thePlayer,ent);
 	//Health of the other players
+ // contains crashes
 	for(int i = 0;i < MAXCLIENTS ;i++)
 	{
 		if(gClient->GetSpawnID(i) != 0)
 		{
-			Actor *actor = NULL;
+			
 			actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i));
 			if(!actor)
 			{
@@ -126,9 +129,12 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			if(ent == NULL)
 				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);
 			if(!ent)
-				throw "This should never happen, however release seems to run out of memory sometimes";
+			{
+				gClient->GetIO() << Error << __FILE__ << " (line:)" << __LINE__ << " : Out of memory or allocation error. Continuing."<<endl;
+				continue; // This means an entity was missed
+			}
 			//SendActorHealthOnly(actor,ent);
-			SendActorValues(actor,ent);
+			SendActorValues(actor,ent); // This causes a crash!!!
 		}
 	}
 	if(gClient->GetIsMasterClient())
@@ -150,7 +156,8 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 				std::list <TESObjectCELL *>::iterator end = CellStack.end();
 				for(;it != end; ++it)
 				{
-					if( (*it)->Compare(form->parentCell) )
+					//if( (*it)->Compare(form->parentCell) )
+					if(!form->parentCell ||  (*it)->refID == form->parentCell->refID )
 					{
 						bInsert = false;
 						break;
@@ -203,7 +210,7 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 			}
 		}
 	}
-	outnet.Send();
+	gClient->GetServerStream()->Send();
 	return true;
 }
 

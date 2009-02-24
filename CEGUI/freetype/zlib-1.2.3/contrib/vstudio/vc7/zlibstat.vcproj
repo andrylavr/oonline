@@ -188,7 +188,7 @@
 				PreprocessorDefinitions="WIN32;ZLIB_WINAPI;ASMV;ASMINF"
 				StringPooling="true"
 				ExceptionHandling="0"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\zlibstat/zlibstat.pch"
 				AssemblerListingLocation=".\zlibstat/"

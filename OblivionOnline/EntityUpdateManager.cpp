@@ -41,21 +41,21 @@ inline void SafeAddUpdateQueue(Entity * ent)
 void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
 {
 	if(!Inbound)
-		NetSendAnimation(outnet.GetPacket(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
+		NetSendAnimation(gClient->GetServerStream(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
 	else
 		SafeAddUpdateQueue(ent);
 }
 void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!Inbound)
-		NetSendActorValue(outnet.GetPacket(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
+		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
 	else
 		SafeAddUpdateQueue(ent);
 }
 void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
-		NetSendCellID(outnet.GetPacket(),ent->RefID(),ent->Status(),ent->CellID(),ent->IsInInterior());
+		NetSendCellID(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->CellID(),ent->IsInInterior());
 	else
 		SafeAddUpdateQueue(ent);
 }
@@ -66,7 +66,7 @@ void EntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
 void EntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound)
 {
 	if(!Inbound)
-		NetSendEquip(outnet.GetPacket(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
+		NetSendEquip(gClient->GetServerStream(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
 	else
 		SafeAddUpdateQueue(ent);
 }
@@ -79,7 +79,7 @@ void EntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
 void EntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
-		NetSendPosition(outnet.GetPacket(),ent->RefID(),ent->Status(),ent->PosX(),ent->PosY()
+		NetSendPosition(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->PosX(),ent->PosY()
 		,ent->PosZ(),ent->RotX(),ent->RotY(),ent->RotZ());
 	else
 		SafeAddUpdateQueue(ent);

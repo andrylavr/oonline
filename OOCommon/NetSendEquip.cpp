@@ -34,8 +34,8 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
-#include "OutPacket.h"
-bool NetSendEquip( OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE Slot,UINT32 EquipID )
+#include "OutPacketStream.h"
+bool NetSendEquip( OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE Slot,UINT32 EquipID )
 {
 	BYTE data[5];
 	data[0] = Slot;

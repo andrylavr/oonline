@@ -39,6 +39,7 @@ forward this exception.
 #include "main.h"
 #include "UserInterface.h"
 #include "NetSend.h"
+#include "OutPacketStream.h"
 bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 {
 	if (!gClient->GetIsConnected())
@@ -47,9 +48,9 @@ bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 	}
 	char message[512] = "\0";
 	if (!ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &message)) return true;
-	outnet.Send();
-	NetSendChat(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)message,strlen(message));
-	outnet.Send();
+	gClient->GetServerStream()->Send();
+	NetSendChat(gClient->GetServerStream(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)message,strlen(message));
+	gClient->GetServerStream()->Send();
 	return true;
 }
 

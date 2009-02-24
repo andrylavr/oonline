@@ -34,8 +34,8 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
-#include "OutPacket.h"
-bool NetSendPosition(OutPacket *outnet, UINT32 FormID,BYTE Status,float PosX,float PosY,float PosZ,float RotX,float RotY,float RotZ )
+#include "OutPacketStream.h"
+bool NetSendPosition(OutPacketStream *outnet, UINT32 FormID,BYTE Status,float PosX,float PosY,float PosZ,float RotX,float RotY,float RotZ )
 {
 	float Data[6] =
 	{
@@ -44,7 +44,7 @@ bool NetSendPosition(OutPacket *outnet, UINT32 FormID,BYTE Status,float PosX,flo
 	outnet->AddChunk(FormID,Status,GetMinChunkSize(Position),Position,(BYTE *)&Data);
 	return true;
 }
-bool NetSendCellID(OutPacket *outnet, UINT32 FormID,BYTE Status,UINT32 CellID,bool IsInInterior )
+bool NetSendCellID(OutPacketStream *outnet, UINT32 FormID,BYTE Status,UINT32 CellID,bool IsInInterior )
 {
 	BYTE Data[5];
 	*((UINT32 *)Data) = CellID;
@@ -52,7 +52,7 @@ bool NetSendCellID(OutPacket *outnet, UINT32 FormID,BYTE Status,UINT32 CellID,bo
 	outnet->AddChunk(FormID,Status,GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE *)&Data);
 	return true;
 }
-bool NetSendAnimation(OutPacket *outnet,UINT32 FormID,BYTE Status,BYTE Animation,bool IsPlaying)
+bool NetSendAnimation(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE Animation,bool IsPlaying)
 {
 	BYTE Data[2]= 
 	{

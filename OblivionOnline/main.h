@@ -56,7 +56,6 @@ This file is part of OblivionOnline.
 #include "OOFunctions.H"
 #include "OBSEFunctions.h"
 
-#include "OutboundNetwork.h"
 #include "EntityManager.h"
 
 #include "GameClient.h"

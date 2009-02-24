@@ -35,3 +35,27 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
+#include "OutPacketStream.h"
+
+bool OutPacketStream::Send()
+{
+	if(packet->Size() <= 3)
+		return false;
+	if(packet->Reliable())
+	{
+		int retval = send(SocketTCP,(const char *)packet->GetData(),packet->Size(),0);
+		if(retval != packet->Size())
+			*IO <<"Packet was fragmented to "<<retval<<" bytes from "<< packet->Size()<< " bytes";
+		if(SOCKET_ERROR == retval)
+		{
+			*IO << Error << "Lost Connection";
+			//gClient->Disconnect();
+		}
+	}
+	else
+	{
+		sendto(SocketUDP,(const char *)packet->GetData(),packet->Size(),0,(SOCKADDR *)&RemoteAddress,sizeof(SOCKADDR_IN));
+	}
+	packet->Reset();
+	return true; //TODO: Error Handling - Fragmentation Handling
+}

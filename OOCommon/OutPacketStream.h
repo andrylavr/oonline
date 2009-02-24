@@ -36,7 +36,7 @@ exception; this exception also makes it possible to release a modified version w
 forward this exception.
 */
 #include "OutPacket.h"
-
+#include "IOSystem.h"
 
 // Provides an abstract way to send data both via UDP and via TCP
 class OutPacketStream
@@ -46,18 +46,30 @@ private:
 	SOCKET SocketUDP;
 	SOCKET SocketTCP;
 	OutPacket * packet;
+	IOStream * IO;
 public:	
-	OutPacketStream(SOCKET SockUDP,SOCKET SockTCP,SOCKADDR_IN SockAddr)
+	OutPacketStream(SOCKET SockTCP,SOCKADDR_IN SockAddr,IOStream * IOsystem)
 	{
 		packet = new OutPacket();
+		RemoteAddress = SockAddr;
+		SocketUDP = socket(AF_INET,SOCK_DGRAM,0);
+		SocketTCP = SockTCP;
+		IO = IOsystem;
 	}
 	~OutPacketStream()
 	{
-		delete OutPacket;
+		delete packet;
 	}
 	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
 	{
-		packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data);
+		if(!packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+			Send();
+		if(!packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+		{
+			*IO << Error << " Chunk couldn't be written into fresh packet " << ChunkType << endl;
+			return false;
+		}
+		return true;
 	}
 	bool Send();
-}
+};

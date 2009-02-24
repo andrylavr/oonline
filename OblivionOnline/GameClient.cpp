@@ -2,6 +2,7 @@
 #include "GameClient.h"
 #include "LogIOProvider.h"
 #include "UserInterface.h"
+#include "OutPacketStream.h"
 GameClient::GameClient(void) : UpdateQueue()
 {
 	/*
@@ -103,7 +104,9 @@ bool GameClient::Connect()
 			else 
 			{
 				*IO << "Successfully connected" << endl;
-				outnet.SetAddress(ServerAddr);
+				
+				outnet = new OutPacketStream(GetSocket(),ServerAddr,IO);
+				
 
 				hRecvThread = CreateThread(NULL,NULL,RecvThread,NULL,NULL,NULL);
 				//hPredictionEngine = CreateThread(NULL,NULL,PredictionEngine,NULL,NULL,NULL);

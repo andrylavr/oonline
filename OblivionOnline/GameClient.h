@@ -3,7 +3,7 @@
 #include <iostream>
 #include "IOSystem.h"
 #include "EntityManager.h"
-
+class OutPacketStream;
 class GameClient
 {
 private:
@@ -23,7 +23,7 @@ private:
 	SOCKET ServerSocket;
 
 	UInt32 SpawnID[MAXCLIENTS];
-
+	OutPacketStream * outnet;
 	char ServerIP[15];
 public:
 	GameClient(void);
@@ -89,6 +89,10 @@ public:
 	void SetSpawnID(UINT32 PlayerID,UINT32 Value)
 	{
 		SpawnID[PlayerID] = Value;
+	}
+	OutPacketStream *GetServerStream()
+	{
+		return outnet;
 	}
 };
 

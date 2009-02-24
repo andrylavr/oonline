@@ -72,6 +72,12 @@ DWORD WINAPI RecvThread(LPVOID Params)
 	while(gClient->GetIsConnected())
 	{
 		rc = recv(gClient->GetSocket(),buf,PACKET_SIZE,0);
+		if(rc == SOCKET_ERROR)
+		{
+			SetConnectionMessage("Server dropped connection");
+			gClient->GetIO() << "Server droppd connection" << endl;
+			gClient->Disconnect();
+		}
 		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *)buf,rc);
 		pkg->HandlePacket();
 		delete pkg;

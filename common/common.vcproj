@@ -110,7 +110,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""

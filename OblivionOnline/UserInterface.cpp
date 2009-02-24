@@ -66,7 +66,7 @@ bool SendButton_Click()
 	/*char Buffer[1033] = "You said:"; //1024 + 8 for "you said"
 	strcat(Buffer,messagewin->getText().c_str()); 
 	RegisterChatMessage(Buffer);*/
-	NetSendChat(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE*)messagewin->getText().c_str(),messagewin->getText().length());
+	NetSendChat(gClient->GetServerStream(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE*)messagewin->getText().c_str(),messagewin->getText().length());
 	messagewin->setText("");
 	return true;
 }

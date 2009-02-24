@@ -326,7 +326,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release_Static|Win32"
-			OutputDirectory="../../../lib"
+			OutputDirectory="$(SolutionDir)/lib"
 			IntermediateDirectory="obj/Release_Static"
 			ConfigurationType="4"
 			CharacterSet="2"
