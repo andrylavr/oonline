@@ -125,6 +125,7 @@ inline bool RequiresReliable(PkgChunk type)
 		return true;
 	case Animation:
 		return false;
+
 	default:
 		return false;
 	}
@@ -161,6 +162,8 @@ inline size_t GetMinChunkSize(PkgChunk type)
 		return sizeof(UINT32);
 	case Animation:
 		return 2*sizeof(BYTE);
+	case Equip:
+		return sizeof(BYTE) + sizeof(UINT32);
 	default:
 		return sizeof(unsigned short);
 	}

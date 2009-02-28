@@ -45,12 +45,11 @@ private:
 	SOCKADDR_IN RemoteAddress;
 	SOCKET SocketUDP;
 	SOCKET SocketTCP;
-	OutPacket * packet;
+	OutPacket packet;
 	IOStream * IO;
 public:	
-	OutPacketStream(SOCKET SockTCP,SOCKADDR_IN SockAddr,IOStream * IOsystem)
+	OutPacketStream(SOCKET SockTCP,SOCKADDR_IN SockAddr,IOStream * IOsystem) : packet()
 	{
-		packet = new OutPacket();
 		RemoteAddress = SockAddr;
 		SocketUDP = socket(AF_INET,SOCK_DGRAM,0);
 		SocketTCP = SockTCP;
@@ -58,13 +57,12 @@ public:
 	}
 	~OutPacketStream()
 	{
-		delete packet;
 	}
 	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
 	{
-		if(!packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+		if(!packet.AddChunk(FormID,Status,ChunkSize,ChunkType,data))
 			Send();
-		if(!packet->AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+		if(!packet.AddChunk(FormID,Status,ChunkSize,ChunkType,data))
 		{
 			*IO << Error << " Chunk couldn't be written into fresh packet " << ChunkType << endl;
 			return false;

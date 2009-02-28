@@ -135,8 +135,9 @@ public:
 	}
 	inline void Reset()
 	{
-		memset(m_ObjectID,0xffffffff,sizeof(UINT32)*MAX_OBJECTS_PER_PACKET);
-		memset(m_Status,255,sizeof(bool)*MAX_OBJECTS_PER_PACKET);
+		/*memset(m_ObjectID,0xffffffff,sizeof(UINT32)*MAX_OBJECTS_PER_PACKET);
+		memset(m_Status,255,sizeof(bool)*MAX_OBJECTS_PER_PACKET);*/
+		memset(&m_Data,255,PACKET_SIZE);
 		m_Dataptr = m_Data + PACKET_HEADER_SIZE;
 		m_Bytes_written =  (UINT16 *)((UINT8 *)m_Data + 1); 
 		m_Chunks_written = (UINT8 *)m_Data;

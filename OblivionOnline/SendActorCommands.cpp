@@ -62,8 +62,8 @@ static void SendActorHealthOnly(Actor *act,Entity *ent)
 }
 static void SendActorValues(Actor *act,Entity *ent)
 {
-	ASSERT(ent);
-	ASSERT(act);
+	/*ASSERT(ent);
+	ASSERT(act);*/
 	ent->SetActorValue(8,act->GetActorValue(8));
 	ent->SetActorValue(9,act->GetActorValue(9));
 	ent->SetActorValue(10,act->GetActorValue(10));
@@ -87,6 +87,8 @@ static void SendActorEquip(Actor *act,Entity *ent)
 static void SendActorAnimation(Actor *act,Entity *ent)
 {
 	ActorAnimData *animdata = GetActorAnimData(act);
+	if(!animdata)
+		return;
 	for(int i = 0;i < 43;i++)
 	{
 		ent->SetAnimation(i,animdata->FindAnimInRange(i));
@@ -118,13 +120,10 @@ bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 	for(int i = 0;i < MAXCLIENTS ;i++)
 	{
 		if(gClient->GetSpawnID(i) != 0)
-		{
+		{			
 			
-			actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i));
-			if(!actor)
-			{
+			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i))  ) )
 				continue; 
-			}
 			ent =  gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
 			if(ent == NULL)
 				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);

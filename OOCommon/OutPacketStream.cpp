@@ -39,13 +39,13 @@ forward this exception.
 
 bool OutPacketStream::Send()
 {
-	if(packet->Size() <= 3)
+	if(packet.Size() <= 3)
 		return false;
-	if(packet->Reliable())
+	if(packet.Reliable())
 	{
-		int retval = send(SocketTCP,(const char *)packet->GetData(),packet->Size(),0);
-		if(retval != packet->Size())
-			*IO <<"Packet was fragmented to "<<retval<<" bytes from "<< packet->Size()<< " bytes";
+		int retval = send(SocketTCP,(const char *)packet.GetData(),packet.Size(),0);
+		if(retval != packet.Size())
+			*IO <<"Packet was fragmented to "<<retval<<" bytes from "<< packet.Size()<< " bytes";
 		if(SOCKET_ERROR == retval)
 		{
 			*IO << Error << "Lost Connection";
@@ -54,8 +54,8 @@ bool OutPacketStream::Send()
 	}
 	else
 	{
-		sendto(SocketUDP,(const char *)packet->GetData(),packet->Size(),0,(SOCKADDR *)&RemoteAddress,sizeof(SOCKADDR_IN));
+		sendto(SocketUDP,(const char *)packet.GetData(),packet.Size(),0,(SOCKADDR *)&RemoteAddress,sizeof(SOCKADDR_IN));
 	}
-	packet->Reset();
+	packet.Reset();
 	return true; //TODO: Error Handling - Fragmentation Handling
 }
