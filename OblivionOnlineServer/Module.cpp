@@ -28,6 +28,8 @@ Module::Module(ModuleManager*mm, GameServer * gs,std::string Filename )
 			TerminateProcess(GetCurrentProcess(),1);
 		}
 	}
+#else
+#error("Module loading not implemented");
 #endif
 	plugin = callback(gs,VERSION_SUPER,VERSION_MAJOR,VERSION_MINOR);
 	m_gs->GetEventSys()->DefaultEvents.EventLoadModule(this); 

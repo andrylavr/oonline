@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InPacket.h"
 #include "GameServer.h"
 #include "LuaSystem.h"
+#include "EventSystem.h"
 #include <sstream>
 #ifdef WIN32
 #include <process.h>
@@ -184,6 +185,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	 m_TCPSockets[ID] = TCPSock;
 	 m_OutPackets[ID] = new OutPacket();	
 	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(PkgChunk::PlayerID),PlayerID,(BYTE *)&ID);
+	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
 	 m_GS->GetIO()<<GameMessage<< "New player" << ID << "joined from address"<< inet_ntoa(addr.sin_addr) << ":" <<ntohs(addr.sin_port)<<endl;
 	 if(m_MasterClientDefined == 0)
 	 {
@@ -243,6 +245,7 @@ bool NetworkSystem::PlayerDisconnect( UINT32 ID )
 {
 	BYTE masterclient = 1;
 	m_GS->GetIO()<<GameMessage<<"Client "<<ID<< "disconnected" <<endl;
+	m_GS->GetEventSys()->DefaultEvents.EventDisconnect(&m_PlayerAddresses[ID]);
 	m_AddressPlayer.erase(m_PlayerAddresses[ID].sin_addr.S_un.S_addr);
 	m_PlayerAddresses.erase(ID);
 	delete m_OutPackets[ID];
