@@ -62,6 +62,11 @@ lua_Number LuaSystem::GetNumeric(std::string Name)
 {
 	lock.lock();
 	lua_getglobal(m_Lua,Name.c_str());
+	if(!lua_gettop(m_Lua))
+	{
+		m_GS->GetIO() << Warning << "LUA:Invalid Number variable  " << Name << " accessed. Returning default 0"<<endl;
+		lua_pushnumber(m_Lua,0);
+	}
 	lock.unlock();
 	return lua_tonumber(m_Lua,lua_gettop(m_Lua));
 }
@@ -69,6 +74,11 @@ lua_Integer LuaSystem::GetInteger(std::string Name)
 {
 	lock.lock();
 	lua_getglobal(m_Lua,Name.c_str());
+	if(!lua_gettop(m_Lua))
+	{
+		m_GS->GetIO() << Warning << "LUA:Invalid Integer variable  " << Name << " accessed. Returning default 0"<<endl;
+		lua_pushinteger(m_Lua,0);
+	}
 	lock.unlock();
 	return lua_tointeger(m_Lua,lua_gettop(m_Lua));
 }
@@ -76,6 +86,14 @@ lua_CFunction LuaSystem::GetFunction(std::string Name)
 {
 	lock.lock();
 	lua_getglobal(m_Lua,Name.c_str());
+	if(!lua_gettop(m_Lua))
+	{
+		m_GS->GetIO() << Warning << "LUA:Invalid Function variable  " << Name << " accessed. Returning default &(abort)."
+			<< "This will most likely crash the server AND all other multiplexed instances; and that is the best way"<<endl;
+		//TODO: this allows a single multiple server instance to crash all multiple instances... properly handle the exception
+		//TODO: implement lua_functions/panic which will safely abort the program without abusing the stack frame
+		lua_pushcfunction(m_Lua,(lua_CFunction)&abort);
+	}
 	lock.unlock();
 	return lua_tocfunction(m_Lua,lua_gettop(m_Lua));
 }
@@ -85,6 +103,11 @@ std::string LuaSystem::GetString(std::string Name)
 	const char *string = 0;
 	lock.lock();
 	lua_getglobal(m_Lua,Name.c_str());
+	if(!lua_gettop(m_Lua))
+	{
+		m_GS->GetIO() << Warning << "LUA:Invalid string variable  " << Name << " accessed. Returning default empty string."<<endl;
+		lua_pushstring(m_Lua,"");
+	}
 	if(lua_isstring(m_Lua,lua_gettop(m_Lua)))
 		string = lua_tostring(m_Lua,lua_gettop(m_Lua));
 	lock.unlock();
@@ -125,6 +148,7 @@ void LuaSystem::DefaultSettings()
 {
 	SetInteger("ServicePort",DEFAULT_GAMEPORT);
 	SetInteger("AdminPort",DEFAULT_ADMINPORT);
+	SetInteger("TickRate",DEFAULT_TICKRATE);
 	SetString("Name",DEFAULT_SERVERNAME);
 	SetString("RealmlistURI",DEFAULT_REALMLIST);
 	SetString("Logfile",DEFAULT_LOGFILE);

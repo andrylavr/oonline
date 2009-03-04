@@ -58,6 +58,7 @@ public:
 	void DisplayBootupMessage();
 	void AdvertiseGameServer();
 protected:
+	int m_tickrate; /*TODO add a way to update this from lua*/
 	LuaSystem *m_script;
 	IOStream *m_IO;
 	IOSystem *m_IOSys;

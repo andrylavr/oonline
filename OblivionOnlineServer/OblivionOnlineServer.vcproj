@@ -237,6 +237,10 @@
 			<Filter
 				Name="LuaFunctions"
 				>
+				<File
+					RelativePath=".\panic.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -85,12 +85,25 @@ GameServer::~GameServer(void)
 	delete m_Evt;
 	delete m_script;
 }
+// Creates ticks and runs the lua GC
 void GameServer::RunServer()
 {
+	UINT64 tickcount = 0;
+	clock_t tick_current,tick_next,tick_delta,tick_garbagecollect = 0;
+	m_tickrate = m_script->GetInteger("TickRate");
 	while(1)
 	{
-		m_script->PrintStatistics();
-		Sleep(120000);// 2 minutes
+		tick_next = clock() + CLOCKS_PER_SEC  / m_tickrate;
+		m_Evt->DefaultEvents.EventTick(tickcount++);
+		tick_delta = tick_next - clock();
+		Sleep( tick_delta * (CLOCKS_PER_SEC / 1000));
+		tick_garbagecollect -= tick_delta;
+		if(tick_garbagecollect <= 0)
+		{
+			tick_garbagecollect = CLOCKS_PER_SEC * 120;
+			m_script->PrintStatistics();
+		}
+		
 	}
 	//AdvertiseGameServer();
 }
