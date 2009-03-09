@@ -3,6 +3,8 @@
 #include "obse/GameForms.h"
 #include "obse/GameExtraData.h"
 #include "obse/GameProcess.h"
+#include "Utilities.h"
+#include <vector>
 
 /*** class hierarchy
  *	
@@ -325,7 +327,7 @@ public:
 	virtual void	Unk_08(void);
 	virtual void	Unk_09(void);
 	virtual void	Unk_0A(void);
-	virtual void	Unk_0B(void);
+	virtual float	GetSpellEffectiveness(float arg0, float arg1);	// seen (0, 0)
 	virtual void	Unk_0C(void);
 	virtual void	Unk_0D(void);
 	virtual void	Unk_0E(void);
@@ -426,6 +428,8 @@ public:
 
 		kChanged_HavokMove =			0x00000008,
 			// CHANGE_REFR_HAVOK_MOVE
+		kChanged_MapMarkerFlags =		0x00000400,
+			// CHANGE_MAPMARKER_EXTRA_FLAGS
 		kChanged_HadHavokMoveFlag =		0x00000800,
 			// CHANGEFLAG_REFR_HAD_HAVOK_MOVE_FLAG
 			// if either of these are set
@@ -450,7 +454,11 @@ public:
 	{
 		kFlags_Persistent	= 0x00000400,		//shared bit with kFormFlags_QuestItem
 		kFlags_Disabled =	  0x00000800,
+		//kFlags_Taken set when an item reference is picked up by an actor
 		kFlags_Taken		= 0x00000022,		//2 bits, both set when picked up by NPC/PC - need to figure out what each means
+		//kFlags_Unk128 set on cell change for a picked up reference, and kFlags_Taken then cleared
+		//Does this flag ref for deletion? 'Cause it persists after quit/reload....
+		kFlags_Unk128		= 0x80000000
 	};
 
 	TESObjectREFR();
@@ -529,6 +537,8 @@ public:
 		flags = bDisabled ? (flags | kFlags_Disabled) : (flags & ~kFlags_Disabled);
 	}
 	TESForm * GetInventoryItem(UInt32 itemIndex, bool bGetWares);
+	void Disable();
+	void Enable();
 };
 
 // 05C+
@@ -575,6 +585,8 @@ public:
 
 	BaseProcess	* process;			// 058
 };
+
+typedef std::vector<TESForm*> EquippedItemsList;
 
 // 104+
 class Actor : public MobileObject
@@ -693,8 +705,9 @@ public:
 	virtual void	Unk_ED(void) = 0;
 	virtual void	Unk_EE(void) = 0;
 
-	void	EquipItem(TESObjectREFR * objType, UInt32 unk1, UInt32 unk2, UInt32 unk3, bool lockEquip);
-	UInt32	GetBaseActorValue(UInt32 value);
+	void				EquipItem(TESObjectREFR * objType, UInt32 unk1, UInt32 unk2, UInt32 unk3, bool lockEquip);
+	UInt32				GetBaseActorValue(UInt32 value);
+	EquippedItemsList	GetEquippedItems();
 
 	// 8
 	struct Unk09C
@@ -844,7 +857,9 @@ public:
 	UInt32		unk11C[(0x130 - 0x11C) >> 2];	// 11C
 	float		skillAdv[21];					// 130
 	UInt32		majorSkillAdvances;				// 184
-	UInt32		unk188[(0x1E0 - 0x188) >> 2];	// 188
+	UInt32		unk188[(0x1DC - 0x188) >> 2];	// 188
+	UInt8		bCanLevelUp;					// 1DC
+	UInt8		unk1DD[3];						// 1DD
 	Creature	* lastRiddenHorse;				// 1E0
 	UInt32		unk1E4[(0x570 - 0x1E4) >> 2];	// 1E4
 	TESObjectREFR	* lastActivatedLoadDoor;	// 570	-most recently activated load door
@@ -853,7 +868,12 @@ public:
 	UInt8		pad589[3];						// 589
 	UInt32		unk58C[(0x5B4 - 0x58C) >> 2];	// 58C
 	UInt8		** attributeBonuses;			// 5B4
-	UInt32		unk5B8[(0x5CC - 0x5B8) >> 2];	// 5B8
+	//UInt32		unk5B8[(0x5CC - 0x5B8) >> 2];	// 5B8
+	UInt32		unk5B8;							// 5B8
+	UInt32		trainingSessionsUsed;			// 5BC reset on level-up
+	UInt32		unk5C0;							// 5C0
+	UInt32		unk5C4;							// 5C4
+	UInt32		unk5C8;							// 5C8
 	ActorAnimData	* firstPersonAnimData;		// 5CC
 	UInt32		unk5D0[(0x610 - 0x5D0) >> 2];	// 5D0
 	UInt8		unk610;							// 610
@@ -877,6 +897,12 @@ public:
 	UInt8	GetAttributeBonus(UInt32 whichAttribute) {
 		return whichAttribute < kActorVal_Luck ? (*attributeBonuses)[whichAttribute] : -1;
 	}
+
+	void	SetAttributeBonus(UInt32 whichAttr, UInt8 newVal) {
+		if (whichAttr < kActorVal_Luck)	(*attributeBonuses)[whichAttr] = newVal;
+	}
+
+	void TogglePOV(bool bFirstPerson);
 };
 
 STATIC_ASSERT(sizeof(PlayerCharacter) == 0x800);
@@ -934,26 +960,29 @@ enum
 	kProjectileType_Bolt,
 };							//arbitrary
 
-struct MagicProjectileData
+//78
+class MagicProjectile : public MobileObject
 {
-	float			speed;				// base speed * GMST fMagicProjectileBaseSpeed
-	float			distanceTraveled;	// speed * elapsedTime while in flight
-	float			elapsedTime;		// length of time projectile has existed
-	MagicCaster		* caster;			// whoever/whatever cast the spell
-										// For NonActorMagicCaster, != casting reference
-	MagicItem		* magicItem;		//can always cast to SpellItem?
-	UInt32			unk070;				
-	EffectSetting	* effectSetting;		
+public:
+	float			speed;				// 5C base speed * GMST fMagicProjectileBaseSpeed
+	float			distanceTraveled;	// 60 speed * elapsedTime while in flight
+	float			elapsedTime;		// 64 length of time projectile has existed
+	MagicCaster		* caster;			// 68 whoever/whatever cast the spell
+										//    For NonActorMagicCaster, != casting reference
+	MagicItem		* magicItem;		// 6C can always cast to SpellItem? NO - can be EnchantmentItem for staves
+	UInt32			effectCode;			// 70 i.e. 'SEFF'
+	EffectSetting	* effectSetting;	// 74
 };
 
+STATIC_ASSERT(sizeof(MagicProjectile) == (sizeof(MobileObject) + 0x1C));
+
 //90
-class MagicBallProjectile : public MobileObject
+class MagicBallProjectile : public MagicProjectile
 {
 public:
 	MagicBallProjectile();
 	~MagicBallProjectile();
 
-	MagicProjectileData	data;				//05C
 	float				unk078;				//078
 	UInt32				unk07C;				//07C
 	UInt32				unk080;				//080 - looks like flags - (1 in flight, 2 hit target?)
@@ -962,14 +991,15 @@ public:
 	UInt32				unk08C;				//08C
 };
 
+STATIC_ASSERT(sizeof(MagicBallProjectile) == 0x90);
+
 //9C
-class MagicFogProjectile : public MobileObject
+class MagicFogProjectile : public MagicProjectile
 {
 public:
 	MagicFogProjectile();
 	~MagicFogProjectile();
 
-	MagicProjectileData	data;				//05C
 	float				unk078;				//078
 	float				unk07C;				//07C
 	float				unk080;				//080
@@ -982,13 +1012,12 @@ public:
 };
 
 //A4
-class MagicBoltProjectile : public MobileObject
+class MagicBoltProjectile : public MagicProjectile
 {
 public:
 	MagicBoltProjectile();
 	~MagicBoltProjectile();
 
-	MagicProjectileData	data;				//05C
 	float				unk078;				//078
 	BoltShaderProperty	* boltShaderProperty;//07C
 	UInt32				unk080;				//080
@@ -1012,7 +1041,7 @@ public:
 	UInt32			unk05C;			//05C
 	UInt32			unk060;			//060
 	float			unk064;			//064
-	float			unk068;			//068
+	float			elapsedTime;	//068
 	float			speed;			//06C - base speed * GMST fArrowSpeedMult
 	float			unk070;			//070
 	float			unk074;			//074

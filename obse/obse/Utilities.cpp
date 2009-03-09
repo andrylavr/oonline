@@ -8,6 +8,22 @@ void PrintItemType(TESForm * form)
 	Console_Print("%s (%s)", GetFullName(form), GetObjectClassName(form));
 }
 
+const char GetSeparatorChar()
+{
+	if (IsConsoleMode())
+		return '@';
+	else
+		return '|';
+}
+
+const char* GetSeparatorChars()
+{
+	if (IsConsoleMode())
+		return "@";
+	else
+		return "|";
+}
+
 #endif
 
 void DumpClass(void * theClassPtr, UInt32 nIntsToDump)
@@ -123,6 +139,10 @@ const char* GetDXDescription(UInt32 keycode)
 		if (g_ButtonNames[keycode - 256])
 			keyName = *(g_ButtonNames[keycode - 256]);
 	}
+	else if (keycode == 264)		//OB doesn't provide names for wheel up/down
+		keyName = "WheelUp";
+	else if (keycode == 265)
+		keyName = "WheelDown";
 
 	return keyName;
 }

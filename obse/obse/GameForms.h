@@ -1,6 +1,6 @@
 #pragma once
 
-#include "obse/GameExtraData.h"
+#include "obse/GameBSExtraData.h"
 #include "obse/GameTypes.h"
 #include "obse/GameAPI.h"
 #include "obse/NiNodes.h"
@@ -247,6 +247,8 @@ class TESRace;
 class Character;
 class FaceGenUndo;
 struct ModEntry;
+class IngredientItem;
+class TESFullName;
 
 /**** bases ****/
 
@@ -374,6 +376,7 @@ public:
 	void	MarkAsTemporary(void);
 
 	TESForm *	TryGetREFRParent(void);
+	TESFullName* GetFullName();
 };
 
 typedef Visitor<TESForm::ModReferenceList, TESForm> ModRefListVisitor;
@@ -469,6 +472,8 @@ public:
 	UInt32	unk2;		// 00C
 	UInt32	unk3;		// 010
 	UInt32	unk4;		// 014
+
+	void SetPath(const char* newPath)	{	nifPath.Set(newPath);	}
 };
 
 // C
@@ -534,6 +539,9 @@ public:
 class TESDescription : public BaseFormComponent
 {
 public:
+	virtual void Unk_3(void);
+	virtual const char * GetText(UInt32 arg0, UInt32 arg1); // arg1 is literal value 0x43534544, arg0 is 0
+
 	TESDescription();
 	~TESDescription();
 
@@ -556,6 +564,8 @@ class TESIcon : public TESTexture
 public:
 	TESIcon();
 	~TESIcon();
+
+	void SetPath(const char* newPath)	{	ddsPath.Set(newPath);	}
 };
 
 // 10
@@ -678,6 +688,8 @@ public:
 };
 
 typedef Visitor<TESContainer::Entry, TESContainer::Data> ContainerVisitor;
+
+class TESFaction;
 
 // 20
 class TESActorBaseData : public BaseFormComponent
@@ -844,6 +856,8 @@ public:
 };
 
 typedef Visitor<TESActorBaseData::FactionListEntry, TESActorBaseData::FactionListData> FactionListVisitor;
+
+class TESPackage;
 
 // 018
 class TESAIForm : public BaseFormComponent
@@ -1014,8 +1028,15 @@ public:
 	TESProduceForm();
 	~TESProduceForm();
 
-	UInt32	unk004;	// 004
-	UInt32	unk008;	// 008
+	enum {
+		kSeason_Spring,
+		kSeason_Summer,
+		kSeason_Fall,
+		kSeason_Winter
+	};
+
+	IngredientItem	* ingredient;		// 004
+	UInt8			harvestChance[4];	//008
 };
 
 // 10
@@ -1074,6 +1095,9 @@ public:
 		//returns first form matching whichLevel
 	UInt32		RemoveByLevel(UInt32 whichLevel);
 		//returns num removed
+	bool		RemoveNthItem(UInt32 itemIndex);
+	UInt32		GetItemIndexByForm(TESForm* form);
+	UInt32		GetItemIndexByLevel(UInt32 level);
 };
 
 typedef Visitor<TESLeveledList::ListEntry, TESLeveledList::ListData> LeveledListVisitor;
@@ -1122,10 +1146,11 @@ public:
 		kFlags_Unk8,
 	};
 
-	enum
-	{
-		kMale = 0,
-		kFemale
+	enum {
+		kPath_Biped,
+		kPath_Ground,
+		kPath_Icon,
+		kPath_Max
 	};
 
 	UInt16		partMask;			// 004
@@ -1140,6 +1165,8 @@ public:
 	void SetSlot(UInt32 slot);
 	bool		IsPlayable() const;
 	void		SetPlayable(bool bPlayable);
+	void  SetPath(const char* newPath, UInt32 whichPath, bool bfemalePath);
+	const char* GetPath(UInt32 whichPath, bool bFemalePath);
 };
 
 // 0E4
@@ -1266,6 +1293,7 @@ public:
 		kEffect_UseCreature =		0x1 << 18,
 		kEffect_UseSkill =			0x1 << 19,
 		kEffect_UseAttribute =		0x1 << 20,
+		//Looks like: M=Ball, N=Bolt, O=Fog?
 		kEffect_UnknownM =			0x1 << 21, // ABHE, FIDG, FOAT, FOMA, FRDG, OPEN, RSHE, RSMA, SEFF, LISH, SHLD
 		kEffect_UnknownN =			0x1 << 22,
 		kEffect_UknownO =			0x1 << 23, // POSN
@@ -1302,6 +1330,12 @@ public:
 	bool UseOtherActorValue() const;
 	bool NoRecast() const;
 	bool NoHitEffect() const;
+
+	void SetFlag(UInt32 flag, bool bMod) {
+		effectFlags = bMod ? (effectFlags | flag) : (effectFlags & ~flag);	}
+
+	bool IsFlagSet(UInt32 flag) {
+		return (effectFlags & flag) == flag;	}
 
 	static UInt32 RefIdForC(UInt32 effectCode);
 	static EffectSetting* EffectSettingForC(UInt32 effectCode);
@@ -1422,6 +1456,7 @@ public:
 };
 
 typedef Visitor<EffectItemList::Entry, EffectItem> EffectItemVisitor;
+EffectItemList* GetEffectList(TESForm* form);
 
 // 1C
 class MagicItem : public TESFullName
@@ -1614,7 +1649,8 @@ public:
 		{	SetFlag(kFactionFlags_Evil, bEvil);	}
 	void SetSpecialCombat(bool bSpec)
 		{	SetFlag(kFactionFlags_SpecialCombat, bSpec);	}
-	const char* GetNthRankMaleName(UInt32 whichRank);
+	const char* GetNthRankName(UInt32 whichRank, bool bFemale = false);
+	void SetNthRankName(const char* newName, UInt32 whichRank, bool bFemale);
 };
 
 typedef Visitor<TESFaction::RankEntry, TESFaction::RankData> FactionRankVisitor;
@@ -1702,7 +1738,9 @@ public:
 	// members
 	BonusSkillInfo	bonusSkills[7];// 050
 	UInt16			pad0;
-	UInt32			unk0[5];	// 050
+	UInt32			unk0[4];	// 060
+	UInt8			isPlayable;	// 070
+	UInt8			unk1[3];	
 	TESAttributes	maleAttr;	// 074
 	TESAttributes	femaleAttr;	// 080
 	UInt32			unk3;		// 08C
@@ -1715,7 +1753,10 @@ public:
 	TESTexture		unk10[9];	// 1B8
 	TESTexture		unk11[10];	// 224
 	Unk				unk12[4];	// 29C
-	UInt32			unk13[4];	// 2FC
+	//UInt32			unk13[4];	// 2FC
+	UInt32			unk13;		// 2FC
+	TESRace			* voiceRaces[2];	//300 - 0=Male, 1=Female
+	UInt32			unk13_2;	//308
 	UInt32			unk14;		// 30C
 	UInt16			unk15;		// 310
 	UInt16			unk16;		// 312
@@ -1853,9 +1894,7 @@ public:
 		UInt8			type;		// 10
 		UInt8			pad11[3];	// 11
 		UInt32			unk14;		// 14
-		const char *	name;		// 18
-		UInt16			unk1C;		// 1C
-		UInt16			unk1E;		// 1E
+		String			name;		// 18
 	};
 
 	struct VarInfoEntry
@@ -1902,6 +1941,8 @@ public:
 	void			StaticDestructor(void);
 
 	void			SetText(const char * buf);
+
+	bool			Execute(UInt32 unk0, ScriptEventList* eventList);	//calls ScriptRunner::Run()
 
 	// unk0 = some ptr
 	// unk1 = 1
@@ -2152,6 +2193,7 @@ public:
 	UInt8				teachesSkill;	// 089
 	UInt8	pad[2];	// 08A
 
+	void Constructor(void);
 	bool CantBeTaken() const;
 	void SetCantBeTaken(bool bCantBeTaken);
 	bool IsScroll() const;
@@ -2440,7 +2482,7 @@ public:
 	~TESFlora();
 
 	// bases
-	TESObjectACTI	activator;	// 00C
+	TESObjectACTI	activator;			// 00C
 };
 
 // 5C
@@ -3411,8 +3453,52 @@ public:
 	TESLeveledList	leveledList;	// 24
 };
 
+// AC
+class TESWaterForm : public TESForm
+{
+public:
+	TESWaterForm();
+	~TESWaterForm();
+
+	enum {								// use to index into simValues array
+		kWaterVal_WindVelocity = 0,
+		kWaterVal_WindDirection,
+		kWaterVal_WaveAmplitude,
+		kWaterVal_WaveFrequency,
+		kWaterVal_SunPower,
+		kWaterVal_Reflectivity,
+		kWaterVal_FresnelAmount,
+		kWaterVal_ScrollX,
+		kWaterVal_ScrollY,
+		kWaterVal_FogDistNear,
+		kWaterVal_FogDistFar,
+
+		kWaterVal_Max
+	};
+
+	TESAttackDamageForm	damageForm;			// 18
+	TESTexture			texture;			// 20
+
+	UInt8				opacity;			// 2C init'ed to 0x4B
+	UInt8				unk2D;				//    looks like flags
+	UInt8				pad2E[2];
+	UInt32				unk30;				// 30
+	UInt16				unk34;				// 34
+	UInt16				unk36;
+	TESSound			* loopSound;		// 38
+	float				waterSimVals[11];	// 3C .. 64
+	UInt32				shallowColorRGB;	// 68
+	UInt32				deepColorRGB;		// 6C
+	UInt32				reflectColorRGB;	// 70
+	UInt32				textureBlend;		// 74
+	float				rainSimVals[5];		// 78 .. 88
+	float				displacementSimVals[5];	// 8C .. 9C
+	UInt32				unkA0[3];			// A0 .. A8 look like pointers to day/night/underwater water forms
+};
+// global TESWaterForm* at 0x00B360AC in v1.2.416 - default water?
+STATIC_ASSERT(sizeof(TESWaterForm) == 0xAC);
+
 // TESObjectANIO
-// TESWaterForm
 // TESEffectShader
 
 bool IsClonedForm(UInt32 formID);

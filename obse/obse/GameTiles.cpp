@@ -1,5 +1,6 @@
 #include "GameTiles.h"
 #include "GameAPI.h"
+#include <string>
 
 const char * Tile::StrIDToStr(UInt32 id)
 {
@@ -215,6 +216,22 @@ const char * Tile::StrIDToStr(UInt32 id)
 #endif
 }
 
+typedef UInt32 (* _TileStrToStrID)(const char * str);
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	const _TileStrToStrID TileStrToStrID = (_TileStrToStrID)0x0057C790;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	const _TileStrToStrID TileStrToStrID = (_TileStrToStrID)0x00588E80;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	const _TileStrToStrID TileStrToStrID = (_TileStrToStrID)0x00588EF0;
+#else
+#error unsupported oblivion version
+#endif
+
+UInt32 Tile::StrToStrID(const char * str)
+{
+	return TileStrToStrID(str);
+}
+
 void Tile::DebugDump()
 {
 	_MESSAGE("%08X %02X %02X %02X %02X (%s) %08X %08X %08X %08X %s",
@@ -223,11 +240,11 @@ void Tile::DebugDump()
 		unk05,
 		unk06,
 		pad07,
-		unk08.m_data ? unk08.m_data : "<null>",
+		name.m_data ? name.m_data : "<null>",
 		parent,
 		unk24,
 		unk28,
-		unk2C,
+		flags,
 		GetType());
 
 	gLog.Indent();
@@ -247,9 +264,9 @@ void Tile::DebugDump()
 				if(!idStr) idStr = "<unknown>";
 
 				if(data->str.m_data)
-					_MESSAGE("%04X %02X: %s = %s", data->id, data->unk1A, idStr, data->str.m_data);
+					_MESSAGE("%04X %02X: %s = %s", data->id, data->bIsNum, idStr, data->str.m_data);
 				else
-					_MESSAGE("%04X %02X: %s = %f", data->id, data->unk1A, idStr, data->num);
+					_MESSAGE("%04X %02X: %s = %f", data->id, data->bIsNum, idStr, data->num);
 			}
 		}
 
@@ -298,10 +315,11 @@ Tile * Tile::GetRoot(void)
 	return traverse;
 }
 
-Tile::Value* Tile::GetValueByType(eTileValue valueType)
+Tile::Value* Tile::GetValueByType(UInt32 valueType)
 {
 	for (ValueList::Node* node = valueList.start; node; node = node->next)
 	{
+		DEBUG_PRINT("%04X\t%s\t%.2f", node->data->id, StrIDToStr(node->data->id), node->data->num);
 		if (node->data && node->data->id == valueType)
 			return node->data;
 	}
@@ -309,7 +327,7 @@ Tile::Value* Tile::GetValueByType(eTileValue valueType)
 	return NULL;
 }
 
-bool Tile::GetFloatValue(eTileValue valueType, float* out)
+bool Tile::GetFloatValue(UInt32 valueType, float* out)
 {
 	Value* val = GetValueByType(valueType);
 	if (val)
@@ -321,7 +339,7 @@ bool Tile::GetFloatValue(eTileValue valueType, float* out)
 	return false;
 }
 
-bool Tile::SetFloatValue(eTileValue valueType, float newValue)
+bool Tile::SetFloatValue(UInt32 valueType, float newValue)
 {
 	Value* val = GetValueByType(valueType);
 	if (val)
@@ -333,7 +351,7 @@ bool Tile::SetFloatValue(eTileValue valueType, float newValue)
 	return false;
 }
 
-bool Tile::GetStringValue(eTileValue valueType, const char** out)
+bool Tile::GetStringValue(UInt32 valueType, const char** out)
 {
 	Value* val = GetValueByType(valueType);
 	if (val)
@@ -345,7 +363,7 @@ bool Tile::GetStringValue(eTileValue valueType, const char** out)
 	return false;
 }
 
-bool Tile::SetStringValue(eTileValue valueType, const char* newValue)
+bool Tile::SetStringValue(UInt32 valueType, const char* newValue)
 {
 	Value* val = GetValueByType(valueType);
 	if (val)
@@ -355,4 +373,162 @@ bool Tile::SetStringValue(eTileValue valueType, const char* newValue)
 	}
 
 	return false;
+}
+
+bool Tile::DeleteValue(UInt32 valueType)
+{
+	ValueList::Node* prevNode = NULL;
+	ValueList::Node* targetNode = NULL;
+
+	for (ValueList::Node* node = valueList.start; node; node = node->next)
+	{
+		if (node->data && node->data->id == valueType)
+		{
+			targetNode = node;
+			break;
+		}
+		else
+			prevNode = node;
+	}
+
+	if (!targetNode)
+		return false;
+
+	if (prevNode)
+		prevNode->next = targetNode->next;
+	else
+		valueList.start = targetNode->next;
+
+	if (!targetNode->next)
+		valueList.end = prevNode;
+
+	valueList.FreeNode(targetNode);
+	return true;
+}
+
+void Tile::UpdateFloat(UInt32 valueType, float newValue)
+{
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	ThisStdCall(0x57FEF0, this, valueType, newValue);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	ThisStdCall(0x58CE10, this, valueType, newValue);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	ThisStdCall(0x58CEB0, this, valueType, newValue);
+#else
+#error unsupported Oblivion version
+#endif
+}
+
+void Tile::UpdateString(UInt32 valueType, const char* newValue)
+{
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	ThisStdCall(0x57FF10, this, valueType, newValue);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	ThisStdCall(0x58CE30, this, valueType, newValue);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	ThisStdCall(0x58CED0, this, valueType, newValue);
+#else
+#error unsupported Oblivion version
+#endif
+}
+
+Tile * Tile::GetChildByName(const char * name)
+{
+	Tile * requestedTile = NULL;
+	for (RefList::Node* node = childList.start; node; node = node->next)
+	{
+		if (node->data)
+		{
+			DEBUG_PRINT("%s", node->data->name.m_data);
+			if (!_stricmp(name, node->data->name.m_data))
+			{
+				requestedTile = node->data;
+				break;
+			}
+		}
+	}
+	
+	return requestedTile;
+}
+
+Tile::Value * Tile::GetValueByName(char* name)
+{
+	char* strtokContext = NULL;
+	char * childName = strtok_s(name, "\\/", &strtokContext);
+	char* nextName = NULL;
+	Tile * parentTile = this;
+
+	while (childName && parentTile)
+	{
+		DEBUG_PRINT("childName: %s", childName);
+		nextName = strtok_s(NULL, "\\/", &strtokContext);
+		if (!nextName)
+			break;
+	
+		parentTile = parentTile->GetChildByName(childName);
+		childName = nextName;
+	}
+
+	if (childName && !nextName && parentTile)	// childName is now name of value to retrieve
+		return parentTile->GetValueByType(StrToStrID(childName));
+
+	return NULL;
+}
+
+// this is currently very slow due to the # of tiles and values that need to be searched
+// The game probably caches the ID trait somewhere on the tile, investigate...
+Tile  * Tile::GetChildByIDTrait(UInt32 idToMatch)
+{
+	// search children recursively
+	for (RefList::Node* node = childList.start; node; node = node->next)
+	{
+		if (node->data)
+		{
+			Tile* match = node->data->GetChildByIDTrait(idToMatch);
+			if (match)
+				return match;
+		}
+	}
+
+	// check this tile
+	Tile::Value* idVal = GetValueByType(kTileValue_id);
+	if (idVal && idVal->num == idToMatch)
+		return this;
+	else
+		return NULL;
+}
+
+std::string Tile::GetQualifiedName()
+{
+	std::string qualifiedName;
+	float parentClass;
+	if (parent && !parent->GetFloatValue(kTileValue_class, &parentClass))	// i.e., parent is not a menu
+		qualifiedName = parent->GetQualifiedName() + "\\";
+
+	qualifiedName += name.m_data;
+
+	return qualifiedName;
+}
+
+void Tile::Value::DumpExpressionList()
+{
+	_MESSAGE("Tile %08x %s %s", parentTile, parentTile->name.m_data, parentTile->GetType());
+	gLog.Indent();
+
+	Expression*  expr = exprList.info;
+	while (expr)
+	{
+		_MESSAGE("%08x: prev %08x next %08x Operand: %08x Opcode: %s %04x %08x ",
+			expr,
+			expr->prev,
+			expr->next,
+			expr->operand,
+			StrIDToStr(expr->opcode),
+			expr->unkE,
+			expr->src);
+
+		expr = expr->next;
+	}
+
+	gLog.Outdent();
 }

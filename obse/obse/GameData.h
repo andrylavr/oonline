@@ -106,6 +106,7 @@ public:
 	const ModEntry ** GetActiveModList();		// returns array of modEntry* corresponding to loaded mods sorted by mod index
 	UInt8 GetModIndex(const char* modName);
 	UInt8 GetActiveModCount();
+	const char* GetNthModName(UInt32 modIndex);
 };
 
 STATIC_ASSERT(sizeof(DataHandler) == 0xCDC);
@@ -137,6 +138,7 @@ public:
 	const ModEntry ** GetActiveModList();		// returns array of modEntry* corresponding to loaded mods sorted by mod index
 	UInt8 GetModIndex(const char* modName);
 	UInt8 GetActiveModCount();
+	const char* GetNthModName(UInt32 modIndex);
 };
 
 STATIC_ASSERT(sizeof(DataHandler) == 0xCE0);

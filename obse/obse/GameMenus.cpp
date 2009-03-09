@@ -85,3 +85,13 @@ UInt32 AlchemyMenu::GetIngredientCount(UInt32 whichIngred)
 	else
 		return -1;
 }
+
+void BookMenu::UpdateText(const char* newText)
+{
+	tile->UpdateString(0xFB0, newText);
+}
+
+bool MessageMenu::IsScriptMessageBox()
+{
+	return (buttonCallback == (void*)ShowMessageBox_Callback);
+}

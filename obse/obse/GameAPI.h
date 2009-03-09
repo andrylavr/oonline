@@ -14,6 +14,7 @@ class SceneGraph;
 class NiNode;
 class Tile;
 class Menu;
+class FormatStringArgs;
 
 // only records individual objects if there's a block that matches it
 // ### how can it tell?
@@ -53,6 +54,7 @@ struct ScriptEventList
 
 	void	Dump(void);
 	Var *	GetVariable(UInt32 id);
+	UInt32	ResetAllVariables();
 };
 
 typedef void (* _Console_Print)(const char * buf, ...);
@@ -67,6 +69,15 @@ extern const _ExtractArgs ExtractArgs;
 bool ExtractArgsEx(ParamInfo * paramInfo, void * scriptData, UInt32 * scriptDataOffset, Script * scriptObj, ScriptEventList * eventList, ...);
 bool ExtractFormatStringArgs(UInt32 fmtStringPos, char* buffer, ParamInfo * paramInfo, void * scriptDataIn, UInt32 * scriptDataOffset, Script * scriptObj, ScriptEventList * eventList, UInt32 maxParams, ...);
 bool ExtractSetStatementVar(Script* script, ScriptEventList* eventList, void* scriptDataIn, double* outVarData, UInt8* outModIndex = NULL);
+bool ExtractFormattedString(FormatStringArgs& args, char* buffer);
+
+// Problem: plugins may want to use %z specifier in format strings, but don't have access to StringVarMap
+// Could change params to ExtractFormatStringArgs to include an OBSEStringVarInterface* but
+//  this would break existing plugins
+// Instead allow plugins to register their OBSEStringVarInterface for use
+// I'm sure there is a better way to do this but I haven't found it
+struct OBSEStringVarInterface;
+void RegisterStringVarInterface(OBSEStringVarInterface* intfc);
 
 typedef TESForm * (* _CreateFormInstance)(UInt8 type);
 extern const _CreateFormInstance CreateFormInstance;
@@ -101,7 +112,7 @@ extern const _ShowMessageBox_button ShowMessageBox_button;
 // unk1 = 0, unk2 = 1
 typedef bool (* _QueueUIMessage)(const char * string, UInt32 unk1, UInt32 unk2, float duration);
 extern const _QueueUIMessage QueueUIMessage;
-const UInt32 kMaxMessageLength = 4096;
+const UInt32 kMaxMessageLength = 0x4000;
 
 //displays icon and plays sound (used by Additem, Addspell, etc...)
 //ddsPath relative to Textures\Menus\...  soundID as defined in the CS
@@ -110,6 +121,9 @@ extern const _QueueUIMessage_2 QueueUIMessage_2;
 
 typedef bool (* _IsGodMode)(void);
 extern const _IsGodMode IsGodMode;
+
+typedef char (__stdcall * _ScancodeToChar)(UInt32 scanCode, UInt32 bUppercase);
+extern const _ScancodeToChar ScancodeToChar;
 
 extern MemoryHeap	* g_formHeap;
 
@@ -152,6 +166,7 @@ public:
 								// table mapping stored mod indices to loaded mod indices
 
 	void	LoadCreatedObjectsHook(UInt32 unk0);
+	bool	LoadGame(const char* filename);
 };
 
 #ifdef OBLIVION_VERSION
@@ -168,6 +183,9 @@ extern void * g_gameSettingsTable;
 
 extern const bool * g_bConsoleMode;
 bool IsConsoleMode();
+
+extern const bool * g_bIsConsoleOpen;
+bool IsConsoleOpen();
 
 const char * GetObjectClassName(void * obj);
 
@@ -300,6 +318,13 @@ public:
 
 	static InterfaceManager *	GetSingleton(void);
 
+	enum {				// special values for IsActiveMenuMode()
+		kMenuMode_GameMode = 0,
+		kMenuMode_BigFour,
+		kMenuMode_Any,
+		kMenuMode_Console,
+	};
+
 	SceneGraph*		unk000;							// 000
 	SceneGraph*		unk004;							// 004
 	UInt32			unk008[(0x018 - 0x008) >> 2];	// 008
@@ -322,35 +347,93 @@ public:
 	UInt32			unk094;							// 094
 	Tile			* activeTile;					// 098 - moused-over tile
 	Menu			* activeMenu;					// 09C - menu over which the mouse cursor is placed
-	UInt32			unk0A0[(0x0BC - 0x0A0) >> 2];	// 0A0
+	UInt32			unk0A0;							// 0A0
+	UInt32			unk0A4;							// 0A4
+	UInt32			unk0A8;							// 0A8
+	UInt32			unk0AC;							// 0AC
+	UInt8			msgBoxButtonPressed;			// 0B0
+	UInt8			unk0B1[3];						// 0B1
+	void			* unk0B4;						// 0B4 - stores callback for ShowMessageBox() (anything else?)
+	UInt32			unk0B8;							// 0B8	
 	TESObjectREFR	* debugSelection;				// 0BC
 	UInt32			unk0C0[(0x134 - 0x0C0) >> 2];	// 0C0
 
 	bool CreateTextEditMenu(const char* promptText, const char* defaultText);
+	float GetDepth();
+	bool MenuModeHasFocus(UInt32 menuType);		// returns true if menuType is on top (has focus)
+	bool IsGameMode();
+
 };
 
 STATIC_ASSERT(offsetof(InterfaceManager, activeMenu) == 0x09C);
 STATIC_ASSERT(sizeof(InterfaceManager) == 0x134);
 
-#define FORMAT_STRING_PARAMS 	\
-	{"format string",	kParamType_String, 0}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1}, \
-	{"variable",		kParamType_Float, 1} 
+bool SCRIPT_ASSERT(bool expr, Script* script, const char * errorMsg, ...);
+
+//A4
+class ScriptRunner
+{
+public:
+	static ScriptRunner *	GetSingleton;
+
+	UInt32					unk00;						//00
+	UInt32					unk04;						//04
+	ScriptEventList			* eventList;				//08
+	UInt32					unk0C;						//0C
+	UInt32					unk10;						//10
+	Script					* script;					//14
+	UInt32					unk18[ (0xA0 - 0x18) >> 2];	//18..9F
+	UInt8					unkA0;						//A0
+	UInt8					unkA1;						//A1
+	UInt8					unkA2;						//A2
+	UInt8					unkA3;						//A3
+
+	//unk4 = offset or length
+	bool ExecuteLine(Script* scriptObj, UInt16 opcode, UInt32 unk2, UInt16* unk3, UInt16 unk4, UInt16* unk5, 
+					 UInt32 currentLine, UInt32 unk7, UInt32 unk8);
+	bool Run(Script* scriptObj, UInt32 unk1, ScriptEventList* eventList, UInt32 unk3, UInt32 unkt4, UInt32 unk5,
+		UInt32 unk6, float unk7);
+};
+
+STATIC_ASSERT(sizeof(ScriptRunner) == 0xA4);
+
+// A plugin author requested the ability to use OBSE format specifiers to format strings with the args
+// coming from a source other than script.
+// So changed ExtractFormattedString to take an object derived from following class, containing the args
+// Probably doesn't belong in GameAPI.h but utilizes a bunch of stuff defined here and can't think of a better place for it
+class FormatStringArgs
+{
+public:
+	enum argType {
+		kArgType_Float,
+		kArgType_Form		// TESForm*
+	};
+
+	virtual bool Arg(argType asType, void * outResult) = 0;	// retrieve next arg
+	virtual bool SkipArgs(UInt32 numToSkip) = 0;			// skip specified # of args
+	virtual bool HasMoreArgs() = 0;
+	virtual std::string GetFormatString() = 0;						// return format string
+};
+
+// concrete class used for extracting script args
+class ScriptFormatStringArgs : public FormatStringArgs
+{
+public:
+	virtual bool Arg(argType asType, void* outResult);
+	virtual bool SkipArgs(UInt32 numToSkip);
+	virtual bool HasMoreArgs();
+	virtual std::string GetFormatString();
+
+	ScriptFormatStringArgs(UInt32 _numArgs, UInt8* _scriptData, Script* _scriptObj, ScriptEventList* _eventList);
+	UInt32 GetNumArgs();
+	UInt8* GetScriptData();
+
+private:
+	UInt32			numArgs;
+	UInt8			* scriptData;
+	Script			* scriptObj;
+	ScriptEventList	* eventList;
+	std::string fmtString;
+};
+
+

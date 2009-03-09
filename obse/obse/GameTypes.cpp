@@ -66,6 +66,8 @@ bool ci_equal(char ch1, char ch2)
 
 bool String::Includes(const char *toFind) const
 {
+	if (!m_data || !toFind)		//passing null ptr to std::string c'tor = CRASH
+		return false;
 	std::string curr(m_data, m_dataLen);
 	std::string str2(toFind);
 	std::string::iterator currEnd = curr.end();
@@ -74,6 +76,9 @@ bool String::Includes(const char *toFind) const
 
 bool String::Replace(const char *_toReplace, const char *_replaceWith)
 {
+	if (!m_data || !_toReplace)
+		return false;
+
 	std::string curr(m_data, m_dataLen);
 	std::string toReplace(_toReplace);
 
@@ -93,7 +98,10 @@ bool String::Replace(const char *_toReplace, const char *_replaceWith)
 
 bool String::Append(const char* toAppend)
 {
-	std::string curr(m_data, m_dataLen);
+	std::string curr("");
+	if (m_data)
+		curr = std::string(m_data, m_dataLen);
+
 	curr += toAppend;
 	Set(curr.c_str());
 	return true;
@@ -101,6 +109,9 @@ bool String::Append(const char* toAppend)
 
 double String::Compare(const String& compareTo, bool caseSensitive)
 {
+	if (!m_data)
+		return -2;		//signal value if comparison could not be made
+
 	std::string first(m_data, m_dataLen);
 	std::string second(compareTo.m_data, compareTo.m_dataLen);
 

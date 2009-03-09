@@ -5,7 +5,11 @@ class TESForm;
 void DumpClass(void * theClassPtr, UInt32 nIntsToDump = 512);
 
 #ifdef OBLIVION
+
 void PrintItemType(TESForm * form);
+const char GetSeparatorChar();		// '|' character can't be typed at the console, so
+const char* GetSeparatorChars();	//	  allow '@' to be substituted in commands called from console
+
 #endif
 
 class StringFinder_CI
@@ -180,6 +184,23 @@ public:
 		const Node* lastNode = GetLastNode();
 		lastNode->SetNext(newNode);
 	}
+
+	template <class Op>
+	UInt32 GetIndexOf(Op& op)
+	{
+		UInt32 idx = 0;
+		const Node* pCur = m_pHead;
+		while (pCur && pCur->Info() && !op.Accept(pCur->Info()))
+		{
+			idx++;
+			pCur = pCur->Next();
+		}
+
+		if (pCur && pCur->Info())
+			return idx;
+		else
+			return -1;
+	}
 };
 
 std::string GetOblivionDirectory(void);
@@ -214,3 +235,19 @@ double genrand_real3(void);
 double genrand_res53(void);
 
 };
+
+#if OBLIVION
+#if _DEBUG
+#define DEBUG_PRINT(x, ...) { Console_Print((x), __VA_ARGS__); }
+#else
+#define DEBUG_PRINT(x, ...) { }
+#endif	//_DEBUG
+#else
+#define DEBUG_PRINT(x, ...) { }
+#endif	//OBLIVION
+
+#define SIZEOF_ARRAY(arrayName, elementType) (sizeof(arrayName) / sizeof(elementType))
+
+// Intellisense likes to crash VS when I try to use Oblivion_DynamicCast so this just saves me some frustration
+#define OBLIVION_CAST(obj, from, to) (to *)Oblivion_DynamicCast((void*)(obj), 0, RTTI_ ## from, RTTI_ ## to, 0)
+

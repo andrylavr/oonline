@@ -562,7 +562,7 @@ public:
 	virtual void		Unk_15(void);
 	virtual void		Unk_16(void);
 	virtual void		Unk_17(void);
-	virtual void		Unk_18(void);
+	virtual void		Unk_18(float unk0, UInt32 unk1);
 	virtual void		Unk_19(void);
 	virtual void		Unk_1A(void);
 	virtual void		Unk_1B(void);

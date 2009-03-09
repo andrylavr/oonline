@@ -211,3 +211,68 @@ public:
 };
 
 extern NiTPointerList <TESForm>	* g_quickKeyList;	//array of 8 NiTPointerLists of size 0-1 with pointers to hotkeyed items/spells
+
+template <typename T>
+class NiPointer
+{
+public:
+	NiPointer(T *init) : data(init)		{	}
+
+	T	* data;
+
+	const T&	operator *() const { return *data; }
+	T&			operator *() { return *data; }
+
+	operator const T*() const { return data; }
+	operator T*() { return data; }
+};
+
+// 1C
+template <typename T>
+class LockFreeMap
+{
+public:
+	virtual void Unk_00(UInt32 arg0) = 0;
+	virtual void Unk_01(UInt32 arg0, UInt32 arg1, UInt32 arg2) = 0;
+	virtual void Unk_02(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3, UInt32 arg4) = 0;
+	virtual void Unk_03(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3) = 0;
+	virtual void Unk_04(UInt32 arg0, UInt32 agr1) = 0;
+	virtual void Unk_05(UInt32 arg0, UInt32 comperand) = 0;
+	virtual void Unk_06(UInt32 arg0) = 0;
+	virtual void Unk_07(UInt32 arg0, UInt32 arg1) = 0;
+	virtual void Unk_08(void) = 0;
+	virtual void Unk_09(UInt32 arg0, UInt32 arg1) = 0;
+	virtual void Unk_0A(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3) = 0;
+	virtual void Unk_0B(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3) = 0;
+	virtual void IncrementUnk0CCount(void) = 0;	
+	virtual void DecrementUnk0CCount(void) = 0;		
+	virtual UInt32 GetUnk0CCount(void) = 0;	
+
+	void	* unk04;				// 004
+	UInt32	unk0C_count;			// 008
+	void	* unk0C;				// 00C has unk0C_count elements; init to 0
+	UInt32	unk10;					// 010
+	void	* unk14;				// 014 ptr to 0x10 byte struct
+	UInt32	unk18;					// 018 init to 0
+};
+
+// 1C
+template <typename T>
+class LockFreeQueue
+{
+public:
+	virtual void Unk_00(void) = 0;
+
+	struct Node {
+		Node	* next;
+		T		data;
+	};
+
+	// void** vtbl
+	Node	* head;						// 004 
+	Node	* tail;						// 008
+	UInt32	unk0C;						// 00C -init to c'tr arg1
+	void	* unk10;					// 010 -dynamic alloc
+	void	* unk14;					// 0x14 (0x10 byte struct, called with arg0)
+	UInt32	unk18;						// 0x18 -init to 0
+};

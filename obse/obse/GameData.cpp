@@ -59,6 +59,15 @@ UInt8 DataHandler::GetActiveModCount()
 	return count;
 }
 
+const char* DataHandler::GetNthModName(UInt32 modIndex)
+{
+	const ModEntry** activeModList = GetActiveModList();
+	if (modIndex < GetActiveModCount() && activeModList[modIndex]->data)
+		return activeModList[modIndex]->data->name;
+	else
+		return "";
+}
+
 #if OBLIVION_VERSION == OBLIVION_VERSION_1_1
 
 FileFinder** g_FileFinder = (FileFinder**)0xAEBE0C;

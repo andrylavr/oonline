@@ -1,13 +1,16 @@
+#include "GameForms.h"
 #include "obse/GameAPI.h"
 #include "obse/GameObjects.h"
 #include "obse/CommandTable.h"
 #include "GameMenus.h"
+#include "GameData.h"
 #include "GameTiles.h"
 #include "StringVar.h"
 #include <cstdarg>
 
 #include <float.h>
 #include <cctype>
+#include <set>
 
 /***
  *	opcodes
@@ -45,8 +48,21 @@ void ScriptEventList::Dump(void)
 	}
 }
 
+UInt32 ScriptEventList::ResetAllVariables()
+{
+	UInt32 numVars = 0;
+	for (VarEntry * entry = m_vars; entry; entry = entry->next)
+		if (entry->var)
+		{
+			entry->var->data = 0.0;
+			numVars++;
+		}
+
+	return numVars;
+}
+
 ScriptEventList::Var * ScriptEventList::GetVariable(UInt32 id)
-{	
+{
 	for(VarEntry * entry = m_vars; entry; entry = entry->next)
 		if(entry->var && entry->var->id == id)
 			return entry->var;
@@ -76,6 +92,8 @@ const _ShowMessageBox_button ShowMessageBox_button = (_ShowMessageBox_button)0x0
 MemoryHeap * g_formHeap = (MemoryHeap *)0x00AC3EC0;
 const bool * g_bConsoleMode = (bool*)0x00AF3F24;
 const _IsGodMode IsGodMode = (_IsGodMode)0x00649840;
+const bool * g_bIsConsoleOpen = (bool*)0x00AEAD39;
+const _ScancodeToChar ScancodeToChar = (_ScancodeToChar)0x00403110;
 
 #elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
 
@@ -96,6 +114,8 @@ const _ShowMessageBox_button ShowMessageBox_button = (_ShowMessageBox_button)0x0
 MemoryHeap * g_formHeap = (MemoryHeap *)0x00B02020;
 const bool * g_bConsoleMode = (bool*)0x00B361AC;
 const _IsGodMode IsGodMode = (_IsGodMode)0x0065D2D0;
+const bool * g_bIsConsoleOpen = (bool*)0x00B33415;
+const _ScancodeToChar ScancodeToChar = (_ScancodeToChar)0x00403D00;
 
 #elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
 
@@ -116,6 +136,8 @@ const _ShowMessageBox_button ShowMessageBox_button = (_ShowMessageBox_button)0x0
 MemoryHeap * g_formHeap = (MemoryHeap *)0x00B02020;
 const bool * g_bConsoleMode = (bool*)0x00B361AC;
 const _IsGodMode IsGodMode = (_IsGodMode)0x0065D820;
+const _ScancodeToChar ScancodeToChar = (_ScancodeToChar)0x00403CF0;
+const bool * g_bIsConsoleOpen = (bool*)0x00B33415;
 
 #else
 
@@ -164,12 +186,18 @@ __declspec(naked) UInt32 __cdecl ThisCall(UInt32 function, void * _this, ...)
 	}
 }
 
-static UInt32 g_ThisStdCall_returnAddr = 0;
-static UInt32 g_ThisStdCall_stackAddr = 0;
+// max recursion depth is 10. We don't currently need anything close to that.
+static UInt32 g_ThisStdCall_returnAddr[10] = { 0 };
+static UInt32 g_ThisStdCall_stackAddr[10] = { 0 };
 
-// like stdcall (ie. called fn pops from stack) but with ecx set to this
+// Updated to allow recursive calls to ThisStdCall (still cheesy but meh)
+// Issue came up with RunScriptLine "fileName" - LoadGame hook called ThisStdCall() again, overwriting the
+// previously stored stack variables
 __declspec(naked) UInt32 __cdecl ThisStdCall(UInt32 function, void * _this, ...)
 {
+	static UInt32 nestDepth = 0;
+	static UInt32 _ebx = 0;				// ebx used as a working var, make sure original contents are preserved
+
 	__asm
 	{
 		//// stack
@@ -187,17 +215,30 @@ __declspec(naked) UInt32 __cdecl ThisStdCall(UInt32 function, void * _this, ...)
 		pop	edx
 		pop	ecx
 
-		mov g_ThisStdCall_returnAddr, eax
-		mov g_ThisStdCall_stackAddr, esp
+		mov _ebx, ebx
+		mov ebx, nestDepth
+
+		mov g_ThisStdCall_returnAddr[ebx * 4], eax
+		mov g_ThisStdCall_stackAddr[ebx * 4], esp
+
+		add ebx, 1
+		mov nestDepth, ebx
+		mov ebx, _ebx
 
 		call edx
 
-		mov esp, g_ThisStdCall_stackAddr
+		mov _ebx, ebx
+		mov ebx, nestDepth
+		sub ebx, 1
+		mov nestDepth, ebx
+
+		mov esp, g_ThisStdCall_stackAddr[ebx * 4]
 
 		push 0
 		push 0
-		push g_ThisStdCall_returnAddr
+		push g_ThisStdCall_returnAddr[ebx * 4]
 
+		mov ebx, _ebx
 		retn
 	}
 }
@@ -361,26 +402,12 @@ const char * GetFullName(TESForm * baseForm)
 {
 	if(baseForm)
 	{
-		TESFullName* fullName = NULL;
-		if (baseForm->typeID >= kFormType_REFR && baseForm->typeID <= kFormType_ACRE)	//handle MapMarkers and references
-		{
-			TESObjectREFR* refr = (TESObjectREFR*)Oblivion_DynamicCast(baseForm, 0, RTTI_TESForm, RTTI_TESObjectREFR, 0);
-			if (refr->baseForm->typeID == kFormType_Stat)
-			{
-				ExtraMapMarker* mapMarker = (ExtraMapMarker*)refr->baseExtraList.GetByType(kExtraData_MapMarker);
-				if (mapMarker)
-					fullName = mapMarker->fullName;
-			}
-
-			if (!fullName)		//if not a mapmarker, use the base form instead
-				baseForm = refr->baseForm;
-		}
-
-		if(!fullName)
-			fullName = (TESFullName *)Oblivion_DynamicCast(baseForm, 0, RTTI_TESForm, RTTI_TESFullName, 0);
-
+		TESFullName* fullName = baseForm->GetFullName();
 		if(fullName && fullName->name.m_data)
-			return fullName->name.m_data;
+		{
+			if (fullName->name.m_dataLen)
+				return fullName->name.m_data;
+		}
 	}
 
 	return "<no name>";
@@ -531,7 +558,7 @@ static bool v_ExtractArgsEx(UInt32 numArgs, ParamInfo * paramInfo, UInt8* &scrip
 	{
 		ParamInfo	* info = &paramInfo[i];
 
-		//_MESSAGE("ParamType: %d Type: %d Param: %s scriptData: %08x", info->typeID, *scriptData, info->typeStr, scriptData);	
+		//DEBUG_PRINT("ParamType: %d Type: %d Param: %s scriptData: %08x", info->typeID, *scriptData, info->typeStr, scriptData);	
 
 		switch(info->typeID)
 		{
@@ -559,7 +586,10 @@ static bool v_ExtractArgsEx(UInt32 numArgs, ParamInfo * paramInfo, UInt8* &scrip
 						*out = *((UInt32 *)++scriptData);
 						scriptData += sizeof(UInt32);
 						break;
-					
+					case 0x7A: // "z"
+						*out = *((double *)++scriptData);
+						scriptData += sizeof(double);
+						break;					
 					case 0x66: // "f"
 					case 0x72: // "r"
 					case 0x73: // "s"
@@ -738,8 +768,6 @@ InterfaceManager * InterfaceManager::GetSingleton(void)
 	return (InterfaceManager *)InterfaceManager_GetSingleton(false, true);
 }
 
-
-
 static void ConvertLiteralPercents(std::string* str)
 {
 	UInt32 idx = 0;
@@ -766,11 +794,11 @@ static void SkipArgs(UInt8* &scriptData)
 	}
 }
 
-static void OmitFormatStringArgs(std::string str, UInt8* &scriptData, UInt32& numArgs)
+static void OmitFormatStringArgs(std::string str, FormatStringArgs& args)
 {
 	//skip any args omitted by the %{ specifier
 	UInt32 strIdx = 0;
-	while ((strIdx = str.find('%', strIdx)) != -1 && numArgs > 0)
+	while ((strIdx = str.find('%', strIdx)) != -1 && args.HasMoreArgs())
 	{
 		switch(str[++strIdx])
 		{
@@ -782,36 +810,31 @@ static void OmitFormatStringArgs(std::string str, UInt8* &scriptData, UInt32& nu
 			break;
 		case 'c':
 		case 'C':
-			SkipArgs(scriptData);
-			SkipArgs(scriptData);
-			numArgs -= 2;
+			args.SkipArgs(2);
 			break;
 		default:
-			SkipArgs(scriptData);
-			numArgs--;
+			args.SkipArgs(1);
 		}
 		strIdx++;
 	}
 }
 
-static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &scriptData, Script* scriptObj, ScriptEventList* eventList)
+static OBSEStringVarInterface* s_StringVarInterface = NULL;
+
+void RegisterStringVarInterface(OBSEStringVarInterface* intfc)
+{
+	s_StringVarInterface = intfc;
+}
+
+//static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &scriptData, Script* scriptObj, ScriptEventList* eventList)
+bool ExtractFormattedString(FormatStringArgs& args, char* buffer)
 {
 	//extracts args based on format string, prints formatted string to buffer
 	static const int maxArgs = 20;
 	double f[maxArgs] = {0.0};
 	UInt32 argIdx = 0;
-	
-	//extract format string
-	UInt16 len = *((UInt16*)scriptData);
-	char* szFmt = new char[len+1];
-	scriptData += 2;
-	memcpy(szFmt, scriptData, len);
-	szFmt[len] = '\0';
 
-	scriptData += len;
-	std::string fmtString(szFmt);
-	delete szFmt;
-
+	std::string fmtString = args.GetFormatString();
 	UInt32 strIdx = 0;
 
 	//extract args
@@ -823,26 +846,31 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case '%':										//literal %
 			strIdx += 2;
 			break;
-#if OBSE_CORE
-// TODO: alternative interface for plugins (different parameters to ExtractFormattedString?)
 		case 'z':
 		case 'Z':										//string variable
 			{
-				numArgs--;
-
 				fmtString.erase(strIdx, 2);
 				double strID = 0;
+				if (!args.Arg(args.kArgType_Float, &strID))
+					return false;
+
+				const char* toInsert = NULL;
+#if OBSE_CORE
 				StringVar* insStr = NULL;
-				if (ExtractFloat(strID, scriptData, scriptObj, eventList))
-					insStr = g_StringMap.Get(strID);
+				insStr = g_StringMap.Get(strID);
 
 				if (insStr)
-					fmtString.insert(strIdx, insStr->GetCString());
+					toInsert = insStr->GetCString();
+#else			// called from a plugin command
+				if (s_StringVarInterface)
+					toInsert = s_StringVarInterface->GetString(strID);
+#endif
+				if (toInsert)
+					fmtString.insert(strIdx, toInsert);
 				else
 					fmtString.insert(strIdx, "NULL");
 			}
 			break;
-#endif
 		case 'r':										//newline
 		case 'R':
 			fmtString.erase(strIdx, 2);
@@ -855,19 +883,23 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case 'a':
 		case 'A':										//character specified by ASCII code
 			{
-				numArgs--;
 				fmtString.erase(strIdx, 2);
 				double fCharCode = 0;
-				if (ExtractFloat(fCharCode, scriptData, scriptObj, eventList))
+				if (args.Arg(args.kArgType_Float, &fCharCode))
 					fmtString.insert(strIdx, 1, (char)fCharCode);
+				else
+					return false;
 			}
 			break;
 		case 'n':										// name of obj/ref
 		case 'N':
 			{
-				numArgs--;
 				fmtString.erase(strIdx, 2);
-				std::string strName(GetFullName(ExtractFormFromFloat(scriptData, scriptObj, eventList)));
+				TESForm* form = NULL;
+				if (!args.Arg(args.kArgType_Form, &form))
+					return false;
+
+				std::string strName(GetFullName(form));
 				ConvertLiteralPercents(&strName);
 				fmtString.insert(strIdx, strName);
 				strIdx += strName.length();
@@ -876,10 +908,11 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case 'i':											//formID
 		case 'I':
 			{
-				numArgs--;
 				fmtString.erase(strIdx, 2);
-				TESForm* form = ExtractFormFromFloat(scriptData, scriptObj, eventList); 
-				if (!form)
+				TESForm* form = NULL;
+				if (!(args.Arg(args.kArgType_Form, &form)))
+					return false;
+				else if (!form)
 					fmtString.insert(strIdx, "00000000");
 				else
 				{			
@@ -892,16 +925,18 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case 'c':											//named component of another object
 		case 'C':											//2 args - object and index
 			{
-				numArgs -= 2;
+				TESForm* form = NULL;
+				if (!args.Arg(args.kArgType_Form, &form))
+					return false;
+
 				fmtString.erase(strIdx, 2);
-				TESForm* form = ExtractFormFromFloat(scriptData, scriptObj, eventList);
 				if (!form)
 					fmtString.insert(strIdx, "NULL");
 				else
 				{
 					double objIdx = 0;
-					if (!ExtractFloat(objIdx, scriptData, scriptObj, eventList))
-						fmtString.insert(strIdx, "NULL");
+					if (!args.Arg(args.kArgType_Float, &objIdx))
+						return false;
 					else
 					{
 						std::string strName("");
@@ -959,7 +994,7 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 									strName = "NULL";
 								else
 								{
-									strName = fact->GetNthRankMaleName(objIdx);
+									strName = fact->GetNthRankName(objIdx);
 								}
 								break;
 							}
@@ -976,50 +1011,47 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case 'k':
 		case 'K':											//DX code
 			{
-				numArgs--;
 				double keycode = 0;
 				fmtString.erase(strIdx, 2);
-				if (ExtractFloat(keycode, scriptData, scriptObj, eventList))
-				{
-					const char* desc = GetDXDescription(keycode);
-					fmtString.insert(strIdx, desc);
-				}
-				else
-					fmtString.insert(strIdx, "0");
+				if (!args.Arg(args.kArgType_Float, &keycode))
+					return false;
+
+				const char* desc = GetDXDescription(keycode);
+				fmtString.insert(strIdx, desc);
+
 			}
 			break;
 		case 'v':
 		case 'V':											//actor value
 			{
-				numArgs--;
 				double actorVal = kActorVal_OblivionMax;
 				fmtString.erase(strIdx, 2);
-				if (ExtractFloat(actorVal, scriptData, scriptObj, eventList))
+				if (!args.Arg(args.kArgType_Float, &actorVal))
+					return false;
+
+				std::string valStr(GetActorValueString(actorVal));
+				if (valStr.length())
 				{
-					std::string valStr(GetActorValueString(actorVal));
-					if (valStr.length())
-					{
-						for (UInt32 idx = 1; idx < valStr.length(); idx++)
-							if (isupper(valStr[idx]))
-							{								//insert spaces to make names more presentable
-								valStr.insert(idx, " ");
-								idx += 2;
-							}
-					}
-					fmtString.insert(strIdx, valStr);
+					for (UInt32 idx = 1; idx < valStr.length(); idx++)
+						if (isupper(valStr[idx]))
+						{								//insert spaces to make names more presentable
+							valStr.insert(idx, " ");
+							idx += 2;
+						}
 				}
-				else
-					fmtString.insert(strIdx, "unknown");
+				fmtString.insert(strIdx, valStr);
 			}
 			break;
 		case 'p':
 		case 'P':											//pronouns
 			{
-				numArgs--;
 				fmtString.erase(strIdx, 2);
 				char pronounType = fmtString[strIdx];
 				fmtString.erase(strIdx, 1);
-				TESForm* form = ExtractFormFromFloat(scriptData, scriptObj, eventList);
+				TESForm* form = NULL;
+				if (!args.Arg(args.kArgType_Form, &form))
+					return false;
+
 				if (!form)
 					fmtString.insert(strIdx, "NULL");
 				else
@@ -1077,17 +1109,18 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 			break;
 		case '{':											//omit portion of string based on flag param
 			{
-				numArgs--;
 				fmtString.erase(strIdx, 2);
 				double flag = 0;
-				ExtractFloat(flag, scriptData, scriptObj, eventList);
+				if (!args.Arg(args.kArgType_Float, &flag))
+					return false;
+
 				UInt32 omitEnd = fmtString.find("%}", strIdx);
 				if (omitEnd == -1)
 					omitEnd = fmtString.length();
 
 				if (!flag)
 				{
-					OmitFormatStringArgs(fmtString.substr(strIdx, omitEnd - strIdx), scriptData, numArgs);
+					OmitFormatStringArgs(fmtString.substr(strIdx, omitEnd - strIdx), args);
 					fmtString.erase(strIdx, omitEnd - strIdx + 2);
 				}
 				else
@@ -1101,8 +1134,9 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 		case 'X':
 			{
 				double data = 0;
-				numArgs--;
-				ExtractFloat(data, scriptData, scriptObj, eventList);
+				if (!args.Arg(args.kArgType_Float, &data))
+					return false;
+
 				UInt64* hexArg = (UInt64*)(&f[argIdx++]);
 				*hexArg = data;
 				fmtString.erase(strIdx, 2);
@@ -1123,9 +1157,10 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 			break;
 		default:											//float
 			{
-				numArgs--;
 				double data = 0;
-				ExtractFloat(data, scriptData, scriptObj, eventList);
+				if (!args.Arg(args.kArgType_Float, &data))
+					return false;
+
 				f[argIdx++] = data;
 				strIdx++;
 			}
@@ -1135,6 +1170,11 @@ static bool ExtractFormattedString(UInt32 &numArgs, char* buffer, UInt8* &script
 	if (sprintf_s(buffer, kMaxMessageLength - 2, fmtString.c_str(), f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11], f[12], f[13], f[14], f[15], f[16], f[17], f[18], f[19]) > 0)
 	{
 		buffer[kMaxMessageLength-1] = '\0';
+		return true;
+	}
+	else if (fmtString.length() == 0)
+	{
+		buffer[0] = '\0';
 		return true;
 	}
 	else
@@ -1174,8 +1214,11 @@ bool ExtractFormatStringArgs(UInt32 fmtStringPos, char* buffer, ParamInfo * para
 			return false;
 	}
 
-	bExtracted = ExtractFormattedString(numArgs, buffer, scriptData, scriptObj, eventList);
+	ScriptFormatStringArgs scriptArgs(numArgs, scriptData, scriptObj, eventList);
+	bExtracted = ExtractFormattedString(scriptArgs, buffer);
 
+	numArgs = scriptArgs.GetNumArgs();
+	scriptData = scriptArgs.GetScriptData();
 	//NOTE: if v_ExtractArgsEx was called above, passing args again in second call below = undefined behavior. Needs fixing.
 	if (bExtracted && numArgs > 0)			//some optional normal params following format string params
 	{
@@ -1192,12 +1235,19 @@ bool ExtractFormatStringArgs(UInt32 fmtStringPos, char* buffer, ParamInfo * para
 bool IsConsoleMode()	
 	{	return *g_bConsoleMode;	}
 
+bool IsConsoleOpen()
+{
+	return *g_bIsConsoleOpen;
+}
+
 bool ExtractSetStatementVar(Script* script, ScriptEventList* eventList, void* scriptDataIn, double * outVarData, UInt8* outModIndex)
 {
 	//when script command called as righthand side of a set statement, the script data containing the variable
 	//to assign to remains on the stack as arg to a previous function. We can get to it through arg1 in COMMAND_ARGS
 
-	if ((*((UInt8*)scriptDataIn)) == 0x1D)		//not a set statement
+	UInt8* dataStart = (UInt8*)scriptDataIn;	// should be 0x58 (or 0x72 if called with dot syntax)
+
+	if (!SCRIPT_ASSERT((*dataStart == 0x58 || *dataStart == 0x72), script, "Function must be used within a Set statement"))
 		return false;
 
 	UInt32 scriptDataPtrAddr = (UInt32)(scriptDataIn) - 0x3C;
@@ -1286,22 +1336,204 @@ bool ExtractSetStatementVar(Script* script, ScriptEventList* eventList, void* sc
 		}
 		break;
 	default:
-		_MESSAGE("Error: ExtractSetStatementVar can't interpret data");
+		SCRIPT_ASSERT(false, script, "Function must be used within a Set statement");
 	}
 
 	return bExtracted;
 }
 
+//Generate a game messagebox
+void MessageBoxAlert(const char * msg)
+{
+	*ShowMessageBox_button = 0xFF;
+	*ShowMessageBox_pScriptRefID = 0;
+	ShowMessageBox(msg, ShowMessageBox_Callback, 0, "Ok", 0);
+}
+
+//Log error if expression evaluates to false
+bool SCRIPT_ASSERT(bool expr, Script* script, const char * errorMsg, ...)
+{
+	static bool bAlerted = false;			//only alert user on first error
+	static std::set<UInt32> naughtyScripts;	//one error per script to avoid thrashing
+
+	if (!expr && naughtyScripts.find(script->refID) == naughtyScripts.end())
+	{
+		const ModEntry ** activeMods = (*g_dataHandler)->GetActiveModList();
+		UInt8 modIndex = script->GetModIndex();
+		const ModEntry * modEntry = activeMods[modIndex];
+
+		const char * modName;
+		if (modIndex != 0xFF && modEntry && modEntry->data && modEntry->data->name)
+			modName = modEntry->data->name;
+		else
+			modName = "Unknown";
+
+//		sprintf_s(errorHeader, sizeof(errorHeader) - 1, "** Error: Script %08X in file \"%s\" **", script->refID, modName);
+//		_MESSAGE("%s", errorHeader);
+		_MESSAGE("** Script Error: Script %08x in file \"%s\" **", script->refID, modName);
+
+		va_list args;
+		va_start(args, errorMsg);
+
+		char errorBuf[512];
+		vsprintf_s(errorBuf, sizeof(errorBuf) - 1, errorMsg, args);
+		va_end(args);
+
+		gLog.Indent();
+		_MESSAGE("%s", errorBuf);
+		gLog.Outdent();
+
+		if (!bAlerted)
+		{
+			MessageBoxAlert("OBSE has detected a script error. \n\nPlease check obse.log for details.");
+			bAlerted = true;
+		}
+
+		naughtyScripts.insert(script->refID);
+	}
+
+	return expr;
+}
+
+ScriptFormatStringArgs::ScriptFormatStringArgs(UInt32 _numArgs, UInt8* _scriptData, Script* _scriptObj, ScriptEventList* _eventList)
+	: numArgs(_numArgs), scriptData(_scriptData), scriptObj(_scriptObj), eventList(_eventList)
+{
+	//extract format string
+	UInt16 len = *((UInt16*)scriptData);
+	char* szFmt = new char[len+1];
+	scriptData += 2;
+	memcpy(szFmt, scriptData, len);
+	szFmt[len] = '\0';
+
+	scriptData += len;
+	fmtString = std::string(szFmt);
+	delete szFmt;
+}
+
+std::string ScriptFormatStringArgs::GetFormatString()
+{
+	return fmtString;
+}
+
+bool ScriptFormatStringArgs::HasMoreArgs()
+{
+	return (numArgs > 0);
+}
+
+UInt32 ScriptFormatStringArgs::GetNumArgs()
+{
+	return numArgs;
+}
+
+UInt8* ScriptFormatStringArgs::GetScriptData()
+{
+	return scriptData;
+}
+
+bool ScriptFormatStringArgs::SkipArgs(UInt32 numToSkip)
+{
+	while (numToSkip--)
+	{
+		switch (*scriptData)
+		{
+		case 'z':
+			scriptData += sizeof(double) + 1;
+			break;
+		case 'r':
+			scriptData += 6;
+			break;
+		default:
+			scriptData += 3;
+			break;
+		}
+
+		numArgs--;
+	}
+
+	return true;
+}
+
+bool ScriptFormatStringArgs::Arg(FormatStringArgs::argType asType, void * outResult)
+{
+	if (!SCRIPT_ASSERT((numArgs > 0), scriptObj, "Too few args for format specifier"))
+		return false;
+
+	numArgs--;
+
+	switch (asType)
+	{
+	case kArgType_Float:
+		{
+			double data = 0;
+			if (ExtractFloat(data, scriptData, scriptObj, eventList))
+			{
+				*((double*)outResult) = data;
+				return true;
+			}
+		}
+		break;
+	case kArgType_Form:
+		{
+			TESForm* form = ExtractFormFromFloat(scriptData, scriptObj, eventList);
+			*((TESForm**)outResult) = form;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool InterfaceManager::CreateTextEditMenu(const char* promptText, const char* defaultText)
 {
-#if OBLIVION_VERSION == OBLIVION_VERSION_1_2
-	return ThisStdCall(0x005DCD10, this, promptText, defaultText);
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	return ThisStdCall(0x005CEAA0, this, promptText, defaultText) ? true : false;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	return ThisStdCall(0x005DCD10, this, promptText, defaultText) ? true : false;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	return ThisStdCall(0x005DCF20, this, promptText, defaultText) ? true : false;
 #else
-#pragma message( __LOC__ "InterfaceManager::CreateTextEditMenu() unimplemented for v1.1 and v1.2.416 - unused" )
-	return NULL;
+#error unsupported Oblivion version
 #endif
 }
 
+float InterfaceManager::GetDepth()
+{
+	float depth = 0;
 
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	ThisStdCall(0x0057BC60, this);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	ThisStdCall(0x00588860, this);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	ThisStdCall(0x00588890, this);
+#else
+#error unsupported oblivion version
+#endif
 
+	__asm {
+		fstp	[depth]
+	}
+
+	return depth;
+}
+
+bool InterfaceManager::MenuModeHasFocus(UInt32 menuType)
+{
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	UInt8 bMenuMode = (UInt8)ThisStdCall(0x0056F500, this, menuType);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	UInt8 bMenuMode = (UInt8)ThisStdCall(0x0057C040, this, menuType);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	UInt8 bMenuMode = (UInt8)ThisStdCall(0x0057C140, this, menuType);
+#else
+#error unsupported oblivion version
+#endif
+
+	return bMenuMode ? true : false;
+}
+
+bool InterfaceManager::IsGameMode()
+{
+	return cursor ? false : true;	// this is what the game generally uses to test for gamemode
+}
 

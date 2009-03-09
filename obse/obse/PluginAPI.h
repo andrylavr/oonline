@@ -1,6 +1,10 @@
 #pragma once
 
 struct CommandInfo;
+struct ParamInfo;
+class TESObjectREFR;
+class Script;
+struct ScriptEventList;
 
 typedef UInt32	PluginHandle;	// treat this as an opaque type
 
@@ -15,6 +19,10 @@ enum
 
 	// added in v0015
 	kInterface_Serialization,
+
+	// added v0016
+	kInterface_StringVar,
+	kInterface_IO,
 
 	kInterface_Max
 };
@@ -44,6 +52,55 @@ struct OBSEConsoleInterface
 
 	UInt32	version;
 	void	(* RunScriptLine)(const char * buf);
+};
+
+/***** string_var API *****************************
+*
+* string_var is OBSE's string pseudo-datatype. Strings are represented internally by
+* integer IDs, however the details of the implementation are opaque to scripts and
+* ideally to plugins as well.
+*
+* Plugin authors should rely primarily on Assign() to return a string as the result of a script function.
+* It takes the COMMAND_ARGS passed to the script function followed by a pointer to the new string.
+* i.e. Assign(PASS_COMMAND_ARGS, "some string") assigns "some string" to the  string variable on the lefthand
+* side of the script assignment statement, initializing the variable if necessary. Generates a logged error if 
+* the scripter does not provide a variable in which to store the result.
+*
+* GetString(), CreateString(), and SetString() are slightly lower-level functions; use them only if you have a 
+* genuine need to directly create and manipulate new string variables outside of script commands. CreateString()
+* returns the integer ID of the newly-created string var.
+*
+* If you want your script commands to support OBSE's %z format specifier (for inserting the contents of a string_var
+* into another string), you must pass an OBSEStringVarInterface pointer to Register(). This only needs to be called
+* once, preferably during plugin load.
+*
+**************************************************/
+
+struct OBSEStringVarInterface
+{
+	enum {
+		kVersion = 1
+	};
+
+	UInt32		version;
+	const char* (* GetString)(UInt32 stringID);
+	void		(* SetString)(UInt32 stringID, const char* newValue);
+	UInt32		(* CreateString)(const char* value, void* owningScript);
+	void		(* Register)(OBSEStringVarInterface* intfc);
+	bool		(* Assign)(ParamInfo * paramInfo, void * arg1, TESObjectREFR * thisObj, UInt32 arg3, Script * scriptObj, ScriptEventList * eventList, double * result, UInt32 * opcodeOffsetPtr, const char* newValue);
+};
+
+// Added in v0016
+// IsKeyPressed() takes a DirectInput scancode; values above 255 represent mouse buttons
+// codes are the same as those used by OBSE's IsKeyPressed2 command
+struct OBSEIOInterface
+{
+	enum {
+		kVersion = 1
+	};
+
+	UInt32		version;
+	bool		(* IsKeyPressed)(UInt32 scancode);
 };
 
 /**** serialization API docs ***************************************************

@@ -232,6 +232,7 @@
  *	
  ******************************************************************************/
 
+//NOTE: For boolean tile values, 1=false, 2=true
 enum eTileValue {
 	//...
 
@@ -244,10 +245,10 @@ enum eTileValue {
 	kTileValue_alpha,
 	kTileValue_id,
 	kTileValue_disablefade,
-	kTileValue_listindex	= 0x00000FAA,
+	kTileValue_listindex,
+	kTileValue_depth,
 	kTileValue_y,
 	kTileValue_x,
-	kTileValue_depth,
 	kTileValue_user0,
 	kTileValue_user1,
 	kTileValue_user2,
@@ -300,6 +301,32 @@ enum eTileValue {
 	kTileValue_explorefade,
 	kTileValue_mouseover,
 	kTileValue_string,
+	kTileValue_shiftclicked,
+	kTileValue_focusinset,
+	kTileValue_clicked,
+	kTileValue_clickcountbefore,
+	kTileValue_clickcountafter,
+	kTileValue_clickedfunc,
+	kTileValue_clicksound,
+	kTileValue_filename,
+
+	//...
+
+	kTileValue_xdefault		= 0x00000FF0,
+	kTileValue_xup,
+	kTileValue_xdown,
+	kTileValue_xleft,
+	kTileValue_xright,
+	kTileValue_xscroll,
+	kTileValue_xlist,
+	kTileValue_xbuttona,
+	kTileValue_xbuttonb,
+	kTileValue_xbuttonx,
+	kTileValue_xbuttony,
+	kTileValue_xbuttonlt,
+	kTileValue_xbuttonrt,
+	kTileValue_xbuttonlb,
+	kTileValue_xbuttonrb,
 
 	//...
 };
@@ -316,29 +343,52 @@ public:
 	void	DebugDump(void);
 
 	static const char *	StrIDToStr(UInt32 id);
+	static UInt32		StrToStrID(const char * str);
 
 	virtual void			Destructor(void);
 	virtual void			Unk_01(UInt32 unk0, const char * str, UInt32 unk2);	// initialize? doesn't read data
 	virtual UInt32			Unk_02(void);	// create render objects?
 	virtual UInt32			GetTypeID(void);
 	virtual const char *	GetType(void);
-	virtual UInt32			UpdateField(UInt32 valueID, float floatValue, const char* strValue);
+	virtual UInt32			UpdateField(UInt32 valueID, float floatValue, const char* strValue);	//checks for equality, doesn't always update...
 	virtual void			Unk_06(void);	// does something with tile's NiNode
 
 	// 1C
 	struct Value
 	{
 
-		bool IsNum() { return unk1A == 1; }
-		bool IsString() { return unk1A == 0; }
+		union Operand {
+			Value	* ref;
+			float	* immediate;
+		};
 
-		UInt32	unk00;		// 00 - Tile * back to owning tile
-		float	num;		// 04
-		String	str;		// 08
-		UInt32	unk10[2];	// 10
-		UInt16	id;			// 18 
-		UInt8	unk1A;		// 1A 0 = string, 1 = number
-		UInt8	pad1B;		// 1B
+		struct Expression
+		{
+			Expression		* prev;
+			Expression		* next;
+			Operand			operand;	// how does it tell if it's ref or immediate?
+			UInt16			opcode;		// i.e. 7D1 "copy", 7D2 "add", etc
+			UInt16			unkE;
+			Value			* src;
+		};
+
+		// linked list of compiled xml expression. Preliminary!
+		struct ExpressionList {
+			Expression		* info;
+			ExpressionList	* next;
+		};
+
+		bool IsNum() { return bIsNum == 1; }
+		bool IsString() { return bIsNum == 0; }
+		void DumpExpressionList();
+
+		Tile	* parentTile;	// 00 - Tile * back to owning tile
+		float	num;			// 04
+		String	str;			// 08
+		ExpressionList	exprList;	// 10
+		UInt16	id;				// 18 
+		UInt8	bIsNum;			// 1A 0 = string, 1 = number
+		UInt8	pad1B;			// 1B
 	};
 
 	typedef NiTListBase <Tile>	RefList;
@@ -348,23 +398,37 @@ public:
 	Tile *	ReadXML(const char * xmlPath);
 	Tile *	GetRoot(void);
 	
-	Value* GetValueByType(eTileValue valueType);
-	bool GetFloatValue(eTileValue valueType, float* out);
-	bool SetFloatValue(eTileValue valueType, float newValue);
-	bool GetStringValue(eTileValue valueType, const char** out);
-	bool SetStringValue(eTileValue valueType, const char* newValue);
+	Value * GetValueByType(UInt32 valueType);
+	Value * GetValueByName(char * name);
+//	bool	SetValueByName(char* name, const char* strVal, float floatVal);
+	Tile  * GetChildByName(const char * name);
+	Tile  * GetChildByIDTrait(UInt32 idToMatch);	// find child with <id> trait matching idToMatch
+	bool GetFloatValue(UInt32 valueType, float* out);
+	bool SetFloatValue(UInt32 valueType, float newValue);
+	bool GetStringValue(UInt32 valueType, const char** out);
+	bool SetStringValue(UInt32 valueType, const char* newValue);
+	bool DeleteValue(UInt32 valueType);
+	void UpdateString(UInt32 valueType, const char* newValue);		// sets field and updates display
+	void UpdateFloat(UInt32 valueType, float newValue);				// ditto for floats
+	std::string GetQualifiedName();	
+
+	enum {
+		kTileFlag_ChangedXY				= 1 << 0,
+		kTileFlag_ChangedString			= 1 << 1,
+		kTileFlag_ChangedWidthHeight	= 1 << 5
+	};
 
 //	void	** _ctor;		// 00
 	UInt8	unk04;			// 04 - 0 = base tile
-	UInt8	unk05;			// 05
+	UInt8	unk05;			// 05 - looks like bool, possibly bModified? Seems only used for x, y, width, height changed
 	UInt8	unk06;			// 06
 	UInt8	pad07;			// 07
-	String	unk08;			// 08
+	String	name;			// 08
 	Tile	* parent;		// 10
 	ValueList	valueList;	// 14
 	UInt32	unk24;			// 24	// NiNode *
 	void	* unk28;		// 28
-	UInt32	unk2C;			// 2C
+	UInt32	flags;			// 2C 
 	RefList	childList;		// 30
 };
 

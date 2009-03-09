@@ -55,9 +55,37 @@ UInt32 Actor::GetBaseActorValue(UInt32 value)
 	return ThisStdCall(s_Actor_GetBaseActorValue, this, value);
 }
 
+EquippedItemsList Actor::GetEquippedItems()
+{
+	EquippedItemsList itemList;
+
+	ExtraContainerChanges	* xChanges = static_cast <ExtraContainerChanges *>(baseExtraList.GetByType(kExtraData_ContainerChanges));
+	if(xChanges && xChanges->data && xChanges->data->objList)
+		for(ExtraContainerChanges::Entry * entry = xChanges->data->objList; entry; entry = entry->next)
+			if(entry->data && entry->data->extendData && entry->data->type)
+				for(ExtraContainerChanges::EntryExtendData * extend = entry->data->extendData; extend; extend = extend->next)
+					if(extend->data && extend->data->HasType(kExtraData_Worn) || extend->data->HasType(kExtraData_WornLeft))
+						itemList.push_back(entry->data->type);
+
+	return itemList;
+}
+
 bool PlayerCharacter::SetActiveSpell(MagicItem * item)
 {
 	return ThisStdCall(s_PlayerCharacter_SetActiveSpell, this, item) != 0;
+}
+
+void PlayerCharacter::TogglePOV(bool bFirstPerson)
+{
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	ThisStdCall(0x00655560, this, bFirstPerson);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	ThisStdCall(0x0066C040, this, bFirstPerson);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	ThisStdCall(0x0066C580, this, bFirstPerson);
+#else
+#error unsupported Oblivion version 
+#endif
 }
 
 Sky * Sky::GetSingleton(void)
@@ -103,4 +131,30 @@ TESForm* TESObjectREFR::GetInventoryItem(UInt32 itemIndex, bool bGetWares)
 		return data->type;
 	else
 		return NULL;
+}
+
+typedef void (*_DisableRef)(TESObjectREFR *refr);
+typedef void (*_EnableRef)(TESObjectREFR *refr);
+
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+const _DisableRef DisableRef = (_DisableRef)0x004F16A0;
+const _EnableRef EnableRef = (_EnableRef)0x004F0650;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+const _DisableRef DisableRef = (_DisableRef)0x004FBC80;
+const _EnableRef EnableRef = (_EnableRef)0x004FA5F0;
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+const _DisableRef DisableRef = (_DisableRef)0x004FBB30;
+const _EnableRef EnableRef = (_EnableRef)0x004FA540;
+#else
+#error unsupported version of oblivion
+#endif
+
+void TESObjectREFR::Disable()
+{
+	DisableRef(this);
+}
+
+void TESObjectREFR::Enable()
+{
+	EnableRef(this);
 }

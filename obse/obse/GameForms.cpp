@@ -116,6 +116,50 @@ void TESBipedModelForm::SetPlayable(bool bPlayable)
 	}
 }
 
+void  TESBipedModelForm::SetPath(const char* newPath, UInt32 whichPath, bool bFemalePath)
+{
+	String* toSet = NULL;
+
+	switch (whichPath)
+	{
+	case kPath_Biped:
+		toSet = &bipedModel[bFemalePath ? 1 : 0].nifPath;
+		break;
+	case kPath_Ground:
+		toSet = &groundModel[bFemalePath ? 1 : 0].nifPath;
+		break;
+	case kPath_Icon:
+		toSet = &icon[bFemalePath ? 1 : 0].ddsPath;
+		break;
+	}
+
+	if (toSet)
+		toSet->Set(newPath);
+}
+
+const char* TESBipedModelForm::GetPath(UInt32 whichPath, bool bFemalePath)
+{
+	String* pathStr = NULL;
+
+	switch (whichPath)
+	{
+	case kPath_Biped:
+		pathStr = &bipedModel[bFemalePath ? 1 : 0].nifPath;
+		break;
+	case kPath_Ground:
+		pathStr = &groundModel[bFemalePath ? 1 : 0].nifPath;
+		break;
+	case kPath_Icon:
+		pathStr = &icon[bFemalePath ? 1 : 0].ddsPath;
+		break;
+	}
+
+	if (pathStr)
+		return pathStr->m_data;
+	else
+		return "";
+}
+
 bool TESForm::IsQuestItem() const
 {
 	return (flags & kFormFlags_QuestItem) != 0;
@@ -197,6 +241,38 @@ TESForm * TESForm::TryGetREFRParent(void)
 	}
 
 	return result;
+}
+
+TESFullName* TESForm::GetFullName()
+{
+	TESForm* baseForm = this;
+	TESFullName* fullName = NULL;
+
+	if (typeID >= kFormType_REFR && typeID <= kFormType_ACRE)	//handle MapMarkers and references
+	{
+		TESObjectREFR* refr = (TESObjectREFR*)Oblivion_DynamicCast(this, 0, RTTI_TESForm, RTTI_TESObjectREFR, 0);
+		if (refr->baseForm->typeID == kFormType_Stat)
+		{
+			ExtraMapMarker* mapMarker = (ExtraMapMarker*)refr->baseExtraList.GetByType(kExtraData_MapMarker);
+			if (mapMarker && mapMarker->data)
+				fullName = &mapMarker->data->fullName;
+		}
+
+		if (!fullName)		//if not a mapmarker, use the base form instead
+			baseForm = refr->baseForm;
+	}
+	else if (typeID == kFormType_Cell)		// some exterior cells inherit name of parent worldspace
+	{
+		TESObjectCELL* cell = OBLIVION_CAST(this, TESForm, TESObjectCELL);
+		if (cell && cell->worldSpace)
+			if (!cell->fullName.name.m_data || !cell->fullName.name.m_dataLen)
+					baseForm = cell->worldSpace;
+	}
+
+	if(!fullName)
+		fullName = (TESFullName *)Oblivion_DynamicCast(baseForm, 0, RTTI_TESForm, RTTI_TESFullName, 0);
+
+	return fullName;
 }
 
 bool TESObjectARMO::IsHeavyArmor() const
@@ -1286,6 +1362,21 @@ bool EffectItemList::RemoveItem(UInt32 whichItem)
 	return bFound;
 }
 
+EffectItemList* GetEffectList(TESForm* form)
+{
+	EffectItemList* list = NULL;
+	MagicItem* magicItem = (MagicItem*)Oblivion_DynamicCast(form, 0, RTTI_TESForm, RTTI_MagicItem, 0);
+	if (magicItem) {
+		list = &magicItem->list;
+	} else {
+		TESSigilStone* sigilStone = (TESSigilStone*)Oblivion_DynamicCast(form, 0, RTTI_TESForm, RTTI_TESSigilStone, 0);
+		if (sigilStone) {
+			list = &sigilStone->effectList;
+		}
+	}
+	return list;
+}
+
 static const bool kFindHostile = true;
 static const bool kFindNonHostile = false;
 class HostileItemCounter {
@@ -1872,6 +1963,22 @@ public:
 	}
 };
 
+class LevListFinderByForm
+{
+	TESForm* m_formToMatch;
+
+public:
+	LevListFinderByForm(TESForm* form) : m_formToMatch(form)
+		{	}
+	bool Accept(const TESLeveledList::ListData* data)
+	{
+		if (data->form == m_formToMatch)
+			return true;
+		else
+			return false;
+	}
+};
+
 UInt32 TESLeveledList::RemoveByLevel(UInt32 whichLevel)
 {
 	UInt32 numRemoved = 0;
@@ -1881,6 +1988,34 @@ UInt32 TESLeveledList::RemoveByLevel(UInt32 whichLevel)
 	return numRemoved;
 }
 
+bool TESLeveledList::RemoveNthItem(UInt32 itemIndex)
+{
+	if (itemIndex == 0)
+	{
+		list.DeleteHead(list.next);
+		return true;
+	}
+	else
+	{
+		TESLeveledList::ListEntry* curEntry = &list;
+		TESLeveledList::ListEntry* prevEntry = NULL;
+		UInt32 idx;
+		for (idx = 0;
+			 idx < itemIndex && curEntry;
+			 idx++, prevEntry = curEntry, curEntry = curEntry->next)
+		{	}	// just incrementing the counter
+
+		if (curEntry && (idx == itemIndex))
+		{
+			prevEntry->SetNext(curEntry->next);
+			curEntry->Delete();
+			return true;
+		}
+	}
+
+	return false;
+}
+	
 void TESLeveledList::ListEntry::Delete() {
 	FormHeap_Free(data);
 	FormHeap_Free(this);
@@ -1906,6 +2041,18 @@ TESForm* TESLeveledList::GetElementByLevel(UInt32 whichLevel)
 		foundForm = foundEntry->data->form;
 
 	return foundForm;
+}
+
+UInt32 TESLeveledList::GetItemIndexByLevel(UInt32 level)
+{
+	LeveledListVisitor visitor(&list);
+	return visitor.GetIndexOf(LevListFinderByLevel(level));
+}
+
+UInt32 TESLeveledList::GetItemIndexByForm(TESForm* form)
+{
+	LeveledListVisitor visitor(&list);
+	return visitor.GetIndexOf(LevListFinderByForm(form));
 }
 
 TESWeather::RGBA& TESWeather::GetColor(UInt32 whichColor, UInt8 time)
@@ -1950,13 +2097,25 @@ TESContainer::Data* TESContainer::DataByType(TESForm *type) const
 	return (entry) ? entry->data : NULL;
 }
 
-const char* TESFaction::GetNthRankMaleName(UInt32 whichRank)
+const char* TESFaction::GetNthRankName(UInt32 whichRank, bool bFemale)
 {
 	TESFaction::RankData* rankData = FactionRankVisitor(&ranks).GetNthInfo(whichRank);
 	if (!rankData)
 		return NULL;
 	else
-		return rankData->maleRank.m_data;
+		return bFemale ? rankData->femaleRank.m_data : rankData->maleRank.m_data;
+}
+
+void TESFaction::SetNthRankName(const char* newName, UInt32 whichRank, bool bFemale)
+{
+	TESFaction::RankData* rankData = FactionRankVisitor(&ranks).GetNthInfo(whichRank);
+	if (rankData)
+	{
+		if (bFemale)
+			rankData->femaleRank.Set(newName);
+		else
+			rankData->maleRank.Set(newName);
+	}
 }
 
 const TESModelList::Entry* TESModelList::FindNifPath(char* path)
@@ -2069,7 +2228,8 @@ public:
 		{	}
 	bool Accept(Script::VariableInfo* varInfo)
 	{
-		if (!_stricmp(m_varName, varInfo->name))
+		//_MESSAGE("  cur var: %s to match: %s", varInfo->name.m_data, m_varName);
+		if (!_stricmp(m_varName, varInfo->name.m_data))
 			return true;
 		else
 			return false;
@@ -2096,3 +2256,15 @@ void SpellItem::SetHostile(bool bHostile)
 	hostileEffectCount = bHostile ? 1 : 0;
 }
 
+void TESObjectBOOK::Constructor(void)
+{
+#if OBLIVION_VERSION == OBLIVION_VERSION_1_1
+	ThisStdCall(0x004ACF90, this);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2
+	ThisStdCall(0x004B5770, this);
+#elif OBLIVION_VERSION == OBLIVION_VERSION_1_2_416
+	ThisStdCall(0x004B59F0, this);
+#else
+#error unsupported Oblivion version
+#endif
+}

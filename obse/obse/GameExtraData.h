@@ -1,5 +1,8 @@
 #pragma once
 
+#include "GameBSExtraData.h"
+#include "GameForms.h"
+
 /****
  *	id	size	type					Decoded
  *	00	?		
@@ -21,7 +24,7 @@
  *	10	10		ExtraDetachTime
  *	11	?		ExtraPersistentCell			*
  *	12	14		ExtraScript					*
- *	13	14		ExtraAction
+ *	13	14		ExtraAction					
  *	14	24		ExtraStartingPosition
  *	15	?		ExtraAnim
  *	16	?		
@@ -134,7 +137,6 @@ class TrespassPackage;
 class TESRegionList;
 class Script;
 struct ScriptEventList;
-class TESFullName;
 
 enum ExtraDataType
 {
@@ -226,44 +228,6 @@ enum ExtraDataType
 	kExtraData_HaggleAmount =			0x5C,
 };
 
-// C+?
-class BSExtraData
-{
-public:
-	BSExtraData();
-	virtual ~BSExtraData();
-
-	virtual void	Fn_01(void);
-
-	static BSExtraData* Create(UInt8 xType, UInt32 size, UInt32 vtbl);
-
-//	void		** _vtbl;	// 000
-	UInt8		type;		// 004
-	UInt8		pad[3];		// 005
-	BSExtraData	* next;		// 008
-};
-
-// 014+
-struct BaseExtraList
-{
-	bool			HasType(UInt32 type) const;
-	BSExtraData *	GetByType(UInt32 type) const;
-
-	void			MarkType(UInt32 type, bool bCleared);
-	bool			Remove(BSExtraData* toRemove);
-	bool			Add(BSExtraData* toAdd);
-
-	void		** m_vtbl;					// 000
-	BSExtraData	* m_data;					// 004
-	UInt8		m_presenceBitfield[0x0C];	// 008 - if a bit is set, then the extralist should contain that extradata
-											// bits are numbered starting from the lsb
-};
-
-struct ExtraDataList : public BaseExtraList
-{
-	static ExtraDataList * Create();
-	//
-};
 
 class ExtraContainerChanges : public BSExtraData
 {
@@ -687,7 +651,37 @@ public:
 	ExtraMapMarker();
 	~ExtraMapMarker();
 
-	TESFullName*	fullName;
+	enum {
+		kFlag_Visible	= 1 << 0,
+		kFlag_CanTravel	= 1 << 1
+	};
+
+	enum {
+		kType_Unk0 = 0,
+		kType_Camp,
+		kType_Unk2,
+		kType_City,
+		//...
+
+		kType_Max
+	};
+
+	struct Data {
+		TESFullName	fullName;
+		UInt16		flags;
+		UInt16		type;	// possibly only 8 bits, haven't checked yet
+	};
+
+	Data	* data;
+
+	TESFullName* GetFullName();
+	const char* GetName();
+	bool IsVisible()	{	return (data->flags & kFlag_Visible) == kFlag_Visible;	}
+	bool CanTravelTo()	{	return (data->flags & kFlag_CanTravel) == kFlag_CanTravel;	}
+	void SetVisible(bool bVisible)	{
+		data->flags = (bVisible) ? (data->flags | kFlag_Visible) : (data->flags & ~kFlag_Visible);	}
+	void SetCanTravelTo(bool bCanTravel) {
+		data->flags = (bCanTravel) ? (data->flags | kFlag_CanTravel) : (data->flags & ~kFlag_CanTravel);	}
 };
 
 class ExtraSound : public BSExtraData
@@ -699,4 +693,12 @@ public:
 	UInt32	* unk01;
 };
 
+class ExtraAction : public BSExtraData
+{
+public:
+	ExtraAction();
+	~ExtraAction();
 
+	TESObjectREFR	* actionRef;
+	UInt32			unk10;
+};

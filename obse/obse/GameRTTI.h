@@ -319,6 +319,7 @@ extern const void * RTTI_PlayerCharacter;
 extern const void * RTTI_PosGen;
 extern const void * RTTI_Precipitation;
 extern const void * RTTI_QuantityMenu;
+extern const void * RTTI_QueuedReference;
 extern const void * RTTI_QuickKeysMenu;
 extern const void * RTTI_RaceSexMenu;
 extern const void * RTTI_Random;
