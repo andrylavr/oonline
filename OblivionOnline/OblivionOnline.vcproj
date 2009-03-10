@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static_d.lib CEGUIFalagardWRBase_Static_d.lib DirectX9GUIRenderer_static_d.lib d3dx9d.lib dxerr9.lib CEGUITinyXMLParser_Static_d.lib freetype235MT_d.lib zlibstat_d.lib pcre7_d.lib OOCommon_d.lib winmm.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static_d.lib CEGUIFalagardWRBase_Static_d.lib DirectX9GUIRenderer_static_d.lib d3dx9d.lib dxerr9.lib CEGUITinyXMLParser_Static_d.lib freetypeMT_d.lib zlibstat_d.lib pcre7_d.lib OOCommon_d.lib winmm.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="false"
@@ -162,7 +162,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/SECTION:.HookSection,S"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUITinyXMLParser_Static.lib freetype235.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib zlibstat.lib pcre7.lib OOCommon.lib winmm.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUITinyXMLParser_Static.lib freetype.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib zlibstat.lib pcre7.lib OOCommon.lib winmm.lib"
 				ShowProgress="1"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="0"
@@ -259,7 +259,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="false"
 				AdditionalOptions="/SECTION:.HookSection,S"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetype235MT.lib zlibstat.lib pcre7.lib OOCommon_d.lib winmm.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9.lib dinput8.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetypeMT.lib zlibstat.lib pcre7.lib OOCommon_d.lib winmm.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(DXSDK_DIR)Lib\x86&quot;;ceguibin;&quot;$(SolutionDir)\Lib\&quot;;&quot;$(BOOSTLIBS)&quot;"
