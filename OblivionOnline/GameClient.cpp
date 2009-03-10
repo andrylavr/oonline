@@ -43,6 +43,7 @@ int GameClient::Initialize()
 	for(int i=0; i<MAXCLIENTS; i++)
 	{
 		bPlayersConnected[i] = false;
+		SetSpawnID(i,0);
 	}
 	return rc;
 }
@@ -87,7 +88,7 @@ bool GameClient::Connect()
 		}
 		while(!feof(Realmlist))
 		{
-			fscanf(Realmlist,"%s",IP);
+			fscanf(Realmlist,"%14s",IP);
 			if(!fscanf(Realmlist,"%i",&ClientPort))
 				ClientPort = 41805;
 			*IO << BootMessage << "Trying to connect to "<<IP << " : "<<ClientPort <<endl;

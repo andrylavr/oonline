@@ -61,7 +61,7 @@ extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* 
 
 extern "C" void OpenLog(int i)
 {
-	gLog.Open("OblivionOnline_ancient.log"); // Or else all our macros wouldn't work - discard
+	gLog.Open("OblivionOnline_bootstrap.log"); // Or else all our macros wouldn't work - discard
 }
 DWORD WINAPI RecvThread(LPVOID Params)
 {

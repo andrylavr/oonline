@@ -96,8 +96,8 @@ static void SendActorAnimation(Actor *act,Entity *ent)
 }
 bool Cmd_MPSendActor_Execute (COMMAND_ARGS)
 {
-	Entity *ent;  // TODO: this seems to make problems, maybe use volatile?
-	Actor *actor = NULL;
+	Entity * ent;  // TODO: this seems to make problems, maybe use volatile?
+	Actor  * actor = NULL;
 	BYTE Status;
 	if(!gClient->GetIsInitialized() )
 		return true;
