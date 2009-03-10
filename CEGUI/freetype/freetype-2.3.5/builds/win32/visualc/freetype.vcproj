@@ -440,7 +440,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(SolutionDir)\Lib\freetype235MT_D.lib"
+				OutputFile="$(SolutionDir)\Lib\freetypeMT_D.lib"
 				SuppressStartupBanner="true"
 			/>
 			<Tool

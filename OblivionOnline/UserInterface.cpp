@@ -150,6 +150,8 @@ void RegisterChatMessage(char *text)
 }
 void SetConnectionMessage(char *message)
 {
+	if(!CEGUI::WindowManager::getSingletonPtr())
+		return;
 	CEGUI::Window *chatwin = CEGUI::WindowManager::getSingleton().getWindow("StatusLabel");
 	chatwin->setText(message);
 }
