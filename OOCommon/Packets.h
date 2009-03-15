@@ -70,8 +70,8 @@ TYPE#	Description
 #define PACKET_SIZE 1024
 #define PACKET_HEADER_SIZE 3
 #define MAX_OBJECTS_PER_PACKET 16
-#define OBJECTMASK 0xff000000
-#define CHUNKMASK 0x00ffffff
+#define OBJECTMASK 0xf000
+#define CHUNKMASK 0x000f   
 enum PkgChunk
 {
 	Object	 = 1,
@@ -88,7 +88,8 @@ enum PkgChunk
 	ClientType = 16,
 	Version	= 17,
 	PlayerID = 18,
-	Animation = 19
+	Animation = 19,
+	End
 };
 inline bool RequiresReliable(PkgChunk type)
 {
@@ -173,7 +174,7 @@ inline PkgChunk GetChunkType(BYTE *stream)
 	return (PkgChunk)(*((INT16 *)(stream)) & CHUNKMASK);
 }
 
-inline UINT8 GetObject(BYTE *stream)
+inline UINT8 GetObjectIDFromObjChunk(BYTE *stream)
 {
 	return (PkgChunk)(*((INT16 *)(stream)) & OBJECTMASK);
 }

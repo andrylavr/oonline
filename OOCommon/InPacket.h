@@ -57,8 +57,8 @@ public:
 		unsigned long maxsize = (unsigned long)EndPtr - (unsigned long)chunkdata;
 		/*if(GetMinChunkSize(chunk) < maxsize )
 			return false;*/
-		UINT32 FormID = this->ObjectIDs[GetObject(chunkdata)];
-		BYTE Status = this->Status[GetObject(chunkdata)];
+		UINT32 FormID = this->ObjectIDs[GetObjectIDFromObjChunk(chunkdata)];
+		BYTE Status = this->Status[GetObjectIDFromObjChunk(chunkdata)];
 		switch(chunk)
 		{
 		case	Object:

@@ -165,6 +165,8 @@ public:
 			state->Apply();
 			state->Release();
 		}
+		if(gClient)
+			gClient->RunFrame();
 		//gClient->GetServerStream()->Send();
 		EndScene();
 		return m_device->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);

@@ -46,6 +46,14 @@ public:
 	{
 		return m_players;
 	}
+	const map<UINT32,Entity *>::const_iterator BeginObjects()
+	{
+		return m_objects.begin();
+	}
+	const map<UINT32,Entity *>::const_iterator EndObjects()
+	{
+		return m_objects.end();
+	}
 	EntityManager(IOStream *io,NetworkSystem *netsys = NULL) : lock() , m_objects(),m_players()
 	{
 		m_IO = io;

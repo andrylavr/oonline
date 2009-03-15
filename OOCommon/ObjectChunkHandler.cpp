@@ -22,8 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 size_t ChunkHandler::HandleObjectChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	//DO not advance the header - instead write the object data
-	FormID = pkg->ObjectIDs[GetObject(chunkdata)] = *((UINT32 *)(chunkdata + 2));
-	Status = pkg->Status[GetObject(chunkdata)] = *(chunkdata + 2 +sizeof(UINT32));
+	pkg->ObjectIDs[GetObjectIDFromObjChunk(chunkdata)] = *((UINT32 *)(chunkdata + 2));
+	FormID =   *((UINT32 *)(chunkdata + 2));
+	pkg->Status[GetObjectIDFromObjChunk(chunkdata)] = *(chunkdata + 2 +sizeof(UINT32));
+	Status = *(chunkdata + 2 +sizeof(UINT32));
 	if(entities->GetEntity(Status,FormID) == NULL)
 	{
 		new Entity(entities,FormID,Status,false,false);

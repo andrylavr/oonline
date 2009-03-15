@@ -95,9 +95,9 @@ private:
 	inline BYTE GetObjectID(UINT32 FormID,BYTE Status)
 	{		
 		BYTE i = 0;		
-		for(i = 0;i < MAX_OBJECTS_PER_PACKET; i++)
+		for(i = 0;i < m_ObjectsWritten; i++)
 		{
-			if((m_Status[i]== STATUS_PLAYER) == (Status == STATUS_PLAYER) && m_ObjectID[i] == FormID)
+			if(m_Status[i] == Status && m_ObjectID[i] == FormID)
 				return i;
 		}
 		//write it
@@ -108,7 +108,7 @@ private:
 			return MAX_OBJECTS_PER_PACKET; // We found no empty slot
 		i = m_ObjectsWritten;
 		m_ObjectID[i] = FormID;
-		m_Status[i] = (STATUS_PLAYER == Status);		
+		m_Status[i] = Status;		
 		WriteWord((   ((UINT16)PkgChunk::Object)   & CHUNKMASK)|(i & OBJECTMASK));
 		(*m_Chunks_written)++;
 		WriteUINT32(FormID);

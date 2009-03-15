@@ -22,7 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "NetworkSystem.h"
 #include "Packets.h"
 #include <map>
+#include "boost/lambda/lambda.hpp"
+#include "boost/lambda/if.hpp"
+#include "boost/lambda/bind.hpp"
+
 using namespace std;
+using namespace boost::lambda;
 void EntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 {
 	UINT race = ent->Race();
@@ -151,6 +156,19 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers
 		}
 	}
 }
+bool SendWorldState( Entity * Player,bool LimitCell /*= true*/,EntityManager *m_mgr)
+{
+	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->BeginObjects(); i != m_mgr->EndObjects() ; i++)
+	{
+		if(Player->CellID() != i->second->CellID())
+			continue;
+		else
+		{
+			//TODO: Send out player data
+		}
+	}
+	return true;
+}
 void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 {
 	BYTE ChunkData[5];
@@ -160,7 +178,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
-			if( i->first != m_net->GetMasterClient()  || !Inbound)
+			if( i->first != m_net->GetMasterClient()  || !Inbound) // !Inbound means that MC will be overriden
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
 			}
@@ -173,6 +191,10 @@ void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 			if( i->first != ent->RefID()  || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
+			}
+			else
+			{
+				SendWorldState(i->second,false,m_mgr);
 			}
 		}
 	}

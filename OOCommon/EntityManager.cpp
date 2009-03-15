@@ -15,6 +15,9 @@ GNU Affero General Public License for more details.
 #include "EntityManager.h"
 #include "Entity.h"
 #include "IOSystem.h"
+#include "boost/lambda/lambda.hpp"
+#include "boost/lambda/bind.hpp"
+#include "boost/lambda/if.hpp"
 bool EntityManager::RegisterEntity(Entity *Entity)
 {
 	lock.lock();
