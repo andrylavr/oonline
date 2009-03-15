@@ -1,6 +1,7 @@
 #pragma once
 #ifdef WIN32 
 #include <Windows.h>
+#endif
 #include <list>
 #include "GameServer.h"
 class RemoteAdminModule;
@@ -39,4 +40,4 @@ public:
 	static OO_TPROC_RET RunServer(void *thisptr);
 	RemoteAdminModule * FindModule(std::string Name);
 };
-#endif
+

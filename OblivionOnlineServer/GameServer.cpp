@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GameServer.h"
 #include "LuaSystem.h"
 #include "ScreenIOProvider.h"
-#include "logIOProvider.h"
+#include "LogIOProvider.h"
 #include "NetworkSystem.h"
 #include "ChatIOProvider.h"
 #include "EventSystem.h"
@@ -54,11 +54,11 @@ GameServer::GameServer(void)
 	m_Evt = new EventSystem(this);
 	m_IOSys = new IOSystem();
 	m_IO = new IOStream(m_IOSys);
-	m_IO->RegisterIOProvider(new ScreenIOProvider(m_IOSys,LogLevel::BootMessage));//TODO : Fix that
+	m_IO->RegisterIOProvider(new ScreenIOProvider(m_IOSys,BootMessage));//TODO : Fix that
 	DisplayBootupMessage();
 	*m_IO<<BootMessage<<"Script , Event and Local IO running" << endl;
 	*m_IO<<BootMessage<<"Opening Log file" << endl;
-	m_IO->RegisterIOProvider(new LogIOProvider(m_IOSys,LogLevel::BootMessage,m_script->GetString("Logfile")));	
+	m_IO->RegisterIOProvider(new LogIOProvider(m_IOSys,BootMessage,m_script->GetString("Logfile")));	
 	m_Netsystem = new NetworkSystem(this);
 	m_Entities = new EntityManager(m_IO,m_Netsystem);
 	m_Netsystem->StartReceiveThreads();
@@ -96,7 +96,12 @@ void GameServer::RunServer()
 		tick_next = clock() + CLOCKS_PER_SEC  / m_tickrate;
 		m_Evt->DefaultEvents.EventTick(tickcount++);
 		tick_delta = tick_next - clock();
-		Sleep( tick_delta * (CLOCKS_PER_SEC / 1000));
+#ifdef WIN32
+		Sleep( 
+#else
+		usleep(
+#endif
+		tick_delta * (CLOCKS_PER_SEC / 1000));
 		tick_garbagecollect -= tick_delta;
 		if(tick_garbagecollect <= 0)
 		{
@@ -141,7 +146,11 @@ void GameServer::AdvertiseGameServer()
 					GetIO() << Error<< "CURL error" <<endl;
 				}
 				m_script->PrintStatistics(); // performs garbage collection
+#ifdef WIN32
 				Sleep(120000); //2 minutes
+#else
+				sleep(120);
+#endif
 			}
 			curl_easy_cleanup(curl);
 
@@ -150,7 +159,7 @@ void GameServer::AdvertiseGameServer()
 	}
 	else
 	{
-		GetIO() << LogLevel::Warning <<"No ListURI set. This server will not be listed online" << endl;
+		GetIO() << Warning <<"No ListURI set. This server will not be listed online" << endl;
 	}	
 }
 

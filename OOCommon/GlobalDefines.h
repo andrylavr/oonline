@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GLOBAL_DEFINES_H
 #define _GLOBAL_DEFINES_H
 #include <string>
+#include <cstring>
 #include <stdlib.h>
 #define VERSION_SUPER 0
 #define VERSION_MAJOR 4
@@ -39,6 +40,7 @@ extern "C" {
 #include <sys/socket.h>
 #include <netdb.h>
 }
+typedef uint64_t UINT64;
 typedef uint32_t UINT32;
 typedef uint32_t DWORD;
 typedef int32_t OO_THREAD;
@@ -46,10 +48,18 @@ typedef uint16_t UINT16;
 typedef uint8_t UINT8;
 typedef uint8_t BYTE;
 typedef int16_t INT16; 
+
 typedef void * OO_TPROC_RET;
 typedef int SOCKET;
 typedef sockaddr_in SOCKADDR_IN;
 //typedef HANDLE SEMAPHORE;
+#include <sys/select.h>
+#include <sys/socket.h>
+typedef int SOCKET;
+typedef fd_set FD_SET;
+typedef struct sockaddr SOCKADDR;
+#define SOCKET_ERROR -1
+#define closesocket close
 #endif
 
 #endif

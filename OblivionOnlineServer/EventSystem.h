@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class Event;
 class Entity;
 class GameServer;
-class DefaultEvents{
+class _DefaultEvents{
 public:
  boost::signal<void(UINT64)>		EventTick; /*ticks since start up, occurs every tick*/	
  boost::signal<void(UINT64)>		EventSecond;  /* Occurs every second, based on ticks:Number of seconds cine start*/
@@ -50,7 +50,7 @@ public:
  boost::signal<void(SOCKADDR_IN *) >	EventRemoteAdminDisconnect; // Someone disconnected
  boost::signal<void(Module *)>			EventLoadModule;
  boost::signal<void(Module *)>			EventUnloadModule;
- DefaultEvents() : EventLoadModule(),EventUnloadModule(),EventRemoteAdminConnect(),EventRemoteAdminDisconnect(),
+ _DefaultEvents() : EventLoadModule(),EventUnloadModule(),EventRemoteAdminConnect(),EventRemoteAdminDisconnect(),
 					EventRemoteAdminUnload(),EventConsoleCommand(),EventUnhandledCommand(),EventCommand(),EventPlayerDespawn(),
 					EventSpawn(),EventDespawn(),EventConnect(),EventDisconnect(),
 					EventBoot(),EventShutdown(), EventTick(),EventSecond(),EventMinute(),EventFiveMinute(),EventHalfhour(),EventHour()
@@ -64,7 +64,7 @@ class EventSystem
 public:
 	EventSystem(GameServer *server);
 	~EventSystem(void);
-	DefaultEvents DefaultEvents;
+	_DefaultEvents DefaultEvents;
 	GameServer *GetGameServer()
 	{
 		return m_server;

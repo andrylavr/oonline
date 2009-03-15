@@ -27,8 +27,7 @@ add_definitions(
   -DCURL_STATICLIB
   -D_CONSOLE
 )
-
+add_subdirectory( ../OOCommon/ commonbin )
 add_executable( OblivionOnlineServer ${SOURCES} )
 
 target_link_libraries( OblivionOnlineServer  OOCommon )
-

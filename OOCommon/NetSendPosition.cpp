@@ -44,21 +44,21 @@ bool NetSendPosition(OutPacketStream *outnet, UINT32 FormID,BYTE Status,float Po
 	outnet->AddChunk(FormID,Status,GetMinChunkSize(Position),Position,(BYTE *)&Data);
 	return true;
 }
-bool NetSendCellID(OutPacketStream *outnet, UINT32 FormID,BYTE Status,UINT32 CellID,bool IsInInterior )
+bool NetSendCellID(OutPacketStream *outnet, UINT32 FormID,BYTE Status,UINT32 Value,bool IsInInterior )
 {
 	BYTE Data[5];
-	*((UINT32 *)Data) = CellID;
+	*((UINT32 *)Data) = Value;
 	Data[4] = IsInInterior ? 1 : 0;
-	outnet->AddChunk(FormID,Status,GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE *)&Data);
+	outnet->AddChunk(FormID,Status,GetMinChunkSize(CellID),CellID,(BYTE *)&Data);
 	return true;
 }
-bool NetSendAnimation(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE Animation,bool IsPlaying)
+bool NetSendAnimation(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE Value,bool IsPlaying)
 {
 	BYTE Data[2]= 
 	{
-		Animation,
+		Value,
 		(IsPlaying ? 1: 0)
 	};
-	outnet->AddChunk(FormID,Status,GetMinChunkSize(PkgChunk::Animation),PkgChunk::Animation,Data);
+	outnet->AddChunk(FormID,Status,GetMinChunkSize(Animation),Animation,Data);
 	return true;
 }

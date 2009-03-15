@@ -17,13 +17,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef GAMESERVER_H
+#define GAMESERVER_H
 #include "IOSystem.h"
 #include "GlobalDefines.h"
 #include "EntityManager.h"
 
 class LuaSystem;
 class NetworkSystem;
-class  ModuleManager;
+class ModuleManager;
 class RemoteAdminServer;
 class GameServer
 {
@@ -68,3 +70,4 @@ protected:
 	ModuleManager *m_Modules;
 	RemoteAdminServer *m_Admin;
 };
+#endif

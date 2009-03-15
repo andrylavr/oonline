@@ -38,7 +38,7 @@ forward this exception.
 bool NetSendChat(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE *message,size_t len)
 {
 	//TODO: Fix up memory
-	byte *buf = new BYTE[len + 2];
+	BYTE *buf = new BYTE[len + 2];
 	*(UINT16 *)buf = (UINT16)len;
 	memcpy(buf +2,message,len);
 	outnet->AddChunk(FormID,Status,len +2,Chat,buf);
@@ -47,7 +47,7 @@ bool NetSendChat(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE *message
 }
 bool NetSendName(OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE *name,size_t len)
 {
-	byte *buf = new BYTE[len + 2];
+	BYTE *buf = new BYTE[len + 2];
 	*(UINT16 *)buf = (UINT16)len;
 	memcpy(buf +2,name,len);
 	outnet->AddChunk(FormID,Status,len +2,Chat,buf);

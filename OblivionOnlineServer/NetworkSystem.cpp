@@ -26,6 +26,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <process.h>
 #include <Windows.h>
 #else
+
+
+
+
+
+
 #include <pthread.h>
 #endif
 NetworkSystem::~NetworkSystem(void)
@@ -61,7 +67,11 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	if( rc == SOCKET_ERROR)
 	{
 		netsys->GetGS()->GetIO()<<FatalError<<"Couldn't bind TCP"<< endl;
-		return ;
+		#ifdef WIN32
+			return ;
+		#else
+			return NULL;
+		#endif
 	}
 	else
 	{
@@ -72,7 +82,12 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	{
 
 		netsys->GetGS()->GetIO()<<FatalError<<"Couldn't listen on TCP"<<endl;
-		return ;
+		#ifdef WIN32
+                        return ;
+                #else
+                        return NULL;
+                #endif
+
 	}
 	else
 	{
@@ -83,23 +98,28 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	{
 		FD_ZERO(&fdSet);
 		FD_SET(acceptSocket,&fdSet);
-		for(std::map<UINT,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!=netsys->m_TCPSockets.end();i++)
+		for(std::map<UINT32,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!=netsys->m_TCPSockets.end();i++)
 		{
 			FD_SET(i->second,&fdSet);
 		}
 		if(select(0,&fdSet,NULL,NULL,NULL) == SOCKET_ERROR)
 		{
 			netsys->GetGS()->GetIO()<<FatalError<<"Error calling select()"<<endl;
-			return;
+			#ifdef WIN32
+	                        return ;
+        	        #else
+                	        return NULL;
+                	#endif
+
 		}
 		if(FD_ISSET(acceptSocket,&fdSet))
 		{
 			SOCKADDR_IN addr;
-			int addr_size = sizeof(SOCKADDR_IN);			
+			size_t addr_size = sizeof(SOCKADDR_IN);			
 			SOCKET sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
 			netsys->AddNewPlayer(addr,sock);
 		}
-		for(std::map<UINT,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!= netsys->m_TCPSockets.end();i++)
+		for(std::map<UINT32,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!= netsys->m_TCPSockets.end();i++)
 		{
 			if(FD_ISSET(i->second,&fdSet))
 			{
@@ -117,6 +137,12 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 			}
 		}
 	}
+	#ifdef WIN32
+	           return ;
+        #else
+                  return NULL;
+        #endif
+
 }
  OO_TPROC_RET NetworkSystem::UDPProc(void *thisptr)
 {
@@ -128,21 +154,23 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	SOCKET sock = socket(AF_INET,SOCK_DGRAM,0);
 	unsigned short port = (unsigned short) netsys->GetGS()->GetLua()->GetInteger("ServicePort");
 	size_t size;
-	int inaddr_len = sizeof(SOCKADDR_IN);
+	size_t inaddr_len = sizeof(SOCKADDR_IN);
 	listenaddr.sin_family = AF_INET;
 	listenaddr.sin_port = htons(port);
-	listenaddr.sin_addr.S_un.S_addr = INADDR_ANY;
+	listenaddr.sin_addr.s_addr = INADDR_ANY;
 	if(bind(sock,(SOCKADDR *)&listenaddr,sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
 		netsys->GetGS()->GetIO()<<Error<<"Could not bind UDP"<<endl;
-		return;
+		#ifdef WIN32 return;
+		#else return NULL;
+		#endif
 	}
 	else
 		netsys->GetGS()->GetIO()<<BootMessage<<"UDP Bound to port "<<port <<endl;
-	
+       	PacketBuffer = (BYTE*) malloc(PACKET_SIZE);	
 	while(1)//TODO : Add some sort of break
 	{
-		PacketBuffer = (BYTE*) malloc (PACKET_SIZE); //TODO : Free these!!!
+		//PacketBuffer = (BYTE*) malloc (PACKET_SIZE); //TODO : Free these!!!
 		size = recvfrom(sock,(char *)PacketBuffer,PACKET_SIZE,0,(SOCKADDR *)&inaddr,&inaddr_len);
 		if(size != 0)
 		{
@@ -151,9 +179,10 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 				netsys->RegisterTraffic(netsys->GetPlayerFromAddr(inaddr),size,PacketBuffer,false);
 			else
 				netsys->GetGS()->GetIO()<<Warning<<"Unknown player sent data to UDP "<<endl;
-			free(PacketBuffer);
+			//free(PacketBuffer);
 		}
 	}
+	free(PacketBuffer);
 }
 
  bool NetworkSystem::RegisterTraffic( UINT32 PlayerID,size_t size,BYTE *data,bool reliable )
@@ -181,10 +210,10 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 			  break;
 	 }
 	 m_PlayerAddresses[ID] = addr;
-	 m_AddressPlayer[addr.sin_addr.S_un.S_addr] = ID;
+	 m_AddressPlayer[addr.sin_addr.s_addr] = ID;
 	 m_TCPSockets[ID] = TCPSock;
 	 m_OutPackets[ID] = new OutPacket();	
-	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(PkgChunk::PlayerID),PlayerID,(BYTE *)&ID);
+	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(PlayerID),PlayerID,(BYTE *)&ID);
 	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
 	 m_GS->GetIO()<<GameMessage<< "New player" << ID << "joined from address"<< inet_ntoa(addr.sin_addr) << ":" <<ntohs(addr.sin_port)<<endl;
 	 if(m_MasterClientDefined == 0)
@@ -246,7 +275,7 @@ bool NetworkSystem::PlayerDisconnect( UINT32 ID )
 	BYTE masterclient = 1;
 	m_GS->GetIO()<<GameMessage<<"Client "<<ID<< "disconnected" <<endl;
 	m_GS->GetEventSys()->DefaultEvents.EventDisconnect(&m_PlayerAddresses[ID]);
-	m_AddressPlayer.erase(m_PlayerAddresses[ID].sin_addr.S_un.S_addr);
+	m_AddressPlayer.erase(m_PlayerAddresses[ID].sin_addr.s_addr);
 	m_PlayerAddresses.erase(ID);
 	delete m_OutPackets[ID];
 	m_OutPackets.erase(ID);

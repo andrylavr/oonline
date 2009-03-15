@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include <iostream>
 #include <string>
-#include "ioprovider.h"
+#include "IOProvider.h"
 #include "GlobalDefines.h"
 void SetStdOutColor(int color);
 class ScreenIOProvider :
@@ -30,7 +30,7 @@ public:
 	ScreenIOProvider(IOSystem *parent,LogLevel LogTreshold);
 	~ScreenIOProvider(void);
 	static OO_TPROC_RET QueryProc(ScreenIOProvider *thisptr);
-	virtual bool DoOutput(LogLevel LogLevel,std::string & Message)
+	virtual bool DoOutput(LogLevel LogLevel,const std::string & Message)
 	{
 		if(LogLevel < m_threshold)
 			return false;

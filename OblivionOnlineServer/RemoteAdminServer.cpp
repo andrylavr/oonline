@@ -10,6 +10,7 @@
 #include <process.h>
 #include <Windows.h>
 #else
+#include <errno.h>
 #include <pthread.h>
 #endif
 RemoteAdminServer::RemoteAdminServer(GameServer *gs) : transmit(),modules(),Header(),Footer()
@@ -24,7 +25,12 @@ RemoteAdminServer::RemoteAdminServer(GameServer *gs) : transmit(),modules(),Head
 	Footer = "</td></tr></table> <a href=\"http://obliviononline.com/\">OblivionOnline (C) 2006-2008 Julian Bangert </a></body></html>";
 	RegisterModule(new ModuleAdminModule(gs));
 	RegisterModule(new PlayerAdminModule(gs));
+	#ifdef WIN32
 	_beginthread(RemoteAdminServer::RunServer,0,this);
+	#else
+	pthread_t thread;
+	pthread_create(&thread,NULL,RemoteAdminServer::RunServer,this);
+	#endif
 }
 
 RemoteAdminServer::~RemoteAdminServer(void)
@@ -74,13 +80,13 @@ void RemoteAdminServer::Listen(unsigned short port,bool Global)
 		}
 		if(select(0,&fdSet,NULL,NULL,NULL) == SOCKET_ERROR)
 		{
-			m_GS->GetIO()<<FatalError<<"Error calling select() on Remote Admin"<<WSAGetLastError()<< endl;
+			m_GS->GetIO()<<FatalError<<"Error calling select() on Remote Admin"<<errno<< endl;
 			return;
 		}
 		if(FD_ISSET(acceptSocket,&fdSet))
 		{
 			SOCKADDR_IN addr;
-			int addr_size = sizeof(SOCKADDR_IN);			
+			size_t addr_size = sizeof(SOCKADDR_IN);			
 			SOCKET  sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
 			transmit.push_back(sock);
 		}

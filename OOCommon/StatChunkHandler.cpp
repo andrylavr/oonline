@@ -30,7 +30,7 @@ size_t ChunkHandler::HandleActorValueChunk(IOStream *IO,EntityManager *entities,
 		return 0;
 	}	
 	ent->SetActorValue(*(chunkdata+2),*(INT16 *)(chunkdata + 3),true);
-	return GetMinChunkSize(PkgChunk::ActorValue) + sizeof(unsigned short);
+	return GetMinChunkSize(ActorValue) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleGenderChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
@@ -41,7 +41,7 @@ size_t ChunkHandler::HandleGenderChunk(IOStream *IO,EntityManager *entities,InPa
 		return 0;
 	}	
 	ent->SetFemale(*(chunkdata+2),true);
-	return GetMinChunkSize(PkgChunk::Gender) + sizeof(unsigned short);
+	return GetMinChunkSize(Gender) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleRaceChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
@@ -52,7 +52,7 @@ size_t ChunkHandler::HandleRaceChunk(IOStream *IO,EntityManager *entities,InPack
 		return 0;
 	}	
 	ent->SetRace(*(UINT32 *)(chunkdata + 2),true);
-	return GetMinChunkSize(PkgChunk::Race) + sizeof(unsigned short);
+	return GetMinChunkSize(Race) + sizeof(unsigned short);
 }
 
 size_t ChunkHandler::HandleClassChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len,UINT32 FormID,BYTE Status)
@@ -86,5 +86,5 @@ size_t ChunkHandler::HandleEquipChunk(IOStream *IO,EntityManager *entities,InPac
 		return 0;
 	}	
 	ent->SetEquip(*(BYTE*)(chunkdata + 2),*(UINT32 *)(chunkdata + 3),true);
-	return GetMinChunkSize(PkgChunk::Equip)  + sizeof(unsigned short);
+	return GetMinChunkSize(Equip)  + sizeof(unsigned short);
 }

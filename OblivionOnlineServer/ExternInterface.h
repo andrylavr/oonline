@@ -18,10 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef OOEXTERNINTERFACE_H
 #define OOEXTERNINTERFACE_H
+#ifdef WIN32
 #include <Windows.h>
 #include <guiddef.h>
-extern class GameServer;
-extern class ModuleManager;
+#else
+#include <stdint.h>
+#include <cstring>
+typedef uint8_t BYTE;
+struct GUID {
+	uint32_t Data1;
+	uint16_t Data2;
+	uint16_t Data3;
+	uint8_t  Data4[8];
+	bool operator==(const GUID &other) const
+	{
+		return (other.Data1==Data1 && other.Data2==Data2 &&
+			other.Data3==Data3 && !memcmp(other.Data4,Data4,8) );
+	}
+};
+#endif
+class GameServer;
+class ModuleManager;
 typedef void (*ShutdownCallback)(void);
 class PluginInfo
 {
@@ -39,7 +56,8 @@ typedef PluginInfo *(*InitialiseCallback) (GameServer *gs,BYTE VersionSuper,BYTE
 #ifdef _MSC_VER
 #define OO_MODULE_EXPORT __declspec( dllexport )
 #else
-#error "Not ported to your platform yet"
+//POSIX needs no dllexport
+#define OO_MODULE_EXPORT
 #endif
 
 #endif

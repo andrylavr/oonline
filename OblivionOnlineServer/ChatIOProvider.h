@@ -30,5 +30,5 @@ public:
 		m_gs = gs;
 	}
 	~ChatIOProvider(void);
-	virtual bool DoOutput(LogLevel LogLevel,std::string & Message);
+	virtual bool DoOutput(LogLevel LogLevel,const std::string & Message);
 };

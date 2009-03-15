@@ -30,5 +30,5 @@ size_t ChunkHandler::HandleObjectChunk(IOStream *IO,EntityManager *entities,InPa
 	{
 		new Entity(entities,FormID,Status,false,false);
 	}
-	return GetMinChunkSize(PkgChunk::Object) + sizeof(unsigned short);
+	return GetMinChunkSize(Object) + sizeof(unsigned short);
 }

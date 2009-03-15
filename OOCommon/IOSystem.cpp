@@ -102,7 +102,7 @@ int IOSystem::sync( void )
 	}
 	Message->append(pbase(),pptr() - pbase());
 	int ret = (int) DoOutput(DefaultLogLevel,*Message);
-	DefaultLogLevel = LogLevel::SystemMessage;
+	DefaultLogLevel = SystemMessage;
 	delete Message;
 	// reset the buffer
 	m_buf[0] = '\0';

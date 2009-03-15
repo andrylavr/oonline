@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
-#include "ioprovider.h"
+#include "IOProvider.h"
 #include <fstream>
 #include <ios>
 #include <ctime>
@@ -52,7 +52,7 @@ public:
 			fclose(File);
 		}
 	}
-	bool DoOutput(LogLevel LogLevel,std::string & Message)
+	bool DoOutput(LogLevel LogLevel,const std::string & Message)
 	{
 		if(LogLevel < m_threshold)
 			return false;
