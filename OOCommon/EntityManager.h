@@ -42,7 +42,7 @@ private:
 	IOStream *m_IO;
 	EntityUpdateManager *m_updatemgr;
 public:
-	inline const std::map<UINT32,Entity *>& GetPlayerList() // TODO : evaluate if this is necessary
+	const std::map<UINT32,Entity *>& GetPlayerList() // TODO : evaluate if this is necessary
 	{
 		return m_players;
 	}
@@ -71,7 +71,7 @@ public:
 	bool DeleteEntity(Entity *Entity);
 	bool DeRegisterEntity(Entity *Entity);
 	bool DeleteEntities();
-	inline Entity * GetEntity(BYTE Status,UINT32 RefID)
+	Entity * GetEntity(BYTE Status,UINT32 RefID)
 	{
 		std::map<UINT32,Entity *>::iterator iter;
 	if(Status == STATUS_PLAYER)

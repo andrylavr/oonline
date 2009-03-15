@@ -109,7 +109,7 @@ private:
 		i = m_ObjectsWritten;
 		m_ObjectID[i] = FormID;
 		m_Status[i] = Status;		
-		WriteWord((   ((UINT16)PkgChunk::Object)   & CHUNKMASK)|(i & OBJECTMASK));
+		WriteWord((   ((UINT16)Object)   & CHUNKMASK)|(i & OBJECTMASK));
 		(*m_Chunks_written)++;
 		WriteUINT32(FormID);
 		WriteByte(Status);

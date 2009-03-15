@@ -16,7 +16,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "Gameserver.h"
+#include "GameServer.h"
 #include "EntityUpdateManager.h"
 #include "Entity.h"
 #include "NetworkSystem.h"
@@ -30,25 +30,25 @@ using namespace std;
 using namespace boost::lambda;
 void EntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 {
-	UINT race = ent->Race();
+	UINT32 race = ent->Race();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
 		if(i->second != ent || !Inbound)
 		{
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Race),PkgChunk::Race,(BYTE*)&race);
+			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Race),Race,(BYTE*)&race);
 		}
 	}
 }
 
 void EntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
 {
-	BYTE Gender = ent->Gender();
+	BYTE Data = ent->Gender();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
 		if(i->second != ent || !Inbound)
 	{
 
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Gender),PkgChunk::Gender,&Gender);
+			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Gender),Gender,&Data);
 		}
 	}
 }
@@ -91,8 +91,8 @@ void EntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 	{
 		if(i->second != ent || !Inbound)
 		{
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE *)&ChunkData);
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
+			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE *)&ChunkData);
+			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&ChunkData);
 			//TODO: send out stats
 		}
 	}
@@ -106,7 +106,7 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 		{
 			if(i->first != m_net->GetMasterClient()  || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::ActorValue),PkgChunk::ActorValue,(BYTE *)&Value);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Value);
 			}
 		}
 	}
@@ -116,7 +116,7 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 		{
 			if(i->first != ent->RefID() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::ActorValue),PkgChunk::ActorValue,(BYTE *)&Value);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Value);
 			}
 		}
 	}
@@ -139,8 +139,8 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers
 		{			
 			if((m_net->GetMasterClient() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&CellData);
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -150,8 +150,8 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers
 		{			
 			if((ent->RefID() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&CellData);
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Position),PkgChunk::Position,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -180,7 +180,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 		{
 			if( i->first != m_net->GetMasterClient()  || !Inbound) // !Inbound means that MC will be overriden
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -190,7 +190,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 		{
 			if( i->first != ent->RefID()  || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::CellID),PkgChunk::CellID,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&ChunkData);
 			}
 			else
 			{
@@ -212,7 +212,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 		{
 			if( i->first != m_net->GetMasterClient() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -222,7 +222,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 		{
 			if(i->first != ent->RefID() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -237,7 +237,7 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 		{
 			if( i->first != m_net->GetMasterClient() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -247,7 +247,7 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 		{
 			if(i->first != ent->RefID() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(PkgChunk::Equip),PkgChunk::Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -259,7 +259,7 @@ void EntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
 	memcpy(buf + 2,Message.c_str(),Message.length());
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
-		m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),Message.length() + 2,PkgChunk::Chat,buf);
+		m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),Message.length() + 2,ChunkType::Chat,buf);
 	}
 	free(buf);
 }

@@ -48,14 +48,14 @@ public:
 	LogLevel DefaultLogLevel;
 	IOSystem() : lock() ,m_providers(),std::streambuf()
 	{
-		DefaultLogLevel = LogLevel::BootMessage;
+		DefaultLogLevel = BootMessage;
 		m_buf = new char[1024];
 		m_buflen = 1024;
 		setp(m_buf, m_buf + 1024);
 		//m_providers.clear();
 	}
 	~IOSystem(void);
-	bool DoOutput(LogLevel Level,std::string & Message);
+	bool DoOutput(LogLevel Level,const std::string & Message);
 	bool DoOutput(LogLevel Level,char * Message)
 	{
 		return DoOutput(Level,std::string(Message));

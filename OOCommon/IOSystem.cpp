@@ -43,7 +43,7 @@ bool IOSystem::RegisterInput(std::string *Message)
 	return true;
 }
 
-bool IOSystem::DoOutput( LogLevel Level,std::string & Message )
+bool IOSystem::DoOutput( LogLevel Level,const std::string & Message )
 {
 	for(std::list<IOProvider *>::iterator  iter = m_providers.begin(); iter != m_providers.end(); iter++)
 	{

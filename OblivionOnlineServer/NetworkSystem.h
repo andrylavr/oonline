@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "OutPacket.h"
 #include "GlobalDefines.h"
+#include <netdb.h>
+
 #include <vector>
 #include <map>
 #include <ctime>
@@ -99,7 +101,12 @@ public:
 	bool StartReceiveThreads();
 	UINT32 GetPlayerFromAddr(SOCKADDR_IN addr)
 	{
-		std::map<u_long,UINT32>::iterator iter = m_AddressPlayer.find(addr.sin_addr.S_un.S_addr);
+		std::map<u_long,UINT32>::iterator iter = m_AddressPlayer.find(
+		#ifdef WIN32 
+			addr.sin_addr.S_un.S_addr);
+		#else
+			addr.sin_addr.s_addr);
+		#endif
 		if(iter != m_AddressPlayer.end())
 			return iter->second;
 		return -1;

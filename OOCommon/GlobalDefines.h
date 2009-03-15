@@ -20,9 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _GLOBAL_DEFINES_H
 #define _GLOBAL_DEFINES_H
 #include <string>
+#include <stdlib.h>
 #define VERSION_SUPER 0
 #define VERSION_MAJOR 4
-#define VERSION_MINOR 8
+#define VERSION_MINOR 9
 #define VERSION_CODENAME "Release V"
 #define VERSION_COMMENT "Public Beta 1"
 #define VERSION_STREAM VERSION_SUPER<<"."<<VERSION_MAJOR<<"."<<VERSION_MINOR<<" \""<< VERSION_CODENAME << " \" "<< VERSION_COMMENT << " "  
@@ -31,13 +32,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 typedef HANDLE OO_THREAD;
 typedef void OO_TPROC_RET;
 #else
-#ifndef UINT32
-#define UINT32 uint32_t
-#endif
-
-typedef int32_t OO_THREAD 
-typedef void * OO_TPROC_RET
-typedef HANDLE SEMAPHORE
+#include <stdint.h>
+extern "C" {
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
+}
+typedef uint32_t UINT32;
+typedef uint32_t DWORD;
+typedef int32_t OO_THREAD;
+typedef uint16_t UINT16;
+typedef uint8_t UINT8;
+typedef uint8_t BYTE;
+typedef int16_t INT16; 
+typedef void * OO_TPROC_RET;
+typedef int SOCKET;
+typedef sockaddr_in SOCKADDR_IN;
+//typedef HANDLE SEMAPHORE;
 #endif
 
 #endif

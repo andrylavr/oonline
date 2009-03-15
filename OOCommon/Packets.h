@@ -72,6 +72,7 @@ TYPE#	Description
 #define MAX_OBJECTS_PER_PACKET 16
 #define OBJECTMASK 0xf000
 #define CHUNKMASK 0x000f   
+namespace ChunkType{
 enum PkgChunk
 {
 	Object	 = 1,
@@ -91,6 +92,9 @@ enum PkgChunk
 	Animation = 19,
 	End
 };
+
+};
+using namespace ChunkType;
 inline bool RequiresReliable(PkgChunk type)
 {
 	switch (type) // No breaks here

@@ -31,7 +31,7 @@ public:
 	{
 		m_system->RemoveIOProvider(this);
 	}
-	virtual bool DoOutput(LogLevel LogLevel,std::string & Message) = 0;
+	virtual bool DoOutput(LogLevel LogLevel,const std::string & Message) = 0;
 	IOSystem *GetIOSystem()
 	{
 		return m_system;
