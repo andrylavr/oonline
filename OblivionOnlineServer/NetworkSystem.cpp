@@ -115,7 +115,12 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		if(FD_ISSET(acceptSocket,&fdSet))
 		{
 			SOCKADDR_IN addr;
-			size_t addr_size = sizeof(SOCKADDR_IN);			
+#ifndef WIN32 
+			size_t addr_size;
+#else		  
+			int addr_size;
+#endif		
+			addr_size = sizeof(SOCKADDR_IN);			
 			SOCKET sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
 			netsys->AddNewPlayer(addr,sock);
 		}
@@ -154,7 +159,12 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	SOCKET sock = socket(AF_INET,SOCK_DGRAM,0);
 	unsigned short port = (unsigned short) netsys->GetGS()->GetLua()->GetInteger("ServicePort");
 	size_t size;
-	size_t inaddr_len = sizeof(SOCKADDR_IN);
+#ifndef WIN32 
+	size_t inaddr_len;
+#else		  
+	int inaddr_len;
+#endif	
+	inaddr_len = sizeof(SOCKADDR_IN);
 	listenaddr.sin_family = AF_INET;
 	listenaddr.sin_port = htons(port);
 	listenaddr.sin_addr.s_addr = INADDR_ANY;

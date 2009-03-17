@@ -86,7 +86,12 @@ void RemoteAdminServer::Listen(unsigned short port,bool Global)
 		if(FD_ISSET(acceptSocket,&fdSet))
 		{
 			SOCKADDR_IN addr;
-			size_t addr_size = sizeof(SOCKADDR_IN);			
+#ifndef WIN32 
+			size_t addr_size; 
+#else		  
+			int addr_size;
+#endif	 
+			addr_size = sizeof(SOCKADDR_IN);			
 			SOCKET  sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
 			transmit.push_back(sock);
 		}

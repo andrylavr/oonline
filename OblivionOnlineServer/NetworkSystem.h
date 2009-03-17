@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "OutPacket.h"
 #include "GlobalDefines.h"
+#ifndef WIN32
 #include <netdb.h>
-
+#endif
 #include <vector>
 #include <map>
 #include <ctime>

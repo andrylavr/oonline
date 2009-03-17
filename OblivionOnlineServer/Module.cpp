@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Module.h"
-#ifndef WIN322
+#ifndef WIN32
 #include <dlfcn.h>
 #endif
 	//TODO: Add implementations
