@@ -362,10 +362,6 @@
 				RelativePath=".\UserInterface.cpp"
 				>
 			</File>
-			<Filter
-				Name="IO"
-				>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Headers"
@@ -1010,6 +1006,10 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="IO"
+			>
 		</Filter>
 		<File
 			RelativePath=".\GameClient.cpp"

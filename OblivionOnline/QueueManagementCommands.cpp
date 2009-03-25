@@ -48,7 +48,10 @@ bool Cmd_MPGetNewObject_Execute (COMMAND_ARGS)
 	UINT32 *refResult = (UINT32 *)result;
 	if(!gClient->GetUpdateQueue()->empty())
 	{
-		*refResult = gClient->GetUpdateQueue()->front()->RefID();
+		if(gClient->GetUpdateQueue()->front()->Status() == STATUS_PLAYER)
+			*refResult = gClient->GetSpawnID(gClient->GetUpdateQueue()->front()->RefID());
+		else
+			*refResult = gClient->GetUpdateQueue()->front()->RefID();
 		gClient->GetUpdateQueue()->pop_front();
 	}
 	else

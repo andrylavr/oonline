@@ -38,7 +38,7 @@ forward this exception.
 #include "Entity.h"
 bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
@@ -52,7 +52,7 @@ bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 
 bool Cmd_MPGetPosY_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
@@ -66,7 +66,7 @@ bool Cmd_MPGetPosY_Execute (COMMAND_ARGS)
 
 bool Cmd_MPGetPosZ_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
@@ -80,7 +80,7 @@ bool Cmd_MPGetPosZ_Execute (COMMAND_ARGS)
 
 bool Cmd_MPGetRotZ_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
@@ -93,7 +93,7 @@ bool Cmd_MPGetRotZ_Execute (COMMAND_ARGS)
 }
 bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
@@ -106,7 +106,7 @@ bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
 }
 bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
 {
-	if(gClient->GetIsInitialized())
+	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
 	{
