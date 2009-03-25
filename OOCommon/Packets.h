@@ -34,7 +34,7 @@ BYTE	Data
 
 Chunk Base Layout
 BYTE	DATA
-0-1		Chunk ID :the first 4 bits ( && 0xff000000 ) Specify the object this is related to , the others ( && 0x00ffffff) the chunk type
+0-1		Chunk ID :the first 4 bits ( && 0xf000 ) Specify the object this is related to , the others ( && 0x0fff) the chunk type
 
 
 Strings in Packets:
@@ -71,7 +71,7 @@ TYPE#	Description
 #define PACKET_HEADER_SIZE 3
 #define MAX_OBJECTS_PER_PACKET 16
 #define OBJECTMASK 0xf000
-#define CHUNKMASK 0x000f   
+#define CHUNKMASK 0x0fff   
 namespace ChunkType{
 enum PkgChunk
 {
