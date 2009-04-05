@@ -123,12 +123,37 @@ void FakeClient::HandleCommand(char *String)
 {
 	switch(String[0])
 	{
-	case 'p': //position
+		UINT32 CellID;
+		UINT32 Interior;
 		float f[6];
-		sscanf(String,"p %f %f %f %f %f %f",f,f+1,f+2,f+3,f+4,f+5);
+		UINT32	formID;
+		BYTE	status;
+	case 'p': //position
+		sscanf(String,"p %f %f %f %f %f %f ",f,f+1,f+2,f+3,f+4,f+5);
 		NetSendPosition(outnet,LocalPlayer,STATUS_PLAYER,f[0],f[1],f[2],f[3],f[4],f[5]);
 		outnet->Send();
 		break;
+	case 'P': //position of another item
+		sscanf(String,"P %U %u %f %f %f %f %f %f",&formID,&status,f,f+1,f+2,f+3,f+4,f+5);
+		NetSendPosition(outnet,LocalPlayer,STATUS_PLAYER,f[0],f[1],f[2],f[3],f[4],f[5]);
+		outnet->Send();
+		break;
+	case 'c': //cell
+		sscanf(String,"c %u %u",&CellID,&Interior);
+		NetSendCellID(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
+		outnet->Send();
+		break;
+	case 'a': // Actor Value
+		sscanf(String,"a %u %d",&CellID,&Interior);
+		NetSendActorValue(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
+		outnet->Send();
+		break;
+	case 'e': // Actor Value
+		sscanf(String,"e %u %d",&CellID,&Interior);
+		NetSendEquip(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
+		outnet->Send();
+		break;
+	
 	}
 }
 FakeClient *g_fake;

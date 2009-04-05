@@ -99,14 +99,17 @@ void EntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 }
 void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
-	short Value = ent->ActorValue(AVCode);
+
+	BYTE Data[3];
+	Data[0] = AVCode;
+	*(short *)(Data+1) = ent->ActorValue(AVCode);
 	if(ent->Status() < STATUS_PLAYER)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{
 			if(i->first != m_net->GetMasterClient()  || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Value);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Data);
 			}
 		}
 	}
@@ -116,7 +119,7 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 		{
 			if(i->first != ent->RefID() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Value);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(ActorValue),ActorValue,(BYTE *)&Data);
 			}
 		}
 	}

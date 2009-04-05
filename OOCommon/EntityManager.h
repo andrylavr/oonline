@@ -13,6 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 */
 #pragma once
+#include "Entity.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include "GlobalDefines.h"
@@ -80,9 +81,11 @@ public:
 		std::map<UINT32,Entity *>::iterator iter;
 	if(Status == STATUS_PLAYER)
 	{
-		iter =  m_players.find(RefID);
-		if(iter != m_players.end())
-			return iter->second;
+		for(iter = m_players.begin();iter!=m_players.end();iter ++)
+		{
+			if(iter->second->RefID() == RefID)
+				return iter->second;
+		}
 	}
 	else
 	{
