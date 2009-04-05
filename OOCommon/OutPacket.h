@@ -129,6 +129,7 @@ public:
 		*m_Chunks_written = 0;
 		m_Reliable = false;
 		m_ObjectsWritten = 0;
+		SendTimer = clock() + RESEND_TICK;
 	}
 	~OutPacket(void)
 	{

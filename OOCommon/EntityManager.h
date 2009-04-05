@@ -67,6 +67,10 @@ public:
 	{
 		DeleteEntities();
 	}
+	IOStream & GetIO()
+	{
+		return *m_IO;
+	}
 	bool RegisterEntity(Entity *Entity);
 	bool DeleteEntity(Entity *Entity);
 	bool DeRegisterEntity(Entity *Entity);

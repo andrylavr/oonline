@@ -191,6 +191,7 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{D398CA15-23DF-4207-9A4B-539BC8C8DFEC}"
+			RelativePathToProject="..\curl\curl-7.18.2\lib\curllib.vcproj"
 		/>
 	</References>
 	<Files>

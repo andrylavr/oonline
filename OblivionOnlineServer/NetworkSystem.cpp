@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "LuaSystem.h"
 #include "EventSystem.h"
 #include <sstream>
+#include "Entity.h"
 #ifdef WIN32
 #include <process.h>
 #include <Windows.h>
@@ -216,8 +217,9 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	 //Find a new RefID
 	 for(iter = m_PlayerAddresses.begin();iter != m_PlayerAddresses.end();iter++)
 	 {
-		  if(++ID != iter->first)
+		  if(ID != iter->first)
 			  break;
+		  ID++;
 	 }
 	 m_PlayerAddresses[ID] = addr;
 	 m_AddressPlayer[addr.sin_addr.s_addr] = ID;
@@ -233,6 +235,10 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		 m_MasterClient = ID;
 		 m_GS->GetIO()<<GameMessage<<"Selected new master client"<<ID<<endl;
 		 m_OutPackets[ID]->AddChunk(ID,STATUS_PLAYER,GetMinChunkSize(ClientType),ClientType,(BYTE *)&masterclient);
+	 }
+	 if(m_GS->GetEntities()->GetEntity(STATUS_PLAYER,ID) == NULL)
+	 {
+		 new Entity(m_GS->GetEntities(),ID,STATUS_PLAYER,false,false);
 	 }
 	 Send(ID);
 	 return ID;

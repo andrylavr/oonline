@@ -68,7 +68,7 @@ public:
 		
 		retVal = packet->AddChunk(FormID,status,ChunkSize,ChunkType,data);
 		if( !retVal|| 
-			clock() <= packet->SendTimer )	
+			clock() >= packet->SendTimer )	
 		{
 			if(packet->Reliable())
 				SendReliableStream(PlayerID,packet->Size(),packet->GetData());
@@ -87,13 +87,15 @@ public:
 	inline bool Send(UINT32 PlayerID)
 	{
 		OutPacket *packet = m_OutPackets[PlayerID];	
+		bool retval;
 		if(packet == NULL)
 			return false;//TODO: Report bug
 		if(packet->Reliable())
-			return SendReliableStream(PlayerID,packet->Size(),packet->GetData());
+			retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
 		else
-			return SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
+			retval= SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
 		packet->Reset();
+		return retval;
 	}
 	bool RegisterTraffic(UINT32 PlayerID,size_t size,BYTE *data,bool reliable);
 	//TODO : Place these in  a callback ?
@@ -114,7 +116,7 @@ public:
 	}
 	UINT32 GetPlayerCount()
 	{
-		return  m_AddressPlayer.size();
+		return  m_PlayerAddresses.size();
 	}
 	UINT32 GetMasterClient()
 	{

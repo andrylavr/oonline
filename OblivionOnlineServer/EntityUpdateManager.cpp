@@ -137,7 +137,8 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{			
-			if((m_net->GetMasterClient() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
+			//&& i->second->CellID() == ent->CellID()
+			if((m_net->GetMasterClient() != i->first ) || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
@@ -148,7 +149,8 @@ void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 		{			
-			if((ent->RefID() != i->first && i->second->CellID() == ent->CellID()) || !Inbound)
+			// && i->second->CellID() == ent->CellID()
+			if((ent->RefID() != i->first) || !Inbound)
 			{
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
