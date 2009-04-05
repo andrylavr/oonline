@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 */
 #include <cstdlib>
-#include "EntityManager.h"
+#include "GlobalDefines.h"
 #include "FakeClient.h"
 #include "IOSystem.h"
 #include "LogIOProvider.h"
@@ -24,6 +24,7 @@ GNU General Public License for more details.
 #include "../OblivionOnlineServer/ScreenIOProvider.h"
 #include "OutPacketStream.h"
 #include "NetSend.h"
+#include "EntityManager.h"
 SOCKET ServerSocket;
 bool g_plot = true;
 
