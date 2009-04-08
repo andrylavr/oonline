@@ -43,6 +43,7 @@ forward this exception.
 #include "NetSend.h"
 #include "OBSEFunctions.h"
 #define MOVE_THRESHOLD 0.2
+bool g_bRenderGUI = true;
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 static void SendActorPosition(TESObjectREFR *act,Entity *ent)
 {	
@@ -148,13 +149,13 @@ int GameClient::Deinitialize()
 	}
 	bIsInitialized = false;
 	TotalPlayers = 0;
-	TerminateThread(hRecvThread, 0);
-	CloseHandle(hRecvThread);
 	gClient->GetEntities()->DeleteEntities();
 	closesocket(ServerSocket);
 	ServerSocket = INVALID_SOCKET;
 	WSACleanup();
 	DeinitialiseUI();
+	TerminateThread(hRecvThread, 0);
+	CloseHandle(hRecvThread);
 	//D3DHookDeInit();
 
 	return 1;
@@ -232,6 +233,14 @@ bool GameClient::RunFrame()
 	BYTE Status;
 	if(!gClient->GetIsInitialized() )
 		return true;
+	//Check if Menu Mode:
+
+	InterfaceManager* intfc = InterfaceManager::GetSingleton();
+	if(!intfc->IsGameMode())
+		g_bRenderGUI = false;
+	else
+		g_bRenderGUI = true;
+
 	// A heavy command xD
 	// 1 - send local player data up .
 	// 2 - send health magicka and fatigue  + equip up.
@@ -342,4 +351,13 @@ bool GameClient::RunFrame()
 	}
 	gClient->GetServerStream()->Send();
 	return true;
+}
+
+Entity * GameClient::LocalFormIDGetEntity(UINT32 RefID)
+{
+	UINT32 playerid = GetSpawnIDFromPlayerID(GetPlayerNumberFromRefID(RefID)); //TODO: this can be optimized
+	if(playerid == -1)
+		return GetEntities()->GetEntity(STATUS_OBJECT,RefID);
+	else
+		return GetEntities()->GetEntity(STATUS_PLAYER,playerid);
 }

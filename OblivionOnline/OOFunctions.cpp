@@ -67,70 +67,13 @@ UINT32 GetPlayerNumberFromRefID(UInt32 refID) // retrieves a player number from 
 		{
 			if(gClient->GetSpawnID(currentspawn) == refID) // we find it quite fast. 12 cmp cycles 12 add cycles
 			{
-				if(gClient->GetIsPlayerConnected(currentplayer))
-				{
+				//TODO: Implement GetIsPlayerConnected
+				//if(gClient->GetIsPlayerConnected(currentplayer))
+				//{
 					return currentplayer;
-				}
+				//}
 			}
 		}
 	}
 	return -1;
 }
-/*
-float GetStat(Actor* ActorBuf, int statNum)
-{
-	float statValue = -1;
-	int PlayerNum = GetPlayerNumberFromRefID(ActorBuf->refID);
-
-	//If actorID is valid and stats have been initialized, retrieve the stat we want
-	if (PlayerNum != -1 && PlayerNum != -2)
-	{
-		if (!Players[PlayerNum].bStatsInitialized)
-			return -1;
-
-		switch(statNum)
-		{
-		case 0:
-			statValue = Players[PlayerNum].Strength;
-			break;
-		case 1:
-			statValue = Players[PlayerNum].Intelligence;
-			break;
-		case 2:
-			statValue = Players[PlayerNum].Willpower;
-			break;
-		case 3:
-			statValue = Players[PlayerNum].Agility;
-			break;
-		case 4:
-			statValue = Players[PlayerNum].Speed;
-			break;
-		case 5:
-			statValue = Players[PlayerNum].Endurance;
-			break;
-		case 6:
-			statValue = Players[PlayerNum].Personality;
-			break;
-		case 7:
-			statValue = Players[PlayerNum].Luck;
-			break;
-		case 8:
-			statValue = Players[PlayerNum].Health;
-			break;
-		case 9:
-			statValue = Players[PlayerNum].Magika;
-			break;
-		case 10:
-			statValue = Players[PlayerNum].Fatigue;
-			break;
-		case 11:
-			statValue = Players[PlayerNum].Encumbrance;
-			break;
-		default:
-			statValue = -1;
-			break;
-		};
-	}
-	return statValue;
-}
-*/

@@ -33,8 +33,8 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 {
 	if(!g_plot)
 		return;
-	m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object ")) << 
-		ent->RefID() << "("<<ent->Name() << ") ActorValue" << AVCode << ": " << ent->ActorValue(AVCode) <<endl;
+	//m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object ")) << 
+	//	ent->RefID() << "("<<ent->Name() << ") ActorValue" << AVCode << ": " << ent->ActorValue(AVCode) <<endl;
 }
 void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 {

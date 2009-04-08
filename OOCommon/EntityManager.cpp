@@ -79,3 +79,23 @@ bool EntityManager::DeRegisterEntity(Entity *Entity)
 	lock.lock();
 	return true;	
 }
+
+Entity * EntityManager::GetEntity( BYTE Status,UINT32 RefID )
+{
+	std::map<UINT32,Entity *>::iterator iter;
+	if(Status == STATUS_PLAYER)
+	{
+		for(iter = m_players.begin();iter!=m_players.end();iter ++)
+		{
+			if(iter->first == RefID)
+				return iter->second;
+		}
+	}
+	else
+	{
+		iter =  m_objects.find(RefID);
+		if(iter != m_objects.end())
+			return iter->second;
+	}
+	return NULL;
+}

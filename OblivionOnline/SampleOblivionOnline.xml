@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<detail>
+  <abstract>
+    <!-- same as in Master XML-->
+    <name>OblivionOnline</name>
+    <game>Oblivion</game>
+    <currentversion legible="0.4.9 beta" short="0.4.9" sequential="49">59229110-8B01-451f-86B8-39FEE904EB54</currentversion>
+    <!-- wenn dass nicht vorhanden, wird die mod nicht mehr unterstützt ( versteckt / bzw nicht in der hauptliste, ausser man sucht explizit danach
+    , aber updates werden noch eingespielt und auf aktualisierungen überprüft-->
+    <UUID>9EDFBFE6-B4D6-4eac-AA2D-CEF3DCB9AD31</UUID>
+    <!-- Eindeutige UUID/ GUID . Die sollte für referenzen verwendet werden-->
+    <short>Description for Multiplayer</short>
+    <DetailXML>SampleOblivionOnline.xml</DetailXML>
+    <!--Usually on HTTP server, URL-->
+  </abstract>
+  <files>
+    <file>
+      <ID>333533DE-BAFD-4b83-B620-F47EA5A37F45</ID>
+      <name>OblivionOnline.dll</name>
+      <size>493200</size>
+      <!-- Nur als referenz für download,0 für unbekannt-->
+      <!--Byte-->
+      <hash>
+        <CRC32>(hier kommt ein CRC, als Hex zahl)</CRC32>
+        <!-- Werte-->
+        <SHA2>(ein SHA2-Hash)</SHA2>
+      </hash>
+      <download href="http://example.com/download.php?file=obliviononline.dll" priority="1" /> <!-- niedrige Priority : Zuerst abfragen, bei fehler höhrere Prio. bei geicher Prio fairer Zufall-->
+    </file>
+    <file>
+    <ID>6244CDC4-584D-475a-BAA1-6D0BCE215099</ID>
+    <name>OblivionOnline.esp</name><!--Only for the User, no other purpose-->
+    <size>4932</size>
+    <!-- Nur als referenz für download,0 für unbekannt-->
+    <!--Byte-->
+    <hash>
+      <CRC32>(hier kommt ein CRC, als Hex zahl)</CRC32>
+      <!-- Werte-->
+      <SHA2>(ein SHA2-Hash)</SHA2>
+    </hash>
+    <download href="http://example.com/download.php?file=obliviononline.esp" priority="1" /> <!-- niedrige Priority : Zuerst abfragen, bei fehler höhrere Prio. bei geicher Prio fairer Zufall-->
+    </file>
+  </files>
+  <version ID="59229110-8B01-451f-86B8-39FEE904EB54" seqential="049" legible="0.4.9 beta"  short="0.4.9">
+    <file id="333533DE-BAFD-4b83-B620-F47EA5A37F45" rel="GamePath">Data/obse/plugins/OblivionOnline.dll</file> <!-- Welche datei und wohin damit-->
+    <file id="333533DE-BAFD-4b83-B620-F47EA5A37F45" rel="ServerPath">downloads/OblivionOnline.dll</file>
+    <!-- rel : To what is the path relative ( a path MAY NOT CONTAIN Colons ( : ) , begin with a slash or contain thesequece ".." 
+    GamePath: Game Install dir
+    ServerPath: Path to the Server instance this mod should be applied to
+    -->
+  </version>
+  
+</detail>

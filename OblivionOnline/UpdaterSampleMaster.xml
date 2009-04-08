@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ooupdate fileversion="1"> <!--Version des Dateiformats, nu geändertt wenn bestehende Tags geändert werden  !-->
+  <category name="core"> <!-- Kategorien -->
+    <download>
+      <name>OblivionOnline</name>
+      <game>Oblivion</game> <!-- Oblivion und Fallout3, Server kann mehrmals installiert werden, heisst Server-->
+      <currentversion legible="0.4.9 beta" short="0.4.9" sequential="49">59229110-8B01-451f-86B8-39FEE904EB54</currentversion>
+      <!-- wenn dass nicht vorhanden, dann nur noch alte versionen, standard ausgeblendet , aber updates werden noch eingespielt-->
+      <UUID>9EDFBFE6-B4D6-4eac-AA2D-CEF3DCB9AD31</UUID><!-- Eindeutige UUID/ GUID . Die sollte für referenzen verwendet werden-->
+      <short>Description for Multiplayer</short> <!-- Zusammenfassung-->
+      <DetailXML>SampleOblivionOnline.xml</DetailXML><!--Usually on HTTP server, URL , enthält genauere Details-->
+    </download>
+    <download>
+      <name>AutoUpdater</name>
+      <currentversion legible="0.1 beta" short="0.1">01</currentversion>
+      <UUID>C7DE05F0-1E55-4750-BAD9-8DDAC2DD91D7</UUID>
+      <short>The Auto Updater itself</short>
+      <DetailXML>SampleAutoUpdater.xml</DetailXML>
+    </download>
+  </category>
+</ooupdate>

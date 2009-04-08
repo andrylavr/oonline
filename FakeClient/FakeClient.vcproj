@@ -136,9 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OOCommon.lib"
+				AdditionalDependencies="OOCommon.lib ws2_32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib&quot;;$(BOOSTLIBS)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

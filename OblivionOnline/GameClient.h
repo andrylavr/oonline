@@ -41,6 +41,8 @@ forward this exception.
 #include "IOSystem.h"
 #include "EntityManager.h"
 class OutPacketStream;
+class Entity;
+extern bool g_bRenderGUI;
 class GameClient
 {
 private:
@@ -53,6 +55,7 @@ private:
 	bool bIsMasterClient; // We have "write rigths" to the server entities
 	bool bIsInitialized; // We received a player ID
 	bool bPlayersConnected[MAXCLIENTS];
+	
 	UINT32 LocalPlayer;
 	UINT32 TotalPlayers;
 
@@ -131,6 +134,15 @@ public:
 	{
 		return outnet;
 	}
+	bool SetRenderGUI(bool Value)
+	{
+		return g_bRenderGUI = Value;
+	}
+	bool GetRenderGUI()
+	{
+		return g_bRenderGUI;
+	}
+	Entity *LocalFormIDGetEntity(UINT32 RefID);
 	bool RunFrame();
 };
 

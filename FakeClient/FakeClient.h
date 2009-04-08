@@ -18,9 +18,11 @@ GNU General Public License for more details.
 */
 #include <string>
 extern bool g_plot;
+#include "GlobalDefines.h"
+
+class IOStream;
 class IOSystem;
 class EntityManager;
-#include "GlobalDefines.h"
 
 class FakeClient
 {

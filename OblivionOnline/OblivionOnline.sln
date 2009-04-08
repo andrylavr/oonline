@@ -77,6 +77,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUITinyXMLParser", "..\CE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FakeClient", "..\FakeClient\FakeClient.vcproj", "{CD0835BF-946D-40F4-85F6-F146F00DD183}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1AEF16E7-8FD0-49D1-943C-33BB89A010FD}"
+	ProjectSection(SolutionItems) = preProject
+		SampleOblivionOnline.xml = SampleOblivionOnline.xml
+		UpdaterSampleMaster.xml = UpdaterSampleMaster.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Static|Any CPU = Debug_Static|Any CPU
@@ -706,8 +712,8 @@ Global
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release_Static|Win32.ActiveCfg = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release_Static|Win32.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Any CPU.ActiveCfg = Release|Win32
-		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.ActiveCfg = Release_Static|Win32
+		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Mixed Platforms.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Win32.ActiveCfg = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.Release|Win32.Build.0 = Release_Static|Win32
 		{FB8B47D0-1A5C-9C40-8AF1-672B6A3FF18F}.ReleaseWithSymbols|Any CPU.ActiveCfg = ReleaseWithSymbols|Win32

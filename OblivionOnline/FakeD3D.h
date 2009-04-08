@@ -42,7 +42,7 @@ This file is part of OblivionOnline.
 #include "main.h"
 #include "UserInterface.h"
 #include "D3DHook.h"
-extern bool bFrameRendered; 
+extern bool g_bRenderGUI; 
 class MyDirect3DDevice9 : public IDirect3DDevice9
 {
 public:
@@ -157,13 +157,18 @@ public:
 		static IDirect3DStateBlock9 *state = NULL;
 		if(bUIInitialized)
 		{	
-			//save state 
-			CreateStateBlock(D3DSBT_ALL,&state);
-			//render
-			CEGUI::System::getSingleton().renderGUI();
-			//restore state
-			state->Apply();
-			state->Release();
+			if(g_bRenderGUI)
+			{
+				//save state 
+				CreateStateBlock(D3DSBT_ALL,&state);
+				//render
+				CEGUI::System::getSingleton().renderGUI();
+				//restore state
+				state->Apply();
+				state->Release();
+
+
+			}
 		}
 		if(gClient)
 			gClient->RunFrame();
