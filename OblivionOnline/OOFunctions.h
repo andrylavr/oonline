@@ -50,18 +50,18 @@ inline int GetPlayerNumberFromSpawnNumber(USHORT SpawnNumber)
 
 inline USHORT GetSpawnIDFromPlayerID(USHORT  PlayerID) // retrieves a player number from a refID in spawn
 {
-	return ((gClient->GetLocalPlayer() >= PlayerID) ? PlayerID : (PlayerID -1));
+	return ((gClient->GetLocalPlayer() > PlayerID) ? PlayerID : (PlayerID -1));
 };
 
 inline UINT32 GetPlayerFormID(UINT32 PlayerID)
 {
-	return gClient->GetSpawnID(gClient->GetLocalPlayer() >= PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
+	return gClient->GetSpawnRefID(gClient->GetLocalPlayer() >= PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
 }
 inline bool IsPlayerSpawn(UINT32 RefID)
 {
 	for(int i = 0;i < MAXCLIENTS;i++)
 	{
-		if(gClient->GetSpawnID(i) == RefID)
+		if(gClient->GetSpawnRefID(i) == RefID)
 			return true;
 	}
 	return false;

@@ -1011,6 +1011,18 @@
 			Name="IO"
 			>
 		</Filter>
+		<Filter
+			Name="Injection"
+			>
+			<File
+				RelativePath=".\GameInject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameInject.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\GameClient.cpp"
 			>

@@ -26,7 +26,7 @@ bool Cmd_MPGetSpawnedRef_Execute (COMMAND_ARGS)
 	if (spawnNumber < MAXCLIENTS)
 	{
 		UInt32* refResult = (UInt32*)result;
-		*refResult = gClient->GetSpawnID(spawnNumber);
+		*refResult = gClient->GetSpawnRefID(spawnNumber);
 		return true;
 	}
 	return true;
@@ -45,7 +45,7 @@ bool Cmd_MPSpawned_Execute (COMMAND_ARGS)
 		UInt32 actorNumber = ActorBuf->refID;
 		for(int i=0; i< MAXCLIENTS ; i++)
 		{
-			if(gClient->GetSpawnID(i) == actorNumber)
+			if(gClient->GetSpawnRefID(i) == actorNumber)
 			{
 				// conflict here
 				gClient->GetIO() << "This reference is already used as a controlled actor" <<endl;
@@ -55,7 +55,7 @@ bool Cmd_MPSpawned_Execute (COMMAND_ARGS)
 		}
 		for(int i=0; i<MAXCLIENTS; i++)
 		{
-			if (!gClient->GetSpawnID(i))
+			if (!gClient->GetSpawnRefID(i))
 			{
 				gClient->SetSpawnID(i,actorNumber);
 				gClient->GetIO() << "Spawn "<< i<<" is " << actorNumber <<endl;
@@ -81,7 +81,7 @@ bool Cmd_MPClearSpawn_Execute (COMMAND_ARGS)
 		Actor *ActorBuf = (Actor *)thisObj;
 		for(int i=0; i<MAXCLIENTS; i++)
 		{
-			if (gClient->GetSpawnID(i) == (ActorBuf->refID))
+			if (gClient->GetSpawnRefID(i) == (ActorBuf->refID))
 			{
 				gClient->SetSpawnID(i,0);
 				//Console_Print("SpawnID cleared");

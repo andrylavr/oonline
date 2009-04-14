@@ -242,7 +242,7 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 		{
 			if( i->first != m_net->GetMasterClient() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Animation),Animation,(BYTE*)&ChunkData);
 			}
 		}
 	}
@@ -252,7 +252,7 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 		{
 			if(i->first != ent->RefID() || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Equip),Equip,(BYTE*)&ChunkData);
+				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Animation),Animation,(BYTE*)&ChunkData);
 			}
 		}
 	}

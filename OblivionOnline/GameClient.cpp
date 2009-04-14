@@ -80,10 +80,9 @@ static void SendActorEquip(Actor *act,Entity *ent)
 		if(i == 18 || i == 19 || i== 9 || i == 10 || i == 11 || i == 12 || i == 14) // These do not exist 
 			continue;
 		if (!FindEquipped(act, i, &getObject, &itemResult))
-		{
 			ent->SetEquip(i,0);
-		}
-		ent->SetEquip(i,*itemRef);
+		else
+			ent->SetEquip(i,*itemRef);
 	}
 }
 static void SendActorAnimation(Actor *act,Entity *ent)
@@ -253,16 +252,15 @@ bool GameClient::RunFrame()
 	//gClient->GetServerStream()->Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
-	//SendActorEquip(*g_thePlayer,ent);
+	SendActorEquip(*g_thePlayer,ent);
 	SendActorAnimation(*g_thePlayer,ent);
 	//Health of the other players
-	// contains crashes
 	for(int i = 0;i < MAXCLIENTS ;i++)
 	{
-		if(gClient->GetSpawnID(i) != 0)
+		if(gClient->GetSpawnRefID(i) != 0 && i!=LocalPlayer)
 		{			
 
-			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnID(i))  ) )
+			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnRefID(i))  ) )
 				continue; 
 			ent =  gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
 			if(ent == NULL)
@@ -285,9 +283,9 @@ bool GameClient::RunFrame()
 		for(int i = 0 ; i < MAXCLIENTS;i++)
 		{
 			bool bInsert = true;
-			if(gClient->GetSpawnID(i))
+			if(gClient->GetSpawnRefID(i))
 			{
-				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(gClient->GetSpawnID(i));
+				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(gClient->GetSpawnRefID(i));
 				if(!form)
 					continue;
 				// Look through the list
@@ -341,7 +339,7 @@ bool GameClient::RunFrame()
 					{
 						Actor * actor = (Actor *)LookupFormByID(ListIterator->refr->refID);
 						SendActorValues(actor,ent);
-						//SendActorEquip(actor,ent);
+						SendActorEquip(actor,ent);
 						SendActorAnimation(actor,ent);						
 					}
 				}
@@ -355,7 +353,7 @@ bool GameClient::RunFrame()
 
 Entity * GameClient::LocalFormIDGetEntity(UINT32 RefID)
 {
-	UINT32 playerid = GetSpawnIDFromPlayerID(GetPlayerNumberFromRefID(RefID)); //TODO: this can be optimized
+	UINT32 playerid = GetPlayerNumberFromRefID(RefID); //TODO: this can be optimized
 	if(playerid == -1)
 		return GetEntities()->GetEntity(STATUS_OBJECT,RefID);
 	else

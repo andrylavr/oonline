@@ -122,7 +122,7 @@ public:
 	{
 		return ServerSocket;
 	}
-	UINT32 GetSpawnID(UINT32 PlayerID)
+	UINT32 GetSpawnRefID(UINT32 PlayerID)
 	{
 		return SpawnID[PlayerID];
 	}

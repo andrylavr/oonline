@@ -26,15 +26,15 @@ void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationI
 		return;
 	m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object "));
 	m_mgr->GetIO() << 
-		ent->RefID() << "("<<ent->Name() << ") Animation " << AnimationID <<
+		ent->RefID() << "("<<ent->Name() << ") Animation " << (unsigned int)AnimationID <<
 		(ent->AnimationStatus(AnimationID) ? "Started" : "Stopped") << endl;
 }
 void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!g_plot)
 		return;
-	//m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object ")) << 
-	//	ent->RefID() << "("<<ent->Name() << ") ActorValue" << AVCode << ": " << ent->ActorValue(AVCode) <<endl;
+	m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object ")) << 
+		ent->RefID() << "("<< ent->Name() << ") ActorValue" << (unsigned int)AVCode << ": " << ent->ActorValue(AVCode) <<endl;
 }
 void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 {
@@ -55,7 +55,7 @@ void EntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbou
 	if(!g_plot)
 		return;
 	m_mgr->GetIO() << GameMessage << (((ent->Status()==STATUS_PLAYER)?"Player ":"Object ")) << 
-		ent->RefID() << "("<<ent->Name() << ") Equip" <<slot << ": " << ent->Equip(slot) <<endl;
+		ent->RefID() << "("<<ent->Name() << ") Equip" <<(unsigned int)slot << ": " << ent->Equip(slot) <<endl;
 }
 void EntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
 {

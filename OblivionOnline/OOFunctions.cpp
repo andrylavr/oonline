@@ -65,7 +65,7 @@ UINT32 GetPlayerNumberFromRefID(UInt32 refID) // retrieves a player number from 
 		for (UINT32 currentspawn = 0 ;  currentspawn<MAXCLIENTS; currentplayer++ ,
 			currentspawn += ((currentplayer == gClient->GetLocalPlayer())?0:1))
 		{
-			if(gClient->GetSpawnID(currentspawn) == refID) // we find it quite fast. 12 cmp cycles 12 add cycles
+			if(gClient->GetSpawnRefID(currentspawn) == refID) // we find it quite fast. 12 cmp cycles 12 add cycles
 			{
 				//TODO: Implement GetIsPlayerConnected
 				//if(gClient->GetIsPlayerConnected(currentplayer))

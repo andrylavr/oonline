@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include "main.h"
 #include "../OOCommon/NetSend.h"
+#include "GameInject.h"
 inline void SafeAddUpdateQueue(Entity * ent)
 {	
 	if(!gClient->GetUpdateQueue()->empty())
@@ -48,14 +49,16 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 	if(!Inbound)
 		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
 	else
-		SafeAddUpdateQueue(ent);
+		InjectActorValue(ent,AVCode,(UINT32)ent->ActorValue(AVCode));// This causes C++ to raw re-interpret the data
 }
 void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
 		NetSendCellID(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->CellID(),ent->IsInInterior());
 	else
+	{
 		SafeAddUpdateQueue(ent);
+	}
 }
 void EntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
 {
