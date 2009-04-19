@@ -22,4 +22,8 @@ class TESObjectREFR;
 class Entity;
 TESObjectREFR *GetRefrFromEntity(Entity * ent);
 bool InjectActorValue(Entity *ent,BYTE slot, INT16 value);
+bool InjectEquip(Entity *ent,BYTE slot,UINT32 formid);
+bool InjectAnimation(Entity  *ent,BYTE slot,bool Playing);
+//Called every frame, BEFORE synch takes place, to fix up things
+void InjectEquip_Handlebacklog();
 #endif // GameInject_h__

@@ -42,7 +42,7 @@ void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationI
 	if(!Inbound)
 		NetSendAnimation(gClient->GetServerStream(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
 	else
-		SafeAddUpdateQueue(ent);
+		InjectAnimation(ent,AnimationID,ent->AnimationStatus(AnimationID));
 }
 void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
@@ -69,7 +69,7 @@ void EntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbou
 	if(!Inbound)
 		NetSendEquip(gClient->GetServerStream(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
 	else
-		SafeAddUpdateQueue(ent);
+		InjectEquip(ent,slot,ent->Equip(slot));
 }
 void EntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
 {

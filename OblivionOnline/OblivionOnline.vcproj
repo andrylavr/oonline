@@ -1015,6 +1015,10 @@
 			Name="Injection"
 			>
 			<File
+				RelativePath=".\GameCommand.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameInject.cpp"
 				>
 			</File>
@@ -1022,6 +1026,22 @@
 				RelativePath=".\GameInject.h"
 				>
 			</File>
+			<Filter
+				Name="Command Wrappers"
+				>
+				<File
+					RelativePath=".\CommandWrapper.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CommandWrapper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\InventoryCommandWrappers.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\GameClient.cpp"
