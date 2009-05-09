@@ -37,7 +37,7 @@ forward this exception.
 */
 #include "CommandWrapper.h"
 #include "GameCommand.h"
-void CallCmdExecuteGeneric(_Cmd_Execute Command,const ParamInfo * param,const void * paramdata,const unsigned integer ParamCount,const TESObjectREFR *thisobj,double *result)
+void CallCmdExecuteGeneric(_Cmd_Execute Command,ParamInfo * paraminfo,void * paramdata,const unsigned int ParamCount,TESObjectREFR *thisobj,double *result)
 {
 	UInt8	scriptObjBuf[sizeof(Script)];
 	Script	* tempScriptObj = (Script *)scriptObjBuf;
@@ -49,6 +49,6 @@ void CallCmdExecuteGeneric(_Cmd_Execute Command,const ParamInfo * param,const vo
 	evt.m_script = tempScriptObj;
 	evt.m_vars = NULL;
 	evt.m_unk1 = 0;
-	Command(param,paramdata,thisobj,ParamCount,tempScriptObj,&evt,result,0);
+	Command(paraminfo,paramdata,thisobj,ParamCount,tempScriptObj,&evt,result,0);
 	tempScriptObj->StaticDestructor();
 }

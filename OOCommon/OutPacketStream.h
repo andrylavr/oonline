@@ -39,7 +39,7 @@ forward this exception.
 #include "IOSystem.h"
 
 // Provides an abstract way to send data both via UDP and via TCP
-class OutPacketStream
+OO_API class OutPacketStream
 {
 private:
 	SOCKADDR_IN RemoteAddress;
@@ -72,5 +72,5 @@ public:
 		}
 		return true;
 	}
-	bool Send();
+	OO_API bool Send();
 };

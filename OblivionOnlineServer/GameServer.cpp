@@ -120,7 +120,7 @@ void GameServer::AdvertiseGameServer()
 	char  *EscapedName;
 	if(ServerName.length() != 0)
 	{
-		GetIO() <<"Beginning to list server" << endl;
+		GetIO() <<  BootMessage << "Beginning to list server" << endl;
 		CURL *curl = curl_easy_init();
 			while(true){
 				stringstream URL;

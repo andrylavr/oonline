@@ -28,22 +28,22 @@ extern "C"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #define STARTUP_SCRIPT "ServerLaunch.lua"
-class LuaSystem
+OO_API class LuaSystem
 {
 public:
 	LuaSystem(GameServer *GS);
 	~LuaSystem(void);
-	bool RunStartupScripts(std::string Name);
-	bool RunScriptLine(std::string Line);
-	lua_Number GetNumeric(std::string Name);
-	lua_Integer GetInteger(std::string Name);
-	std::string GetString(std::string Name);
-	lua_CFunction GetFunction(std::string Name);
-	void SetFunction(std::string Name,lua_CFunction value);
-	void SetNumeric(std::string Name,lua_Number value);
-	void SetInteger(std::string Name,lua_Integer value);	
-	void SetString(std::string Name,std::string Value);
-	void PrintStatistics();
+	OO_API bool RunStartupScripts(std::string Name);
+	OO_API bool RunScriptLine(std::string Line);
+	OO_API lua_Number GetNumeric(std::string Name);
+	OO_API lua_Integer GetInteger(std::string Name);
+	OO_API std::string GetString(std::string Name);
+	OO_API lua_CFunction GetFunction(std::string Name);
+	OO_API void SetFunction(std::string Name,lua_CFunction value);
+	OO_API void SetNumeric(std::string Name,lua_Number value);
+	OO_API void SetInteger(std::string Name,lua_Integer value);	
+	OO_API void SetString(std::string Name,std::string Value);
+	OO_API void PrintStatistics();
 private:
 	void DefaultSettings();
 	lua_State *m_Lua;

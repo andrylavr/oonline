@@ -49,6 +49,7 @@ bool EquipItemCommand(Actor *thisObj,UINT32 FormID)
 	TESObjectREFR * arg1= refr; // Set parameter 1 ( Object) 
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
 	CallCmdExecuteGeneric(Cmd_EquipItem_Execute,kParams_CmdEquipItem,&arg1,1,thisObj,&result);
+	return true;
 }
 bool UnEquipItemCommand(Actor *thisObj,UINT32 FormID)
 {
@@ -61,18 +62,10 @@ bool UnEquipItemCommand(Actor *thisObj,UINT32 FormID)
 	double result;
 	// Call AddItem: 1 Pointer to the form
 	TESObjectREFR * arg1; //
-	// create a Script object
-	UInt8	scriptObjBuf[sizeof(Script)];
-	Script	* tempScriptObj = (Script *)scriptObjBuf;
-
-	void	* scriptState = GetGlobalScriptStateObj();
-
-	tempScriptObj->Constructor();
-	tempScriptObj->MarkAsTemporary();
 	arg1 = refr; // Set parameter 1 ( Object) 
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-	Cmd_UnequipItem_Execute(kParams_CmdUnequipItem,&arg1,thisObj, 1,tempScriptObj,NULL,&result,0); // NULL denotes incomplete params
-	tempScriptObj->StaticDestructor();
+	CallCmdExecuteGeneric(Cmd_UnequipItem_Execute,kParams_CmdUnequipItem,&arg1,1,thisObj,&result);
+	return true;
 }
 bool AddOneItemCommand(Actor *thisObj,UINT32 FormID)
 {
@@ -87,18 +80,8 @@ bool AddOneItemCommand(Actor *thisObj,UINT32 FormID)
 		refr,
 		(TESObjectREFR *) 1
 	}; 
-	// create a Script object
-	UInt8	scriptObjBuf[sizeof(Script)];
-	Script	* tempScriptObj = (Script *)scriptObjBuf;
-
-	void	* scriptState = GetGlobalScriptStateObj();
-
-	tempScriptObj->Constructor();
-	tempScriptObj->MarkAsTemporary();
-	
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-	Cmd_AddItem_Execute(kParams_CmdAddItem,&arg1,thisObj, 1,tempScriptObj,NULL,&result,0); // NULL denotes incomplete params
-	tempScriptObj->StaticDestructor();
+	CallCmdExecuteGeneric(Cmd_AddItem_Execute,kParams_CmdAddItem,&arg1, 1,thisObj,&result); // NULL denotes incomplete params
 }
 bool RemoveOneItemCommand(Actor * thisObj,UINT32 FormID)
 {
@@ -114,15 +97,7 @@ bool RemoveOneItemCommand(Actor * thisObj,UINT32 FormID)
 		refr,
 		(TESObjectREFR *) 1
 	}; 
-	// create a Script object
-	UInt8	scriptObjBuf[sizeof(Script)];
-	Script	* tempScriptObj = (Script *)scriptObjBuf;
-
-	void	* scriptState = GetGlobalScriptStateObj();
-
-	tempScriptObj->Constructor();
-	tempScriptObj->MarkAsTemporary();
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-	Cmd_RemoveItem_Execute(kParams_CmdRemoveItem,arg1,thisObj, 1,tempScriptObj,NULL,&result,0); // NULL denotes incomplete params
-	tempScriptObj->StaticDestructor();
+	CallCmdExecuteGeneric(Cmd_RemoveItem_Execute,kParams_CmdRemoveItem,arg1, 1,thisObj,&result); // NULL denotes incomplete params
+
 }

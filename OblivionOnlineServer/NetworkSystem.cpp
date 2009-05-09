@@ -241,6 +241,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		 new Entity(m_GS->GetEntities(),ID,STATUS_PLAYER,false,false);
 	 }
 	 Send(ID);
+	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
 	 return ID;
 }
 

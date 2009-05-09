@@ -27,7 +27,7 @@ class EventSystem;
 class NetworkSystem;
 class IOStream;
 typedef std::pair<UINT32,Entity *> IDEntityPair;
-class EntityManager
+OO_API class EntityManager
 {	
 private:
 	boost::mutex lock;

@@ -40,4 +40,4 @@ bool EquipItemCommand(Actor *thisObj,UINT32 FormID);
 bool UnEquipItemCommand(Actor *thisObj,UINT32 FormID);
 bool AddOneItemCommand(Actor *thisObj,UINT32 FormID);
 bool RemoveOneItemCommand(Actor * thisObj,UINT32 FormID);
-void CallCmdExecuteGeneric(_Cmd_Execute Command,const ParamInfo * param,const void * paramdata,const unsigned int ParamCount,const TESObjectREFR *thisobj,double *result);
+void CallCmdExecuteGeneric(_Cmd_Execute Command,ParamInfo * param,void * paramdata,const unsigned int ParamCount,TESObjectREFR *thisobj,double *result);

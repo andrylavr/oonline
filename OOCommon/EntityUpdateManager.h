@@ -23,7 +23,7 @@ class EntityManager;
 class GameServer;
 #include <string>
 // The implementation is  different on client and server */
-class EntityUpdateManager
+OO_API class EntityUpdateManager
 {
 private:
 	EntityManager *m_mgr;
@@ -38,15 +38,15 @@ public:
 	{
 		return m_net;
 	}
-	void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
-	void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
-	void GlobalSend(Entity *ent,bool Inbound );
-	void OnNameUpdate(Entity *ent,bool Inbound );
-	void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound );
-	void OnClassUpdate(Entity *ent,bool Inbound );
-	void OnCellChange(Entity *ent,bool Inbound );
-	void OnRaceUpdate(Entity *ent,bool Inbound );
-	void OnGenderUpdate(Entity *ent,bool Inbound );
-	void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound );
-	void Chat(Entity *ent,std::string Message,bool Inbound );
+	OO_API void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
+	OO_API void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
+	OO_API void GlobalSend(Entity *ent,bool Inbound );
+	OO_API void OnNameUpdate(Entity *ent,bool Inbound );
+	OO_API void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound );
+	OO_API void OnClassUpdate(Entity *ent,bool Inbound );
+	OO_API void OnCellChange(Entity *ent,bool Inbound );
+	OO_API void OnRaceUpdate(Entity *ent,bool Inbound );
+	OO_API void OnGenderUpdate(Entity *ent,bool Inbound );
+	OO_API void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound );
+	OO_API void Chat(Entity *ent,std::string Message,bool Inbound );
 };

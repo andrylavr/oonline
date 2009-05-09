@@ -27,11 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define VERSION_MINOR 9
 #define VERSION_CODENAME "Release V"
 #define VERSION_COMMENT "Public Beta 1"
+#define VERSION_CODE ( VERSION_SUPER*1000000 + VERSION_MAJOR *1000+VERSION_MINOR )
 #define VERSION_STREAM VERSION_SUPER<<"."<<VERSION_MAJOR<<"."<<VERSION_MINOR<<" \""<< VERSION_CODENAME << " \" "<< VERSION_COMMENT << " "  
 #ifdef WIN32
 #include <Windows.h>
 typedef HANDLE OO_THREAD;
 typedef void OO_TPROC_RET;
+#ifdef OO_EXPORT
+	#define OO_API __declspec(dllexport)
+#else
+	#define OO_API __declspec(dllimport)
+#endif
 #else
 #include <stdint.h>
 extern "C" {
