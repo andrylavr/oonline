@@ -55,7 +55,10 @@ inline USHORT GetSpawnIDFromPlayerID(USHORT  PlayerID) // retrieves a player num
 
 inline UINT32 GetPlayerFormID(UINT32 PlayerID)
 {
-	return gClient->GetSpawnRefID(gClient->GetLocalPlayer() >= PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
+	if(PlayerID == gClient->GetLocalPlayer())
+		return (*g_thePlayer)  ->refID;
+	else
+		return gClient->GetSpawnRefID(gClient->GetLocalPlayer() > PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
 }
 inline bool IsPlayerSpawn(UINT32 RefID)
 {

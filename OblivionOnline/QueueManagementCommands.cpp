@@ -49,7 +49,7 @@ bool Cmd_MPGetNewObject_Execute (COMMAND_ARGS)
 	if(!gClient->GetUpdateQueue()->empty())
 	{
 		if(gClient->GetUpdateQueue()->front()->Status() == STATUS_PLAYER)
-			*refResult = gClient->GetSpawnRefID(GetSpawnIDFromPlayerID(gClient->GetUpdateQueue()->front()->RefID()));
+			*refResult = GetPlayerFormID(gClient->GetUpdateQueue()->front()->RefID());
 		else
 			*refResult = gClient->GetUpdateQueue()->front()->RefID();
 		gClient->GetUpdateQueue()->pop_front();

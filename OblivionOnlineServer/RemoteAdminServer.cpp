@@ -123,7 +123,7 @@ void RemoteAdminServer::Process(char *data, unsigned long len, SOCKET sock)
 	std::string current;
 	int i = 0;
 	int p = 4;
-	for(; i < 128 && !isspace(data[p]) && data[p] != ',' ; i++,p++)
+	for(; i < 127 && !isspace(data[p]) && data[p] != ',' ; i++,p++)
 		module[i] = data[p];
 	module[i] = 0;
 	parameters.clear();
