@@ -43,8 +43,23 @@ bool InjectActorValue(Entity *ent,BYTE slot, INT16 value)
 	else
 	{
 		Actor * actor = (Actor *)refr;
-		actor->SetActorValue(slot,value);
-		ASSERT(actor->GetActorValue(slot) == value);
+		int CurrentVal = actor->GetActorValue(slot);
+		//TODO: Sync health, fatigue, magicka unmodifiedvalues as well. In general sync all modifiers here
+		    
+		switch(slot)
+		{
+		case AV_FATIGUE:
+		case AV_HEALTH:
+		case AV_MAGICKA:
+			actor->ModActorBaseValue(slot,value - CurrentVal,0);
+			//assert(actor->GetBaseActorValue(slot) == value);
+			//TODO: Re-add this assertion here
+			break;
+		default:
+			actor->ModActorValue(slot,value - CurrentVal,0);
+			assert(actor->GetActorValue(slot) == value);
+			break;
+		}
 	}
 }
 //Called every frame, BEFORE synch takes place, to fix up things
@@ -72,7 +87,7 @@ bool InjectEquip( Entity *ent,BYTE slot,UINT32 formid )
 	else
 	{
 		Actor * act= (Actor*)refr;
-		if(!formid || !LookupFormByID(formid))
+		if(formid && LookupFormByID(formid))
 		{
 			AddOneItemCommand(act,formid);
 			EquipItemQueue.push(pair<Actor *,UINT32>(act,formid));

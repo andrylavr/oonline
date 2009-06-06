@@ -51,7 +51,10 @@ static void SendActorPosition(TESObjectREFR *act,Entity *ent)
 		|| abs(act->posZ - ent->PosZ()) > MOVE_THRESHOLD || abs(act->rotZ - ent->RotZ()) > MOVE_THRESHOLD
 		|| abs(act->rotX - ent->RotX())>MOVE_THRESHOLD ||abs(act->rotY - ent->RotY()) > MOVE_THRESHOLD)
 	{
-		ent->SetCell(act->parentCell->refID,act->parentCell->worldSpace == NULL);
+		if(act->parentCell->worldSpace == NULL)
+			ent->SetCell(act->parentCell->refID,true);
+		else
+			ent->SetCell(act->parentCell->worldSpace->refID,false);
 		ent->MoveNRot(act->posX,act->posY,act->posZ,act->rotX,act->rotY,act->rotZ);
 	}
 }

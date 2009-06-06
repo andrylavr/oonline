@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64, Joseph Pearson aka chessmaster42
+Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 

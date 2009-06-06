@@ -180,7 +180,7 @@ inline PkgChunk GetChunkType(BYTE *stream)
 
 inline UINT8 GetObjectIDFromObjChunk(BYTE *stream)
 {
-	return (PkgChunk)(*((INT16 *)(stream)) & OBJECTMASK);
+	return (PkgChunk)((*((INT16 *)(stream)) & OBJECTMASK)>>12);
 }
 inline std::string ReadANSIString(BYTE* BaseStream,size_t maxlen)
 {

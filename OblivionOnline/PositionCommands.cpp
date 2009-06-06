@@ -119,6 +119,7 @@ bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
 }
 bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
 {
+	UINT32 * refres = (UINT32 *) result;
 	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
@@ -127,14 +128,32 @@ bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
 		return true;
 	}
 	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	if(!ent)
+		return true;
 	//TESObjectCELL *obj = (TESObjectCELL *)Oblivion_DynamicCast(LookupFormByID(ent->CellID),0,RTTI_TESForm,RTTI_TESObjectCELL,0);	
-	*result = ent->IsInInterior() ? 1 : 0;
+	if(ent->IsInInterior())
+		*result = 1;
+	else
+		*result = 0;
+	//*refres = ent->IsInInterior() ? 0 : 1;
+	return true;
+}
+bool Cmd_MPGetParentCellOrWS_Execute (COMMAND_ARGS)
+{
+	UINT32 * refres = (UINT32 *) result;
+	if(!thisObj)
+		return true;
+	if(thisObj->parentCell->worldSpace)
+		*refres = thisObj->parentCell->worldSpace->refID;
+	else
+		*refres = thisObj->parentCell->refID;
 	return true;
 }
 
 
 bool Cmd_MPGetCell_Execute (COMMAND_ARGS)
 {
+	UINT32 * refres = (UINT32 *) result;
 	if(!gClient->GetIsInitialized())
 		return true;
 	if (!thisObj)
@@ -143,7 +162,7 @@ bool Cmd_MPGetCell_Execute (COMMAND_ARGS)
 		return true;
 	}
 	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*(UINT32 *) result = ent->CellID();
+	*refres = ent->CellID();
 	return true;
 }
 
@@ -238,4 +257,15 @@ CommandInfo kMPGetCellCommand =
 	0,		// has no param
 	NULL,	// has no param table
 	Cmd_MPGetCell_Execute
+};
+CommandInfo kMPGetParentCellOrWSCommand =
+{
+	"MPGetParentCellOrWS",
+	"MPGPCWS",
+	0,
+	"Gets an objects parent cell or worldspace",
+	0,		// requires parent obj
+	0,		// has no param
+	NULL,	// has no param table
+	Cmd_MPGetParentCellOrWS_Execute
 };

@@ -157,14 +157,3 @@ CommandInfo kMPTotalPlayersCommand =
 	NULL,	// no param table
 	Cmd_MPTotalPlayers_Execute
 };
-CommandInfo kGetParentCellCommand =
-{
-	"GetParentCell",
-	"GPC",
-	0,
-	"Gets an objects parent cell",
-	0,		// requires parent obj
-	0,		// doesn't have params
-	NULL,	// no param table
-	Cmd_MPTotalPlayers_Execute
-};
