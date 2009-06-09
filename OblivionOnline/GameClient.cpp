@@ -45,7 +45,7 @@ forward this exception.
 #define MOVE_THRESHOLD 0.2
 bool g_bRenderGUI = true;
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
-static void SendActorPosition(TESObjectREFR *act,Entity *ent)
+static void SendActorPosition(TESObjectREFR *act,ClientEntity *ent)
 {	
 	if(abs(act->posX - ent->PosX())> MOVE_THRESHOLD || abs(act->posY - ent->PosY()) > MOVE_THRESHOLD
 		|| abs(act->posZ - ent->PosZ()) > MOVE_THRESHOLD || abs(act->rotZ - ent->RotZ()) > MOVE_THRESHOLD
@@ -58,14 +58,14 @@ static void SendActorPosition(TESObjectREFR *act,Entity *ent)
 		ent->MoveNRot(act->posX,act->posY,act->posZ,act->rotX,act->rotY,act->rotZ);
 	}
 }
-static void SendActorHealthOnly(Actor *act,Entity *ent)
+static void SendActorHealthOnly(Actor *act,ClientEntity *ent)
 {
 	for(BYTE i = 8;i <= 10;i++) // Only 8;9;10
 	{
 		ent->SetActorValue(i,act->GetActorValue(i));
 	}
 }
-static void SendActorValues(Actor *act,Entity *ent)
+static void SendActorValues(Actor *act,ClientEntity *ent)
 {
 	/*ASSERT(ent);
 	ASSERT(act);*/
@@ -73,7 +73,7 @@ static void SendActorValues(Actor *act,Entity *ent)
 	ent->SetActorValue(9,act->GetActorValue(9));
 	ent->SetActorValue(10,act->GetActorValue(10));
 }
-static void SendActorEquip(Actor *act,Entity *ent)
+static void SendActorEquip(Actor *act,ClientEntity *ent)
 {
 	feGetObject getObject;
 	double itemResult;
@@ -88,7 +88,7 @@ static void SendActorEquip(Actor *act,Entity *ent)
 			ent->SetEquip(i,*itemRef);
 	}
 }
-static void SendActorAnimation(Actor *act,Entity *ent)
+static void SendActorAnimation(Actor *act,ClientEntity *ent)
 {
 	ActorAnimData *animdata = GetActorAnimData(act);
 	if(!animdata)
@@ -103,7 +103,7 @@ GameClient::GameClient(void) : UpdateQueue()
 	/*
 	1 IO
 	2 Network
-	3 Entity
+	3 ClientEntity
 	*/
 	IOSys = new IOSystem();
 	IO = new IOStream(IOSys);
@@ -230,7 +230,7 @@ bool GameClient::Disconnect()
 }
 bool GameClient::RunFrame()
 {
-	Entity * ent;  // TODO: this seems to make problems, maybe use volatile?
+	ClientEntity * ent;  
 	Actor  * actor = NULL;
 	BYTE Status;
 	if(!gClient->GetIsInitialized() )
@@ -249,9 +249,9 @@ bool GameClient::RunFrame()
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-	ent = gClient->GetEntities()->GetEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
+	ent = (ClientEntity *)gClient->GetEntities()->GetEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
 	if(ent == NULL)
-		ent = new Entity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
+		ent = new ClientEntity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
 	//gClient->GetServerStream()->Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
@@ -265,13 +265,13 @@ bool GameClient::RunFrame()
 
 			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnRefID(i))  ) )
 				continue; 
-			ent =  gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
+			ent =  (ClientEntity *)gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
 			if(ent == NULL)
-				ent = new Entity( gClient->GetEntities(),i,STATUS_PLAYER);
+				ent = new ClientEntity( gClient->GetEntities(),i,STATUS_PLAYER);
 			if(!ent)
 			{
 				gClient->GetIO() << Error << __FILE__ << " (line:)" << __LINE__ << " : Out of memory or allocation error. Continuing."<<endl;
-				continue; // This means an entity was missed
+				continue; // This means an ClientEntity was missed
 			}
 			//SendActorHealthOnly(actor,ent);
 			SendActorValues(actor,ent); 
@@ -326,10 +326,10 @@ bool GameClient::RunFrame()
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = gClient->GetEntities()->GetEntity(Status,ListIterator->refr->refID);
+					ent = (ClientEntity *) gClient->GetEntities()->GetEntity(Status,ListIterator->refr->refID);
 
 					if(ent == NULL)
-						ent = new Entity(gClient->GetEntities(),ListIterator->refr->refID,Status);
+						ent = new ClientEntity(gClient->GetEntities(),ListIterator->refr->refID,Status);
 					//Sync that object too
 					/*
 					if(ListIterator->refr->parentCell->refID != ent->CellID)
@@ -354,11 +354,11 @@ bool GameClient::RunFrame()
 	return true;
 }
 
-Entity * GameClient::LocalFormIDGetEntity(UINT32 RefID)
+ClientEntity * GameClient::LocalFormIDGetEntity(UINT32 RefID)
 {
 	UINT32 playerid = GetPlayerNumberFromRefID(RefID); //TODO: this can be optimized
 	if(playerid == -1)
-		return GetEntities()->GetEntity(STATUS_OBJECT,RefID);
+		return (ClientEntity *) GetEntities()->GetEntity(STATUS_OBJECT,RefID);
 	else
-		return GetEntities()->GetEntity(STATUS_PLAYER,playerid);
+		return (ClientEntity *) GetEntities()->GetEntity(STATUS_PLAYER,playerid);
 }

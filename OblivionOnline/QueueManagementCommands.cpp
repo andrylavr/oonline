@@ -38,7 +38,7 @@ forward this exception.
 */
 #include "main.h"
 
-#include "Entity.h"
+#include "ClientEntity.h"
 
 
 

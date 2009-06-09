@@ -37,48 +37,111 @@ exception; this exception also makes it possible to release a modified version w
 forward this exception.
 */
 #include "main.h"
-#include "Entity.h"
+#include "ClientEntity.h"
 #include "NetSend.h"
-//Reworked 3/19/2008
-bool Cmd_MPGetEquipment_Execute (COMMAND_ARGS)
+/* Note that these commands need to be called in a particular order:
+FIRST RemoveItem, then UnequipItem, then EquipItem, then AddItem,  */
+bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)
 {
-	if(!gClient->GetIsInitialized())
+	UINT32 *refres = (UINT32*) result;
+	if(!thisObj)
 		return true;
-	if (!thisObj)
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	*refres= 0;
+	if(!ent->GetAddItemQueue().empty())
 	{
-		Console_Print("Error, no reference given for MPGetEquipment");
+		*refres = ent->GetAddItemQueue().front();
+		ent->GetEquipQueue().push(*refres);
+		ent->GetAddItemQueue().pop();
+	}
+	return true;
+}
+bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
+{
+	UINT32 *refres = (UINT32*) result;
+	if(!thisObj)
 		return true;
-	}
-	if (thisObj->IsActor())
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	*refres= 0;
+	if(!ent->GetRemoveItemQueue().empty())
 	{
-		Actor *ActorBuf = (Actor *)thisObj;
-		Entity *ent = gClient->LocalFormIDGetEntity(ActorBuf->refID);
-		BYTE i = 0;
-		if(ent ==NULL)
-			ent = new Entity(gClient->GetEntities(),thisObj->refID,GetStatus(thisObj));
-		for(;i < MAX_EQUIPSLOTS;i++)
-		{
-			if(ent->EquipChanged(i))
-			{
-				ent->ResetEquipChanged(i);
-				*((UINT32 *)result) = ent->Equip(i);
-				return true;
-			}
-		}
-		*result = 0;
+		*refres = ent->GetRemoveItemQueue().front();
+		ent->GetRemoveItemQueue().pop();
 	}
-
+	return true;
+}
+bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
+{
+	UINT32 *refres = (UINT32*) result;
+	if(!thisObj)
+		return true;
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	*refres= 0;
+	if(!ent->GetEquipQueue().empty())
+	{
+		*refres = ent->GetEquipQueue().front();
+		ent->GetEquipQueue().pop();
+	}
+	return true;
+}
+bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
+{
+	UINT32 *refres = (UINT32*) result;
+	if(!thisObj)
+		return true;
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	*refres= 0;
+	if(!ent->GetUnEquipQueue().empty())
+	{
+		*refres = ent->GetUnEquipQueue().front();
+		ent->GetRemoveItemQueue().push(*refres);
+		ent->GetUnEquipQueue().pop();
+	}
 	return true;
 }
 
-CommandInfo kMPGetEquipmentCommand =
+
+CommandInfo kMPGetAddItemCommand =
 {
-	"MPGetEquipment",
-	"MPGE",
+	"MPGetAddItem",
+	"MPGAI",
 	0,
-	"Gets an actors equipment in the specifiec slot",
+	"Gets next Item to add",
 	0,		// requires parent obj
 	1,		// 1 param
-	kParams_OneInt,	// int param table
-	Cmd_MPGetEquipment_Execute
+	NULL,	// int param table
+	Cmd_MPGetAddItemCommand_Execute
+};
+CommandInfo kMPGetRemoveItemCommand =
+{
+	"MPGetRemoveItem",
+	"MPGRI",
+	0,
+	"Gets next item to remove",
+	0,		// requires parent obj
+	1,		// 1 param
+	NULL,	// int param table
+	Cmd_MPGetRemoveItemCommand_Execute
+};
+CommandInfo kMPGetEquipItemCommand =
+{
+	"MPGetEquipItem",
+	"MPGEI",
+	0,
+	"Gets next item to equip",
+	0,		// requires parent obj
+	1,		// 1 param
+	NULL,	// int param table
+	Cmd_MPGetEquipItemCommand_Execute
+};
+CommandInfo kMPGetUnEquipItemCommand =
+{
+	"MPGetUnequipItem",
+	"MPGUEI",
+	0,
+	"Gets next item to unequip",
+	0,		// requires parent obj
+	1,		// 1 param
+	NULL,	// int param table
+	Cmd_MPGetUnEquipItemCommand_Execute
 };

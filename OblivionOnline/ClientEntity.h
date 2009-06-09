@@ -35,45 +35,42 @@ This file is part of OblivionOnline.
 	exception; this exception also makes it possible to release a modified version which carries 
 	forward this exception.
 */
-
-#ifndef main_h
-#define main_h
-
-#include <list>
+#pragma once
+#ifndef CLIENTENTITY_H
+#define CLIENTENTITY_H
 #include <queue>
-#include <stdio.h>
-#include <Windows.h>
-#include "../OOCommon/GlobalDefines.h"
-#include "../OOCommon/IOSystem.h"
-#include "ClientEntity.h"
-#include "obse/PluginAPI.h"
-#include "obse/CommandTable.h"
-#include "obse/GameAPI.h"
-#include "obse/ParamInfos.h"
-#include "obse/GameObjects.h"
-#define MAXCLIENTS 12
-#define MAXSERVERS 8
-#include "OOFunctions.H"
-#include "OBSEFunctions.h"
+#include "../OOCommon/Entity.h"
+class ClientEntity : public Entity
+{
+private:
+	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; // QUeues for client commands
+public:
+	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
+		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
+		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
+		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")) :
+	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,fatigue,female,race,name,classname),
+		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()
+	{
+		
+	}
+	std::queue<UINT32> &GetEquipQueue()
+	{
+		return EquipQueue;
+	}
+	std::queue<UINT32> &GetUnEquipQueue()
+	{
+		return UnEquipQueue;
+	}
+	std::queue<UINT32> &GetAddItemQueue()
+	{
+		return AddItemQueue;
+	}
+	 std::queue<UINT32> &GetRemoveItemQueue()
+	{
+		return RemoveItemQueue;
+	}
 
-#include "EntityManager.h"
-
-#include "GameClient.h"
-#define SUPER_VERSION 0 //Not used yet
-#define MAIN_VERSION 5
-#define SUB_VERSION 0
-//The 2 below here are nothing but UI . Not on the netcode
-#define RELEASE_CODENAME "Release V" // The Name . Can be empty
-#define ADDITIONAL_VERSION_COMMENT "Internal Alpha" // For betas and special builds only
-
-//Externals
-
-class OutboundNetwork;
-extern GameClient *gClient;
-extern TESObjectREFR* PlayerActorList[MAXCLIENTS];
-extern OutboundNetwork outnet;
-
-extern DWORD WINAPI RecvThread(LPVOID Params);
-extern "C" HANDLE hEvtSendPacket;
+};
 
 #endif

@@ -110,57 +110,6 @@ void GameServer::RunServer()
 		}
 		
 	}
-	//AdvertiseGameServer();
-}
-void GameServer::AdvertiseGameServer()
-{
-	return;
-	string RealmListURI = m_script->GetString("RealmlistURI");
-	string ServerName  = m_script->GetString("Name");
-	char  *EscapedName;
-	if(ServerName.length() != 0)
-	{
-		GetIO() <<  BootMessage << "Beginning to list server" << endl;
-		CURL *curl = curl_easy_init();
-			while(true){
-				stringstream URL;
-				CURLcode result;
-				if(curl)
-				{
-					char *EscapedName = curl_easy_escape(curl,ServerName.c_str(),0);
-					URL<<RealmListURI;
-					URL << "?name=" << string( EscapedName) << "&port=" <<m_script->GetInteger("ServicePort") <<"&players=" <<
-						m_Netsystem->GetPlayerCount()<<"&maxplayers="<<MAX_PLAYERS <<"&VersionMajor="
-						<< VERSION_MAJOR << "&VersionMinor=" << VERSION_MINOR << "&HasPassword="<<0;
-					EscapedName = (char *)calloc(URL.str().length(),sizeof(char));
-					memcpy(EscapedName,URL.str().c_str(),URL.str().length());
-					//TODO:  If I readd passworded servers - remove the false
-					//TODO: Escape string
-					curl_easy_setopt(curl,CURLOPT_URL,EscapedName);
-					free(EscapedName);
-					result = curl_easy_perform(curl);
-					
-				}
-				else
-				{
-					GetIO() << Error<< "CURL error" <<endl;
-				}
-				m_script->PrintStatistics(); // performs garbage collection
-#ifdef WIN32
-				Sleep(120000); //2 minutes
-#else
-				sleep(120);
-#endif
-			}
-			curl_easy_cleanup(curl);
-
-			curl_free(EscapedName);
-
-	}
-	else
-	{
-		GetIO() << Warning <<"No ListURI set. This server will not be listed online" << endl;
-	}	
 }
 
 void GameServer::DisplayBootupMessage()

@@ -20,20 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GameClient.h"
 #include "GameInject.h"
 #include "GameAPI.h"
-#include "Entity.h"
+#include "ClientEntity.h"
 #include "GameCommand.h"
 #include "CommandWrapper.h"
-static queue<pair<Actor *,UINT32>> RemoveOneItemQueue; 
-static queue<pair<Actor *,UINT32>> EquipItemQueue; 
+//static queue<pair<Actor *,UINT32>> RemoveOneItemQueue; 
+//static queue<pair<Actor *,UINT32>> EquipItemQueue; 
 
-TESObjectREFR * GetRefrFromEntity( Entity * ent )
+TESObjectREFR * GetRefrFromEntity( ClientEntity * ent )
 {
 	if(ent->Status() != STATUS_PLAYER)
 		return (TESObjectREFR * )LookupFormByID(ent->RefID());
 	else
 		return (TESObjectREFR * )LookupFormByID(gClient->GetSpawnRefID(GetSpawnIDFromPlayerID(ent->RefID())));
 }
-bool InjectActorValue(Entity *ent,BYTE slot, INT16 value)
+bool InjectActorValue(ClientEntity *ent,BYTE slot, INT16 value)
 {
 	if(!ent)
 		return false;
@@ -65,7 +65,7 @@ bool InjectActorValue(Entity *ent,BYTE slot, INT16 value)
 //Called every frame, BEFORE synch takes place, to fix up things
 void InjectEquip_Handlebacklog()
 {
-	while(!RemoveOneItemQueue.empty())
+	/*while(!RemoveOneItemQueue.empty())
 	{
 		RemoveOneItemCommand(RemoveOneItemQueue.front().first,RemoveOneItemQueue.front().second);
 		RemoveOneItemQueue.pop();
@@ -74,10 +74,10 @@ void InjectEquip_Handlebacklog()
 	{
 		EquipItemCommand(EquipItemQueue.front().first,EquipItemQueue.front().second);
 		EquipItemQueue.pop();
-	}
+	}*/
 }
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
-bool InjectEquip( Entity *ent,BYTE slot,UINT32 formid )
+bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 {
 	if(!ent)
 		return false;
@@ -89,8 +89,9 @@ bool InjectEquip( Entity *ent,BYTE slot,UINT32 formid )
 		Actor * act= (Actor*)refr;
 		if(formid && LookupFormByID(formid))
 		{
-			AddOneItemCommand(act,formid);
-			EquipItemQueue.push(pair<Actor *,UINT32>(act,formid));
+			//AddOneItemCommand(act,formid);
+			ent->GetAddItemQueue().push(formid);
+			//EquipItemQueue.push(pair<Actor *,UINT32>(act,formid));
 		}
 		else
 		{
@@ -98,18 +99,20 @@ bool InjectEquip( Entity *ent,BYTE slot,UINT32 formid )
 			feGetObject getObject;
 			double itemResult;
 			UInt32* itemRef = (UInt32 *)&itemResult;
-			if (FindEquipped(act, slot, &getObject, &itemResult)) // If we find nothing, there already is no equip
+			if (FindEquipped(act, slot, &getObject, &itemResult)  ) // If we find nothing, there already is no equip
 			{
-				UnEquipItemCommand(act,*itemRef);
-				RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
+				ent->GetUnEquipQueue().push(*itemRef);
+				//UnEquipItemCommand(act,*itemRef);
+				//RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
 			}
 		}
+		SafeAddUpdateQueue(ent);
 		
 	}
 	return true;
 }
 
-bool InjectAnimation( Entity *ent,BYTE slot,bool Playing )
+bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 {
 	TESObjectREFR * refr = GetRefrFromEntity(ent);
 	if(!refr || !refr->IsActor())

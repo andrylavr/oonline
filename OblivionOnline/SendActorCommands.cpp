@@ -36,7 +36,7 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
-#include "Entity.h"
+#include "ClientEntity.h"
 #include "main.h"
 #include "NetSend.h"
 #include "outpacketstream.h"

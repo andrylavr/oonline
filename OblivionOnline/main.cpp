@@ -40,7 +40,7 @@ This file is part of OblivionOnline.
 #include "D3Dhook.h"
 #include "InPacket.h"
 #include "Commands.h"
-#include "Entity.h"
+#include "ClientEntity.h"
 #include "LogIOProvider.h"
 #include "../OOCommon/InPacket.h"
 #include "GameClient.h"
@@ -164,7 +164,10 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 	obse->RegisterCommand(&kMPClearSpawnCommand);
 
 	//Equipment
-	obse->RegisterCommand(&kMPGetEquipmentCommand);
+	obse->RegisterCommand(&kMPGetAddItemCommand);
+	obse->RegisterCommand(&kMPGetRemoveItemCommand);
+	obse->RegisterCommand(&kMPGetEquipItemCommand);
+	obse->RegisterCommand(&kMPGetUnEquipItemCommand);
 
 
 	obse->RegisterCommand(&kMPGetNewObjectCommand);

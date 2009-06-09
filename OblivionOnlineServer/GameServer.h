@@ -58,7 +58,6 @@ public:
 		return m_Modules;
 	}
 	OO_API void DisplayBootupMessage();
-	OO_API void AdvertiseGameServer();
 protected:
 	int m_tickrate; /*TODO add a way to update this from lua*/
 	LuaSystem *m_script;

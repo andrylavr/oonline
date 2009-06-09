@@ -183,7 +183,7 @@ namespace CEGUI
         */
         void indentLine();
         /*!
-        \brief convert special char to there corresponding entity in text data. 
+        \brief convert special char to there corresponding ClientEntity in text data. 
         */
         static String convertEntityInText(const String& text);
         /*!

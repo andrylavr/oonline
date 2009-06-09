@@ -61,8 +61,10 @@ extern CommandInfo kMPDisconnectCommand;
 extern CommandInfo kMPClearSpawnCommand;
 
 //Equipment
-extern CommandInfo kMPGetEquipmentCommand;
-
+extern CommandInfo kMPGetAddItemCommand;
+extern CommandInfo kMPGetRemoveItemCommand;
+extern CommandInfo kMPGetEquipItemCommand;
+extern CommandInfo kMPGetUnEquipItemCommand;
 
 
 extern CommandInfo kMPGetMyIDCommand;

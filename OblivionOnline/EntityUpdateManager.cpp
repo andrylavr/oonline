@@ -20,36 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 #include "../OOCommon/NetSend.h"
 #include "GameInject.h"
-inline void SafeAddUpdateQueue(Entity * ent)
-{	
-	if(!gClient->GetUpdateQueue()->empty())
-	{
-		deque<Entity *>::iterator UpdateIterator;
-		UpdateIterator =gClient->GetUpdateQueue()->begin();
-		while(1)
-		{
-			if(UpdateIterator == gClient->GetUpdateQueue()->end())
-				break; //really bad , but fixes some crashes ??
-			if((*UpdateIterator) == ent )
-				return;
-			UpdateIterator++;
-		}
-	}
-	gClient->GetUpdateQueue()->push_back(ent);
-}
+
 void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
 {
 	if(!Inbound)
 		NetSendAnimation(gClient->GetServerStream(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
 	else
-		InjectAnimation(ent,AnimationID,ent->AnimationStatus(AnimationID));
+		InjectAnimation((ClientEntity *)ent,AnimationID,ent->AnimationStatus(AnimationID));
 }
 void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!Inbound)
 		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
 	else
-		InjectActorValue(ent,AVCode,(UINT32)ent->ActorValue(AVCode));// This causes C++ to raw re-interpret the data
+		InjectActorValue((ClientEntity *)ent,AVCode,(UINT32)ent->ActorValue(AVCode));// This causes C++ to raw re-interpret the data
 }
 void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 {
@@ -69,7 +53,7 @@ void EntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbou
 	if(!Inbound)
 		NetSendEquip(gClient->GetServerStream(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
 	else
-		InjectEquip(ent,slot,ent->Equip(slot));
+		InjectEquip((ClientEntity *)ent,slot,ent->Equip(slot));
 }
 void EntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
 {

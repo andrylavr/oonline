@@ -367,6 +367,10 @@
 			Name="Headers"
 			>
 			<File
+				RelativePath=".\ClientEntity.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.h"
 				>
 			</File>
@@ -382,78 +386,6 @@
 				RelativePath=".\UserInterface.h"
 				>
 			</File>
-			<Filter
-				Name="Hooks"
-				>
-				<Filter
-					Name="Graphics"
-					>
-					<File
-						RelativePath=".\D3DHook.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\D3DHook.h"
-						>
-					</File>
-					<File
-						RelativePath=".\FakeD3D.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Code"
-					>
-					<File
-						RelativePath=".\BugslayerUtil.h"
-						>
-					</File>
-					<File
-						RelativePath=".\GetLoadedModules.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\HookImportedFunctionByName.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\MemDumperValidator.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\MemDumperValidator.h"
-						>
-					</File>
-					<File
-						RelativePath=".\MSJDBG.h"
-						>
-					</File>
-					<File
-						RelativePath=".\NT4ProcessInfo.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\TLHELPProcessInfo.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Input"
-					>
-					<File
-						RelativePath=".\FakeDI8.h"
-						>
-					</File>
-					<File
-						RelativePath=".\InputHook.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\InputHook.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Externals"
@@ -1039,6 +971,78 @@
 				</File>
 				<File
 					RelativePath=".\InventoryCommandWrappers.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Hooks"
+			>
+			<Filter
+				Name="Graphics"
+				>
+				<File
+					RelativePath=".\D3DHook.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\D3DHook.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FakeD3D.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Code"
+				>
+				<File
+					RelativePath=".\BugslayerUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GetLoadedModules.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HookImportedFunctionByName.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MemDumperValidator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MemDumperValidator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MSJDBG.h"
+					>
+				</File>
+				<File
+					RelativePath=".\NT4ProcessInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TLHELPProcessInfo.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Input"
+				>
+				<File
+					RelativePath=".\FakeDI8.h"
+					>
+				</File>
+				<File
+					RelativePath=".\InputHook.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\InputHook.h"
 					>
 				</File>
 			</Filter>

@@ -35,7 +35,7 @@ exception; this exception also makes it possible to release a modified version w
 forward this exception.
 */
 #include "main.h"
-#include "Entity.h"
+#include "ClientEntity.h"
 bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 {
 	if(!gClient->GetIsInitialized())
@@ -45,7 +45,7 @@ bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosX");
 		return true;
 	}
-	Entity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->PosX();
 	return true;
 }
@@ -59,7 +59,7 @@ bool Cmd_MPGetPosY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosY");
 		return true;
 	}
-	Entity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->PosY();
 	return true;
 }
@@ -73,7 +73,7 @@ bool Cmd_MPGetPosZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosZ");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->PosZ();
 	return true;
 }
@@ -87,7 +87,7 @@ bool Cmd_MPGetRotZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotZ");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->RotZ();
 	return true;
 }
@@ -100,7 +100,7 @@ bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotY");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->RotY();
 	return true;
 }
@@ -113,7 +113,7 @@ bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotX");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*result = ent->RotX();
 	return true;
 }
@@ -127,7 +127,7 @@ bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetIsInterior");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	if(!ent)
 		return true;
 	//TESObjectCELL *obj = (TESObjectCELL *)Oblivion_DynamicCast(LookupFormByID(ent->CellID),0,RTTI_TESForm,RTTI_TESObjectCELL,0);	
@@ -142,6 +142,8 @@ bool Cmd_MPGetParentCellOrWS_Execute (COMMAND_ARGS)
 {
 	UINT32 * refres = (UINT32 *) result;
 	if(!thisObj)
+		return true;
+	if(!thisObj->parentCell)
 		return true;
 	if(thisObj->parentCell->worldSpace)
 		*refres = thisObj->parentCell->worldSpace->refID;
@@ -161,7 +163,7 @@ bool Cmd_MPGetCell_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetCell");
 		return true;
 	}
-	Entity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*refres = ent->CellID();
 	return true;
 }

@@ -41,7 +41,7 @@ forward this exception.
 #include "IOSystem.h"
 #include "EntityManager.h"
 class OutPacketStream;
-class Entity;
+class ClientEntity;
 extern bool g_bRenderGUI;
 class GameClient
 {
@@ -142,7 +142,7 @@ public:
 	{
 		return g_bRenderGUI;
 	}
-	Entity *LocalFormIDGetEntity(UINT32 RefID);
+	ClientEntity *LocalFormIDGetEntity(UINT32 RefID);
 	bool RunFrame();
 };
 
