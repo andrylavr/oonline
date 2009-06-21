@@ -52,7 +52,7 @@ Module::Module(ModuleManager*mm, GameServer * gs,std::string Filename )
 	}
 #else
 	//Clear error
-	char * err= dlerror();
+	const char * err= dlerror();
 	Filename =string("./")+Filename;
 	m_data = (void *)dlopen(Filename.c_str(),RTLD_NOW);
 	err = dlerror();

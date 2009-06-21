@@ -87,7 +87,7 @@ void RemoteAdminServer::Listen(unsigned short port,bool Global)
 		{
 			SOCKADDR_IN addr;
 #ifndef WIN32 
-			size_t addr_size; 
+			socklen_t addr_size; 
 #else		  
 			int addr_size;
 #endif	 
