@@ -47,6 +47,13 @@ bool NetworkSystem::StartReceiveThreads()
 	Sleep(200); // allows TCP to bind
 	_beginthread(UDPProc,0,(LPVOID) this);
 	Sleep(200);
+#else
+	//POSIX pthread
+	pthread_t temp;
+	pthread_create(&temp,NULL,TCPProc,(void *) this);
+	usleep(200000); // 200 millisec
+	pthread_create(&temp,NULL,UDPProc,(void *) this);
+	usleep(200000); //TODO: use better synchronisation here
 #endif
 	m_MasterClient = 0;
 	return true;
@@ -117,7 +124,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		{
 			SOCKADDR_IN addr;
 #ifndef WIN32 
-			size_t addr_size;
+			socklen_t addr_size;
 #else		  
 			int addr_size;
 #endif		
@@ -161,7 +168,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	unsigned short port = (unsigned short) netsys->GetGS()->GetLua()->GetInteger("ServicePort");
 	size_t size;
 #ifndef WIN32 
-	size_t inaddr_len;
+	socklen_t inaddr_len;
 #else		  
 	int inaddr_len;
 #endif	
@@ -172,8 +179,10 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	if(bind(sock,(SOCKADDR *)&listenaddr,sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
 		netsys->GetGS()->GetIO()<<Error<<"Could not bind UDP"<<endl;
-		#ifdef WIN32 return;
-		#else return NULL;
+		#ifdef WIN32 
+		return;
+		#else 
+		return NULL;
 		#endif
 	}
 	else

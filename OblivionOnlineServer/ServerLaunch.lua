@@ -1,6 +1,4 @@
 function OnLoad()
-	LoadModule("modPluginSample")
-	LoadModule("core_ServerBrowser")
 end
 ServicePort = 41805
 AdminPort = 0

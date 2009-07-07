@@ -44,8 +44,10 @@ extern "C" {
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <netdb.h>
 }
+#define OO_API 
 typedef uint64_t UINT64;
 typedef uint32_t UINT32;
 typedef uint32_t DWORD;

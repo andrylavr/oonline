@@ -21,6 +21,7 @@ class NetworkSystem;
 class Entity;
 class EntityManager;
 class GameServer;
+#include "GlobalDefines.h"
 #include <string>
 // The implementation is  different on client and server */
 OO_API class EntityUpdateManager

@@ -97,11 +97,10 @@ void GameServer::RunServer()
 		m_Evt->DefaultEvents.EventTick(tickcount++);
 		tick_delta = tick_next - clock();
 #ifdef WIN32
-		Sleep( 
+		Sleep( tick_delta * (CLOCKS_PER_SEC / 1000));
 #else
-		usleep(
+		usleep(1000000/m_tickrate); // dirty, but apparently more precise
 #endif
-		tick_delta * (CLOCKS_PER_SEC / 1000));
 		tick_garbagecollect -= tick_delta;
 		if(tick_garbagecollect <= 0)
 		{
