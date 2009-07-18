@@ -39,6 +39,10 @@ forward this exception.
 #include "GameCommand.h"
 void CallCmdExecuteGeneric(_Cmd_Execute Command,ParamInfo * paraminfo,void * paramdata,const unsigned int ParamCount,TESObjectREFR *thisobj,double *result)
 {
+	//We need to find an opcode for the command, "compile" our own script, generate opcodeoffsetpointer
+	//(pointer to params - opcode  I think) and THEN pass the parameters. This is bullshit
+	
+	UInt32 opcodeoffset = 4;
 	UInt8	scriptObjBuf[sizeof(Script)];
 	Script	* tempScriptObj = (Script *)scriptObjBuf;
 	ScriptEventList evt;
@@ -49,6 +53,6 @@ void CallCmdExecuteGeneric(_Cmd_Execute Command,ParamInfo * paraminfo,void * par
 	evt.m_script = tempScriptObj;
 	evt.m_vars = NULL;
 	evt.m_unk1 = 0;
-	Command(paraminfo,paramdata,thisobj,ParamCount,tempScriptObj,&evt,result,0);
+	Command(paraminfo,paramdata,thisobj,ParamCount,tempScriptObj,&evt,result,&opcodeoffset);
 	tempScriptObj->StaticDestructor();
 }

@@ -46,9 +46,12 @@ bool EquipItemCommand(Actor *thisObj,UINT32 FormID)
 	//TODO: rework this
 	double result;
 	// Call AddItem: 1 Pointer to the form
-	TESObjectREFR * arg1= refr; // Set parameter 1 ( Object) 
+	TESForm * arg1 [2]= {
+		refr,
+		(TESObjectREFR *)0
+	}; // Set parameter 1 ( Object) 
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-	CallCmdExecuteGeneric(Cmd_EquipItem_Execute,kParams_CmdEquipItem,&arg1,1,thisObj,&result);
+	CallCmdExecuteGeneric(Cmd_EquipItem_Execute,kParams_CmdEquipItem,&arg1,2,thisObj,&result);
 	return true;
 }
 bool UnEquipItemCommand(Actor *thisObj,UINT32 FormID)
@@ -61,8 +64,12 @@ bool UnEquipItemCommand(Actor *thisObj,UINT32 FormID)
 	//TODO: rework this
 	double result;
 	// Call AddItem: 1 Pointer to the form
-	TESObjectREFR * arg1; //
-	arg1 = refr; // Set parameter 1 ( Object) 
+	TESObjectREFR * arg1[2]=
+	{
+		refr,
+		(TESObjectREFR *)0
+	}; //
+	//arg1 = refr; // Set parameter 1 ( Object) 
 	// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
 	CallCmdExecuteGeneric(Cmd_UnequipItem_Execute,kParams_CmdUnequipItem,&arg1,1,thisObj,&result);
 	return true;

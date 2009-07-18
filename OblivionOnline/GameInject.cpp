@@ -90,7 +90,7 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 		if(formid && LookupFormByID(formid))
 		{
 			//AddOneItemCommand(act,formid);
-			ent->GetAddItemQueue().push(formid);
+			ent->GetAddItemQueue().insert(formid);
 			//EquipItemQueue.push(pair<Actor *,UINT32>(act,formid));
 		}
 		else
@@ -101,7 +101,7 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 			UInt32* itemRef = (UInt32 *)&itemResult;
 			if (FindEquipped(act, slot, &getObject, &itemResult)  ) // If we find nothing, there already is no equip
 			{
-				ent->GetUnEquipQueue().push(*itemRef);
+				ent->GetUnEquipQueue().insert(*itemRef);
 				//UnEquipItemCommand(act,*itemRef);
 				//RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
 			}
@@ -119,7 +119,7 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 		return false;
 	else
 	{
-		//TODO: rework this
+		//TODO: See CallCommandGeneric
 		double result;
 		// We wish to call PlayGroup. This has the parameters ( which are passed as flat array in arg1 ) 
 		// AnimGroup ( a UINT16) , and 1 Integer ( flag, which we want to be "1" ) 
@@ -128,7 +128,11 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 		// create a Script object
 		UInt8	scriptObjBuf[sizeof(Script)];
 		Script	* tempScriptObj = (Script *)scriptObjBuf;
-
+		ScriptEventList evlist;
+		evlist.m_eventList = NULL;
+		evlist.m_script = tempScriptObj;
+		evlist.m_unk1 = 0;
+		evlist.m_vars = NULL;
 		void	* scriptState = GetGlobalScriptStateObj();
 
 		tempScriptObj->Constructor();
@@ -139,7 +143,7 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 			*((UINT16 *)ParamData) = 0; // Play idle anim
 		*((UINT32 *)(ParamData + 2)) = 1; // Flag to start immediately
 		// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-		Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,NULL,&result,0); // NULL denotes incomplete params
+		//Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
 		tempScriptObj->StaticDestructor();
 	}
 	return true;

@@ -38,12 +38,12 @@ This file is part of OblivionOnline.
 #pragma once
 #ifndef CLIENTENTITY_H
 #define CLIENTENTITY_H
-#include <queue>
+#include <set>
 #include "../OOCommon/Entity.h"
 class ClientEntity : public Entity
 {
 private:
-	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; // QUeues for client commands
+	std::set<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; // QUeues for client commands
 public:
 	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
@@ -54,19 +54,19 @@ public:
 	{
 		
 	}
-	std::queue<UINT32> &GetEquipQueue()
+	std::set<UINT32> &GetEquipSet()
 	{
 		return EquipQueue;
 	}
-	std::queue<UINT32> &GetUnEquipQueue()
+	std::set<UINT32> &GetUnEquipQueue()
 	{
 		return UnEquipQueue;
 	}
-	std::queue<UINT32> &GetAddItemQueue()
+	std::set<UINT32> &GetAddItemQueue()
 	{
 		return AddItemQueue;
 	}
-	 std::queue<UINT32> &GetRemoveItemQueue()
+	 std::set<UINT32> &GetRemoveItemQueue()
 	{
 		return RemoveItemQueue;
 	}

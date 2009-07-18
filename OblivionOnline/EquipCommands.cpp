@@ -50,9 +50,9 @@ bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)
 	*refres= 0;
 	if(!ent->GetAddItemQueue().empty())
 	{
-		*refres = ent->GetAddItemQueue().front();
-		ent->GetEquipQueue().push(*refres);
-		ent->GetAddItemQueue().pop();
+		*refres = *ent->GetAddItemQueue().begin();
+		ent->GetEquipSet().insert(*refres);
+		ent->GetAddItemQueue().erase(ent->GetAddItemQueue().begin());
 	}
 	return true;
 }
@@ -65,8 +65,8 @@ bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
 	*refres= 0;
 	if(!ent->GetRemoveItemQueue().empty())
 	{
-		*refres = ent->GetRemoveItemQueue().front();
-		ent->GetRemoveItemQueue().pop();
+		*refres = *ent->GetRemoveItemQueue().begin();
+		ent->GetRemoveItemQueue().erase(ent->GetRemoveItemQueue().begin());
 	}
 	return true;
 }
@@ -77,10 +77,10 @@ bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
 	*refres= 0;
-	if(!ent->GetEquipQueue().empty())
+	if(!ent->GetEquipSet().empty())
 	{
-		*refres = ent->GetEquipQueue().front();
-		ent->GetEquipQueue().pop();
+		*refres = *ent->GetEquipSet().begin();
+		ent->GetEquipSet().erase(ent->GetEquipSet().begin());
 	}
 	return true;
 }
@@ -93,9 +93,9 @@ bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
 	*refres= 0;
 	if(!ent->GetUnEquipQueue().empty())
 	{
-		*refres = ent->GetUnEquipQueue().front();
-		ent->GetRemoveItemQueue().push(*refres);
-		ent->GetUnEquipQueue().pop();
+		*refres = *ent->GetUnEquipQueue().begin();
+		ent->GetRemoveItemQueue().insert(*refres);
+		ent->GetUnEquipQueue().erase(ent->GetUnEquipQueue().begin());
 	}
 	return true;
 }
