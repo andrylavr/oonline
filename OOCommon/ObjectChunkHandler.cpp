@@ -26,9 +26,6 @@ size_t ChunkHandler::HandleObjectChunk(IOStream *IO,EntityManager *entities,InPa
 	FormID =   *((UINT32 *)(chunkdata + 2));
 	pkg->Status[GetObjectIDFromObjChunk(chunkdata)] = *(chunkdata + 2 +sizeof(UINT32));
 	Status = *(chunkdata + 2 +sizeof(UINT32));
-	if(entities->GetEntity(Status,FormID) == NULL)
-	{
-		new Entity(entities,FormID,Status,false,false);
-	}
+	entities->GetOrCreateEntity(Status,FormID);
 	return GetMinChunkSize(Object) + sizeof(unsigned short);
 }

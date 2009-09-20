@@ -311,6 +311,14 @@
 			Name="Main"
 			>
 			<File
+				RelativePath=".\ClientEntityUpdateManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ClientEntityUpdateManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\dllmain.c"
 				>
 				<FileConfiguration
@@ -337,10 +345,6 @@
 						ForcedIncludeFiles="$(NOINHERIT)"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\EntityUpdateManager.cpp"
-				>
 			</File>
 			<File
 				RelativePath=".\main.cpp"

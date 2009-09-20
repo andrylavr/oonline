@@ -1,7 +1,7 @@
 
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 

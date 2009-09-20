@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 #pragma once
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/tr1/tr1/unordered_map>
 #include "GlobalDefines.h"
 #include "Packets.h"
 #include "EntityUpdateManager.h"
@@ -29,7 +30,7 @@ class IOStream;
 typedef std::pair<UINT32,Entity *> IDEntityPair;
 OO_API class EntityManager
 {	
-private:
+protected:
 	boost::mutex lock;
 #ifndef OO_USE_HASHMAP	
 	std::map<UINT32,Entity *> m_objects; //Includes actors
@@ -54,10 +55,13 @@ public:
 	{
 		return m_objects.end();
 	}
-	EntityManager(IOStream *io,NetworkSystem *netsys = NULL) : lock() , m_objects(),m_players()
+	EntityManager(IOStream *io) : lock() , m_objects(),m_players()
 	{
 		m_IO = io;
-		m_updatemgr = new EntityUpdateManager(this,netsys);
+	}
+	void SetUpdateManager(EntityUpdateManager *mgr)
+	{
+		m_updatemgr = mgr;
 	}
 	EntityUpdateManager* GetUpdateMgr()
 	{
@@ -76,5 +80,7 @@ public:
 	bool DeRegisterEntity(Entity *Entity);
 	bool DeleteEntities();
 	Entity * GetEntity(BYTE Status,UINT32 RefID);
+	// Gets You an Entity or creates it
+	Entity * GetOrCreateEntity(BYTE Status,UINT32 RefID);
 };
 

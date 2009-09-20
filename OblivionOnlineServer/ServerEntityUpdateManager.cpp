@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "GameServer.h"
-#include "EntityUpdateManager.h"
+#include "ServerEntityUpdateManager.h"
 #include "Entity.h"
 #include "NetworkSystem.h"
 #include "Packets.h"
@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace std;
 using namespace boost::lambda;
-void EntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
+void ServerEntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 {
 	UINT32 race = ent->Race();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
@@ -40,7 +40,7 @@ void EntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 	}
 }
 
-void EntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
+void ServerEntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
 {
 	BYTE Data = ent->Gender();
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
@@ -53,7 +53,7 @@ void EntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
 	}
 }
 
-void EntityUpdateManager::OnClassUpdate( Entity *ent ,bool Inbound)
+void ServerEntityUpdateManager::OnClassUpdate( Entity *ent ,bool Inbound)
 {
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
@@ -64,7 +64,7 @@ void EntityUpdateManager::OnClassUpdate( Entity *ent ,bool Inbound)
 	}
 }
 
-void EntityUpdateManager::OnNameUpdate( Entity *ent ,bool Inbound)
+void ServerEntityUpdateManager::OnNameUpdate( Entity *ent ,bool Inbound)
 {
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
 	{
@@ -75,7 +75,7 @@ void EntityUpdateManager::OnNameUpdate( Entity *ent ,bool Inbound)
 	}
 }
 
-void EntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
+void ServerEntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 {
 	float ChunkData[6] =
 	{
@@ -97,7 +97,7 @@ void EntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 		}
 	}
 }
-void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
+void ServerEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 
 	BYTE Data[3];
@@ -124,7 +124,7 @@ void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbou
 		}
 	}
 }
-void EntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers Events and network code */
+void ServerEntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers Events and network code */
 {
 	float ChunkData[6] =
 	{
@@ -174,7 +174,7 @@ bool SendWorldState( Entity * Player,bool LimitCell /*= true*/,EntityManager *m_
 	}
 	return true;
 }
-void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
+void ServerEntityUpdateManager::OnCellChange( Entity *ent,UINT32 OldID,bool Inbound)
 {
 	BYTE ChunkData[5];
 	*((UINT32 *)ChunkData) = ent->CellID();
@@ -205,7 +205,7 @@ void EntityUpdateManager::OnCellChange( Entity *ent,bool Inbound)
 	}
 }
 
-void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
+void ServerEntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 {
 	BYTE ChunkData[5];
 	ChunkData[0] = slot;
@@ -233,7 +233,7 @@ void EntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 	}
 }
 
-void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char AnimationID ,bool Inbound )
+void ServerEntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char AnimationID ,bool Inbound )
 {
 	BYTE ChunkData[2] = {AnimationID,ent->AnimationStatus(AnimationID)};
 	if(ent->Status() < STATUS_PLAYER)
@@ -257,7 +257,7 @@ void EntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char Animation
 		}
 	}
 }
-void EntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
+void ServerEntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
 {
 	BYTE *buf = (BYTE *)malloc(Message.length() + 2);
 	*(UINT16 *) buf = Message.length();

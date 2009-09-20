@@ -1,6 +1,40 @@
-Mon Jul  6 19:07:41 2009	Opened Log FileMon Jul  6 19:07:41 2009[BootMessage]Starting receive threads
+Sun Sep 20 12:34:27 2009	Opened Log FileSun Sep 20 12:34:27 2009[BootMessage]Starting receive threads
 
-Mon Jul  6 19:07:41 2009[FatalError]Loading Remote Admin ServerTCP listening on Remote Admin
-Cannot load shared library ./modPluginSampleerr: Cannot open "./modPluginSample"
+Sun Sep 20 12:34:27 2009[BootMessage]TCP Bound to port 41805
 
-Mon Jul  6 19:07:41 2009[SystemMessage]
+Sun Sep 20 12:34:27 2009[BootMessage]TCP listening
+
+Sun Sep 20 12:34:27 2009[BootMessage]UDP Bound to port 41805
+
+Sun Sep 20 12:34:27 2009[BootMessage]Loading Remote Admin ServerTCP listening on Remote Admin
+
+Sun Sep 20 12:34:27 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:36:27 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:38:27 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:40:27 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:41:04 2009[GameMessage]New player0joined from address127.0.0.1:49656
+
+Sun Sep 20 12:41:04 2009[GameMessage]Selected new master client0
+
+Sun Sep 20 12:41:10 2009[GameMessage]Client 0disconnected
+
+Sun Sep 20 12:41:10 2009[GameMessage]We now have0players
+
+Sun Sep 20 12:41:15 2009[GameMessage]New player0joined from address127.0.0.1:49657
+
+Sun Sep 20 12:41:15 2009[GameMessage]Selected new master client0
+
+Sun Sep 20 12:41:23 2009[GameMessage]New player1joined from address127.0.0.1:49658
+
+Sun Sep 20 12:45:01 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:47:01 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 12:58:58 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+
+Sun Sep 20 13:05:23 2009[SystemMessage]Lua Statistics: Total Script Memory used after Garbage Collection in Bytes:7789
+

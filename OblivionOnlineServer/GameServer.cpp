@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "EventSystem.h"
 #include "ModuleManager.h"
 #include "RemoteAdminServer.h"
+#include "ServerEntityUpdateManager.h"
 #include <string>
 #include <sstream>
 #include "curl/curl.h"
@@ -60,7 +61,8 @@ GameServer::GameServer(void)
 	*m_IO<<BootMessage<<"Opening Log file" << endl;
 	m_IO->RegisterIOProvider(new LogIOProvider(m_IOSys,BootMessage,m_script->GetString("Logfile")));	
 	m_Netsystem = new NetworkSystem(this);
-	m_Entities = new EntityManager(m_IO,m_Netsystem);
+	m_Entities = new EntityManager(m_IO);
+	m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Entities,m_Netsystem));
 	m_Netsystem->StartReceiveThreads();
 	m_IO->RegisterIOProvider(new ChatIOProvider(this,m_IOSys));
 	//In this thread we now run the server browser update

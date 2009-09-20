@@ -20,22 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 #include "../OOCommon/NetSend.h"
 #include "GameInject.h"
-
-void EntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
+#include "ClientEntityUpdateManager.h"
+void ClientEntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
 {
 	if(!Inbound)
 		NetSendAnimation(gClient->GetServerStream(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
 	else
 		InjectAnimation((ClientEntity *)ent,AnimationID,ent->AnimationStatus(AnimationID));
 }
-void EntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
+void ClientEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!Inbound)
 		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
 	else
 		InjectActorValue((ClientEntity *)ent,AVCode,(UINT32)ent->ActorValue(AVCode));// This causes C++ to raw re-interpret the data
 }
-void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnCellChange(Entity *ent,UINT32 OldCell,bool Inbound)
 {
 	if(!Inbound)
 		NetSendCellID(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->CellID(),ent->IsInInterior());
@@ -44,24 +44,24 @@ void EntityUpdateManager::OnCellChange(Entity *ent,bool Inbound)
 		SafeAddUpdateQueue(ent);
 	}
 }
-void EntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
 {
 
 }
-void EntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound)
+void ClientEntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound)
 {
 	if(!Inbound)
 		NetSendEquip(gClient->GetServerStream(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
 	else
 		InjectEquip((ClientEntity *)ent,slot,ent->Equip(slot));
 }
-void EntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
 {
 }
-void EntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
 {
 }
-void EntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
 		NetSendPosition(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->PosX(),ent->PosY()
@@ -69,7 +69,13 @@ void EntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
 	else
 		SafeAddUpdateQueue(ent);
 }
-void EntityUpdateManager::OnRaceUpdate(Entity *ent,bool Inbound)
+void ClientEntityUpdateManager::OnRaceUpdate(Entity *ent,bool Inbound)
+{
+
+}
+void ClientEntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
+{}
+void ClientEntityUpdateManager::GlobalSend(Entity *ent, bool Inbound)
 {
 
 }

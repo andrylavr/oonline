@@ -1,7 +1,7 @@
 #pragma once
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 
@@ -142,6 +142,7 @@ public:
 	{
 		return g_bRenderGUI;
 	}
+	//Returns invalid pointer if entity does not exist
 	ClientEntity *LocalFormIDGetEntity(UINT32 RefID);
 	bool RunFrame();
 };

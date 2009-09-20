@@ -22,32 +22,29 @@ class Entity;
 class EntityManager;
 class GameServer;
 #include "GlobalDefines.h"
+#include <unordered_map>
 #include <string>
 // The implementation is  different on client and server */
 OO_API class EntityUpdateManager
 {
-private:
+protected:
 	EntityManager *m_mgr;
-	NetworkSystem *m_net;
+	std::tr1::unordered_map<UINT32,std::list<Entity *>> m_entities_in_cells;
+	const std::list<Entity *>* GetPlayersInCell(UINT32 CellID); // Refactor this;
 public:
-	EntityUpdateManager(EntityManager *mgr,NetworkSystem *netsys)
+	EntityUpdateManager(EntityManager *mgr):m_entities_in_cells()
 	{
 		m_mgr = mgr;
-		m_net = netsys;
 	};
-	NetworkSystem *GetNetsys()
-	{
-		return m_net;
-	}
-	OO_API void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
-	OO_API void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
-	OO_API void GlobalSend(Entity *ent,bool Inbound );
-	OO_API void OnNameUpdate(Entity *ent,bool Inbound );
-	OO_API void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound );
-	OO_API void OnClassUpdate(Entity *ent,bool Inbound );
-	OO_API void OnCellChange(Entity *ent,bool Inbound );
-	OO_API void OnRaceUpdate(Entity *ent,bool Inbound );
-	OO_API void OnGenderUpdate(Entity *ent,bool Inbound );
-	OO_API void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound );
-	OO_API void Chat(Entity *ent,std::string Message,bool Inbound );
+	OO_API virtual void OnPositionUpdate(Entity *ent,bool Inbound ) = 0;//Triggers Events and network code;
+	OO_API virtual void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound )= 0;
+	OO_API virtual  void GlobalSend(Entity *ent,bool Inbound )= 0;
+	OO_API virtual void OnNameUpdate(Entity *ent,bool Inbound )= 0;
+	OO_API virtual void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound )= 0;
+	OO_API virtual void OnClassUpdate(Entity *ent,bool Inbound )= 0;
+	OO_API virtual void OnCellChange(Entity *ent,UINT32 oldCell, bool Inbound );
+	OO_API virtual void OnRaceUpdate(Entity *ent,bool Inbound )= 0;
+	OO_API virtual void OnGenderUpdate(Entity *ent,bool Inbound )= 0;
+	OO_API virtual void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound )= 0;
+	OO_API virtual void Chat(Entity *ent,std::string Message,bool Inbound )= 0;
 };

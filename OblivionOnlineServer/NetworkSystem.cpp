@@ -245,10 +245,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		 m_GS->GetIO()<<GameMessage<<"Selected new master client"<<ID<<endl;
 		 m_OutPackets[ID]->AddChunk(ID,STATUS_PLAYER,GetMinChunkSize(ClientType),ClientType,(BYTE *)&masterclient);
 	 }
-	 if(m_GS->GetEntities()->GetEntity(STATUS_PLAYER,ID) == NULL)
-	 {
-		 new Entity(m_GS->GetEntities(),ID,STATUS_PLAYER,false,false);
-	 }
+	 m_GS->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,ID);
 	 Send(ID);
 	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
 	 return ID;

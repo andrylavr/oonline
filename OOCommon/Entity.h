@@ -21,89 +21,22 @@ GNU Affero General Public License for more details.
 #include "EntityManager.h"
 #include "EntityUpdateManager.h"
 #include <vector>
+#include <queue>
 #define AV_HEALTH 8
 #define AV_MAGICKA 9
 #define AV_FATIGUE 10
 class ChunkHandler;
+
 class Entity
 {
-private:
-	boost::mutex lock;
-	short m_ActorValues[72];
-	bool m_AnimationStatus[43];
-	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enuf 
-	bool   m_EquipChanged[MAX_EQUIPSLOTS];
-	float m_PosX,m_PosY,m_PosZ,m_RotX,m_RotY,m_RotZ;
-	UINT32 m_RefID,m_CellID,m_Race; 
-	bool m_Actor,m_GlobalSynch,m_Female;//Player : is a player , Actor: is an actor , GlobalSynch: Is important for quests and must therefore always be synched
-	bool m_TriggerEvents,m_IsInInterior;
-	BYTE  m_Status;
-	EntityManager *m_mgr;
-	std::string m_Name; // A std::string should not waste TOO much space 
-	//std::string m_Class;
-	inline void _Move(float PosX,float PosY,float PosZ)
-	{
-			m_PosX = PosX;
-			m_PosY = PosY;
-			m_PosZ = PosZ;
-	}
-	inline void _SetRotation(float RotX,float RotY,float RotZ)
-	{
-			m_RotX = RotX;
-			m_RotY = RotY;
-			m_RotZ = RotZ;
-	}
-	inline void _SetFemale(bool value)
-	{
-		m_Female = value;
-	}
-	inline void _SetCell(UINT32 value,bool IsInInterior)
-	{
-		m_CellID = value;
-		m_IsInInterior = IsInInterior;
-	}
-	inline void _SetGlobalSynch(bool value)
-	{
-		m_GlobalSynch  = value; 
-		//TODO: Synch object out 
-	}
-	inline void _SetRace(UINT32 value)
-	{
-		m_Race = value;
-	}
-	inline void _SetEquip(BYTE slot,UINT32 value)
-	{
-		if(slot < MAX_EQUIPSLOTS)
-		{
-			m_Equip[slot ] = value;
-			m_EquipChanged[slot]  = true;
-		}
-	}
-	inline void _SetName(std::string Name)
-	{
-		m_Name = Name;
-	}
-	inline void _SetClassName(std::string Class)
-	{
-		//m_Class = Class;
-	}
-	inline void _SetActorValue(BYTE ActorValue,short Value)
-	{
-		if(ActorValue < 72)
-			m_ActorValues[ActorValue] = Value;		
-	}
-	inline void _SetAnimation(BYTE AnimationNo,bool Status)
-	{
-		if(AnimationNo < 43)
-			m_AnimationStatus[AnimationNo] = Status;
-	}
-public:
-	inline Entity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
+	friend class EntityManager;
+protected:
+	Entity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
-		lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
-		EventLifeChange()//,m_Class(classname)
+	lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
+		EventLifeChange(),		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()//,m_Class(classname)
 	{
 		lock.lock();
 		m_mgr = mgr;
@@ -128,144 +61,51 @@ public:
 		m_mgr->RegisterEntity(this);
 		lock.unlock();
 	}
-	inline void Move(float X,float Y,float Z,bool Inbound = false)
-	{	
-		lock.lock();
-		if(m_PosX != X || m_PosY != Y || m_PosZ != Z)
-		{
-			_Move(X,Y,Z);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
-		}
-		lock.unlock();
-	}
-	inline void Rotate(float rX,float rY,float rZ,bool Inbound = false)
-	{
-		lock.lock();
-		if(m_RotX != rX || m_RotY != rY || m_RotZ != rZ)
-		{
-			_SetRotation(rX,rY,rZ);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
-		}
-		lock.unlock();
-	}
-	inline void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false)
-	{
-		lock.lock();
-		if(m_PosX != X || m_PosY != Y || m_PosZ != Z || m_RotX != rX || m_RotY != rY || m_RotZ != rZ )
-		{
-			_Move(X,Y,Z);
-			_SetRotation(rX,rY,rZ);
-			m_mgr->GetUpdateMgr()->OnPositionUpdate(this,Inbound);
-		}
-		lock.unlock();
-	}
-	inline void SetFemale(bool value,bool Inbound = false)
-	{
-		lock.lock();
-		_SetFemale(value);
-		m_mgr->GetUpdateMgr()->OnGenderUpdate(this,Inbound);
-		lock.unlock();
-	}
-	inline void SetCell(UINT32 value,bool IsInInterior,bool Inbound = false)
-	{
-		lock.lock();
-		if(CellID() != value || m_IsInInterior != IsInInterior)
-		{
-			_SetCell(value,IsInInterior);
-			m_mgr->GetUpdateMgr()->OnCellChange(this,Inbound);
-		}
-		lock.unlock();
-	}
-	inline void SetGlobalSynch(bool value,bool Inbound = false)
-	{
-		_SetGlobalSynch(value);
-		//TODO: Synch object out 
-	}
-	inline void SetRace(UINT32 value,bool Inbound = false)
-	{
-		lock.lock();
-		_SetRace(value);
-		m_mgr->GetUpdateMgr()->OnRaceUpdate(this,Inbound);
-		lock.unlock();
-	}
-	inline void SetEquip(BYTE slot,UINT32 value,bool Inbound = false)
-	{
-		lock.lock();
-		if(Equip(slot) != value)
-		{
-			_SetEquip(slot,value);
-			m_mgr->GetUpdateMgr()->OnEquipUdate(this,slot,Inbound);
-		}
-		lock.unlock();
-	}
-	inline void SetName(std::string Name,bool Inbound = false)
-	{
-		lock.lock();
-		_SetName(Name);
-		m_mgr->GetUpdateMgr()->OnNameUpdate(this,Inbound);
-		lock.unlock();
-	}
-	inline void SetClassName(std::string Class,bool Inbound = false)
-	{
-		lock.lock();
-		_SetClassName(Class);
-		m_mgr->GetUpdateMgr()->OnClassUpdate(this,Inbound);
-		lock.unlock();
-	}
-	inline void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false)
-	{
-		lock.lock();
-		if(this->ActorValue(ActorValue) != Value)
-		{
-			_SetActorValue(ActorValue,Value);
-			m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
-			if(ActorValue == AV_HEALTH)
-			{
-				EventLifeChange(this);
-				if(Value <= 0)
-					EventDeath(this);
-			}
-			else if(ActorValue == AV_MAGICKA)
-			{
-				EventMagicka(this);
-				if(Value <= 0)
-					EventMagickaEmpty(this);
-			}
-			else if(ActorValue == AV_FATIGUE)
-			{
-				EventFatigue(this);
-				if(Value <= 0)
-					EventFatigueEmpty(this);
-			}
-		}
-		lock.unlock();
-	}
-	inline void SetAnimation(BYTE AnimationNo,bool Status,bool Inbound = false)
-	{
-		lock.lock();
-		if(AnimationStatus(AnimationNo) != Status)
-		{
-			_SetAnimation(AnimationNo,Status);
-			m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,AnimationNo,Inbound);
-		}		
-		lock.unlock();
-	}
-	inline void ResetEquipChanged(BYTE Slot)
-	{
-		lock.lock();
-		if(Slot < MAX_EQUIPSLOTS)
-			m_EquipChanged[Slot] = false;
-		lock.unlock();
-	}
+	boost::mutex lock;
+	//TODO::!!! MOVE THESE TO CLIENTENTITY.CPP ... and create something like EntityFactory...
+
+	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; //Queues for client commands
+private:
+	short m_ActorValues[72];
+	bool m_AnimationStatus[43];
+	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enuf 
+	bool   m_EquipChanged[MAX_EQUIPSLOTS];
+	float m_PosX,m_PosY,m_PosZ,m_RotX,m_RotY,m_RotZ;
+	UINT32 m_RefID,m_CellID,m_Race; 
+	bool m_Actor,m_GlobalSynch,m_Female;//Player : is a player , Actor: is an actor , GlobalSynch: Is important for quests and must therefore always be synched
+	bool m_TriggerEvents,m_IsInInterior;
+	BYTE  m_Status;
+	EntityManager *m_mgr;
+	std::string m_Name; // A std::string should not waste TOO much space 
+	//std::string m_Class;
+	void _Move(float PosX,float PosY,float PosZ);
+	void _SetRotation(float RotX,float RotY,float RotZ);
+	void _SetFemale(bool value);
+	void _SetCell(UINT32 value,bool IsInInterior);
+	void _SetGlobalSynch(bool value);
+	void _SetRace(UINT32 value);
+	void _SetEquip(BYTE slot,UINT32 value);
+	void _SetName(std::string Name);
+	void _SetClassName(std::string Class);
+	void _SetActorValue(BYTE ActorValue,short Value);
+	void _SetAnimation(BYTE AnimationNo,bool Status);
+public:
+	
+	void Move(float X,float Y,float Z,bool Inbound = false);
+	void Rotate(float rX,float rY,float rZ,bool Inbound = false);
+	void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false);
+	void SetFemale(bool value,bool Inbound = false);
+	void SetCell(UINT32 value,bool IsInInterior,bool Inbound = false);
+	void SetGlobalSynch(bool value,bool Inbound = false);
+	void SetRace(UINT32 value,bool Inbound = false);
+	void SetEquip(BYTE slot,UINT32 value,bool Inbound = false);
+	void SetName(std::string Name,bool Inbound = false);
+	void SetClassName(std::string Class,bool Inbound = false);
+	void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false);
+	void SetAnimation(BYTE AnimationNo,bool Status,bool Inbound = false);
 	inline std::string Name()
 	{
 		return m_Name;
-	}
-	inline bool EquipChanged(BYTE slot)
-	{
-		if(slot < MAX_EQUIPSLOTS)
-			return m_EquipChanged[slot];
-		return false;
 	}
 	inline std::string ClassName()
 	{
@@ -355,5 +195,4 @@ public:
 	boost::signal<void(Entity *)>		EventFatigue; // same as above
 	boost::signal<void(Entity *)>		EventFatigueEmpty; // same as above
 	boost::signal<void(Entity *,std::string *)>	EventChat; // On Chat
-
 };

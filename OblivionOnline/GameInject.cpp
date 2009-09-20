@@ -88,10 +88,20 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 	{
 		Actor * act= (Actor*)refr;
 		if(formid && LookupFormByID(formid))
-		{
+		{		
+			feGetObject getObject;
+			double itemResult;
+			UInt32* itemRef = (UInt32 *)&itemResult;
+			if (FindEquipped(act, slot, &getObject, &itemResult)  ) // If we find nothing, there already is no equip
+			{
+				ent->AddUnequipItem(*itemRef);
+				ent->AddRemoveItem(*itemRef);
+				//UnEquipItemCommand(act,*itemRef);
+				//RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
+			}
 			//AddOneItemCommand(act,formid);
-			ent->GetAddItemQueue().insert(formid);
-			//EquipItemQueue.push(pair<Actor *,UINT32>(act,formid));
+			ent->AddAddItem(formid);
+			ent->AddEquipItem(formid);
 		}
 		else
 		{
@@ -101,7 +111,8 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 			UInt32* itemRef = (UInt32 *)&itemResult;
 			if (FindEquipped(act, slot, &getObject, &itemResult)  ) // If we find nothing, there already is no equip
 			{
-				ent->GetUnEquipQueue().insert(*itemRef);
+				ent->AddUnequipItem(*itemRef);
+				ent->AddRemoveItem(*itemRef);
 				//UnEquipItemCommand(act,*itemRef);
 				//RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
 			}

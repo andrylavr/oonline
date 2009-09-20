@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 
@@ -42,6 +42,7 @@ forward this exception.
 #include "OutPacketStream.h"
 #include "NetSend.h"
 #include "OBSEFunctions.h"
+#include "ClientEntityUpdateManager.h"
 #define MOVE_THRESHOLD 0.2
 bool g_bRenderGUI = true;
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
@@ -110,6 +111,7 @@ GameClient::GameClient(void) : UpdateQueue()
 	IOSys->RegisterIOProvider(new LogIOProvider(IOSys,LogLevel::BootMessage,"OblivionOnline.log"));
 	*IO << BootMessage << "Initializing game client: IO running" <<endl;
 	Entities = new EntityManager(IO);
+	Entities->SetUpdateManager(new ClientEntityUpdateManager(Entities));
 	bIsConnected = false;
 	bIsMasterClient = false;
 	bIsInitialized = false;
@@ -249,9 +251,7 @@ bool GameClient::RunFrame()
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-	ent = (ClientEntity *)gClient->GetEntities()->GetEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
-	if(ent == NULL)
-		ent = new ClientEntity(gClient->GetEntities(),gClient->GetLocalPlayer(),STATUS_PLAYER);
+	ent = (ClientEntity *)gClient->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
 	//gClient->GetServerStream()->Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
@@ -265,9 +265,7 @@ bool GameClient::RunFrame()
 
 			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnRefID(i))  ) )
 				continue; 
-			ent =  (ClientEntity *)gClient->GetEntities()->GetEntity(STATUS_PLAYER,i);
-			if(ent == NULL)
-				ent = new ClientEntity( gClient->GetEntities(),i,STATUS_PLAYER);
+			ent =  (ClientEntity *)gClient->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,i);
 			if(!ent)
 			{
 				gClient->GetIO() << Error << __FILE__ << " (line:)" << __LINE__ << " : Out of memory or allocation error. Continuing."<<endl;
@@ -326,10 +324,8 @@ bool GameClient::RunFrame()
 
 				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
 				{
-					ent = (ClientEntity *) gClient->GetEntities()->GetEntity(Status,ListIterator->refr->refID);
+					ent = (ClientEntity *) gClient->GetEntities()->GetOrCreateEntity(Status,ListIterator->refr->refID);
 
-					if(ent == NULL)
-						ent = new ClientEntity(gClient->GetEntities(),ListIterator->refr->refID,Status);
 					//Sync that object too
 					/*
 					if(ListIterator->refr->parentCell->refID != ent->CellID)

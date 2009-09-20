@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 
@@ -60,6 +60,7 @@ FakeClient::FakeClient(void)
 	IO->RegisterIOProvider(new ScreenIOProvider(IOSys,LogLevel::BootMessage));
 	*IO << BootMessage << "Initializing game client: IO running" <<endl;
 	Entities = new EntityManager(IO);
+	Entities->SetUpdateManager(new FakeEntityUpdateManager(Entities,NULL));
 	bIsConnected = false;
 	bIsMasterClient = false;
 	bIsInitialized = false;

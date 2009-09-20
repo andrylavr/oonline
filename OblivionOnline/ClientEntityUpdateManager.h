@@ -1,4 +1,3 @@
-#pragma once
 /*
 
 Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
@@ -16,39 +15,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 */
-#include <string>
-extern bool g_plot;
-#include "GlobalDefines.h"
 #include "EntityUpdateManager.h"
 
-class IOStream;
-class IOSystem;
-class EntityManager;
-
-class FakeClient
-{
-private:	
-	IOSystem *IOSys;
-			IOStream *IO;
-			EntityManager *Entities;
-			bool bIsConnected; //TCP / IP connection exists
-			bool bIsMasterClient; // We have "write rigths" to the server entities
-			bool bIsInitialized; // We received a player ID
-			UINT32 LocalPlayer;
-public:
-	FakeClient(void);
-	~FakeClient(void);
-	void SetIsMasterClient(bool Value) {bIsMasterClient = Value;}
-	void SetPlayerID(UINT32 value) {LocalPlayer = value; }
-	EntityManager *GetEntities() {return Entities;}
-	IOStream & GetIO(){return *IO;}
-	void run();
-	void HandleCommand(char * String);
-};
-class FakeEntityUpdateManager : public EntityUpdateManager
+class  ClientEntityUpdateManager : public EntityUpdateManager
 {
 public:
-	FakeEntityUpdateManager(EntityManager *mgr,NetworkSystem *netsys) : EntityUpdateManager(mgr)
+	ClientEntityUpdateManager(EntityManager * mgr) : EntityUpdateManager(mgr)
 	{
 
 	}
@@ -64,4 +36,3 @@ public:
 	OO_API virtual void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound );
 	OO_API virtual void Chat(Entity *ent,std::string Message,bool Inbound );
 };
-extern FakeClient *g_fake;

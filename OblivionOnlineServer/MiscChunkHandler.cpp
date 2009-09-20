@@ -21,11 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Entity.h"
 #include "NetworkSystem.h"
 #include "InPacket.h"
+#include <cassert>
 size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	size_t retval;
 	UINT16 supposedlength = *(unsigned short *)(chunkdata + 2);
 	Entity *ent = entities->GetEntity(Status,FormID);
+	assert(ent);
 	std::string message = ent->Name();
 	if(supposedlength > len - 4)
 		retval = len;

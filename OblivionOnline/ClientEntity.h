@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64, Joseph Pearson aka chessmaster42 
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64, Joseph Pearson aka chessmaster42 
 
 This file is part of OblivionOnline.
 
@@ -39,38 +39,101 @@ This file is part of OblivionOnline.
 #ifndef CLIENTENTITY_H
 #define CLIENTENTITY_H
 #include <set>
+#include <queue>
 #include "../OOCommon/Entity.h"
 class ClientEntity : public Entity
 {
 private:
-	std::set<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; // QUeues for client commands
 public:
 	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")) :
-	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,fatigue,female,race,name,classname),
-		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()
+	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,fatigue,female,race,name,classname)
 	{
 		
 	}
-	std::set<UINT32> &GetEquipSet()
+	UINT32 GetNextEquipItem()
 	{
-		return EquipQueue;
-	}
-	std::set<UINT32> &GetUnEquipQueue()
-	{
-		return UnEquipQueue;
-	}
-	std::set<UINT32> &GetAddItemQueue()
-	{
-		return AddItemQueue;
-	}
-	 std::set<UINT32> &GetRemoveItemQueue()
-	{
-		return RemoveItemQueue;
-	}
+		UINT32 retval;
+		lock.lock();
+		if(!EquipQueue.empty())
+		{
+			retval = EquipQueue.front();
+			EquipQueue.pop();
+		}
+		else	
+			retval = 0;
+		lock.unlock();
 
+		return retval;
+	}
+	UINT32 GetNextUnequipItem()
+	{
+		UINT32 retval;
+		lock.lock();
+		if(!UnEquipQueue.empty())
+		{
+			retval = UnEquipQueue.front();
+			UnEquipQueue.pop();
+		}
+		else
+			retval = 0;
+		lock.unlock();
+		return retval;
+	}
+	UINT32 GetNextAddItem()
+	{
+		UINT32 retval;
+		lock.lock();
+		if(!AddItemQueue.empty())
+		{
+			retval = AddItemQueue.front();
+			AddItemQueue.pop();
+		}
+		else
+			retval = 0;
+		lock.unlock();
+		return retval;
+	}
+	UINT32 GetNextRemoveItem()
+	{
+		UINT32 retval;
+		lock.lock();
+		if(!RemoveItemQueue.empty())
+		{
+			retval = RemoveItemQueue.front();
+			RemoveItemQueue.pop();
+		}
+		else 
+			retval = 0;
+		lock.unlock();
+		return retval;
+	}
+	void AddEquipItem(UINT32 fo)
+	{
+		lock.lock();
+		AddItemQueue.push(fo);
+		lock.unlock();
+	}
+	void AddRemoveItem(UINT32 fo)
+	{
+		lock.lock();
+		RemoveItemQueue.push(fo);
+		lock.unlock();
+	}
+	void AddAddItem(UINT32 fo)
+	{
+		lock.lock();
+		AddItemQueue.push(fo);
+		lock.unlock();
+	}
+	void AddUnequipItem(UINT32 fo)
+	{
+		lock.lock();
+		UnEquipQueue.push(fo);
+		lock.unlock();
+	}
 };
 
 #endif

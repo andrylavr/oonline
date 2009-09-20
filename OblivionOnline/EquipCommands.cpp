@@ -1,7 +1,7 @@
 
 /*
 
-Copyright(c) 2007-2008   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
 
 This file is part of OblivionOnline.
 
@@ -47,13 +47,7 @@ bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= 0;
-	if(!ent->GetAddItemQueue().empty())
-	{
-		*refres = *ent->GetAddItemQueue().begin();
-		ent->GetEquipSet().insert(*refres);
-		ent->GetAddItemQueue().erase(ent->GetAddItemQueue().begin());
-	}
+	*refres= ent->GetNextAddItem();
 	return true;
 }
 bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
@@ -62,12 +56,7 @@ bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= 0;
-	if(!ent->GetRemoveItemQueue().empty())
-	{
-		*refres = *ent->GetRemoveItemQueue().begin();
-		ent->GetRemoveItemQueue().erase(ent->GetRemoveItemQueue().begin());
-	}
+	*refres= ent->GetNextRemoveItem();
 	return true;
 }
 bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
@@ -76,12 +65,7 @@ bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= 0;
-	if(!ent->GetEquipSet().empty())
-	{
-		*refres = *ent->GetEquipSet().begin();
-		ent->GetEquipSet().erase(ent->GetEquipSet().begin());
-	}
+	*refres= ent->GetNextAddItem();
 	return true;
 }
 bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
@@ -90,13 +74,7 @@ bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= 0;
-	if(!ent->GetUnEquipQueue().empty())
-	{
-		*refres = *ent->GetUnEquipQueue().begin();
-		ent->GetRemoveItemQueue().insert(*refres);
-		ent->GetUnEquipQueue().erase(ent->GetUnEquipQueue().begin());
-	}
+	*refres= ent->GetNextUnequipItem();
 	return true;
 }
 
