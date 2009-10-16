@@ -135,7 +135,7 @@ void ServerEntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Tr
 		ent->RotY(),
 		ent->RotZ()
 	};
-	UINT32 CellData = ent->CellID();
+	
 	if(ent->Status() < STATUS_PLAYER)
 	{
 		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
@@ -143,7 +143,6 @@ void ServerEntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Tr
 			//&& i->second->CellID() == ent->CellID()
 			if((m_net->GetMasterClient() != i->first ) || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
 			}
 		}
@@ -155,7 +154,6 @@ void ServerEntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Tr
 			// && i->second->CellID() == ent->CellID()
 			if((ent->RefID() != i->first) || !Inbound)
 			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(CellID),CellID,(BYTE*)&CellData);
 				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Position),Position,(BYTE*)&ChunkData);
 			}
 		}

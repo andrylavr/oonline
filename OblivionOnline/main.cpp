@@ -71,7 +71,7 @@ DWORD WINAPI RecvThread(LPVOID Params)
 	gClient->GetIO() << "Receive thread started" <<endl;
 	while(gClient->GetIsConnected())
 	{
-		rc = recv(gClient->GetSocket(),buf,PACKET_SIZE,0);
+		rc = recv(gClient->GetSocket(),buf,PACKET_SIZE,0); //TODO: Doesn't receive  UDP
 		if(rc == SOCKET_ERROR)
 		{
 			SetConnectionMessage("Server dropped connection");
