@@ -59,48 +59,12 @@ public:
 	}
 	UINT32 AddNewPlayer(SOCKADDR_IN addr,SOCKET TCPSock);
 	bool PlayerDisconnect(UINT32 ID);
-	inline bool SendChunk(UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
-	{
-		OutPacket *packet = m_OutPackets[PlayerID];
-		bool retVal;
-		if(packet == NULL)
-			return false; //TODO: Report bug
-		
-		retVal = packet->AddChunk(FormID,status,ChunkSize,ChunkType,data);
-		if( !retVal|| 
-			clock() >= packet->SendTimer )	
-		{
-			if(packet->Reliable())
-				SendReliableStream(PlayerID,packet->Size(),packet->GetData());
-			else
-				SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
-			packet->Reset();
-		}
-		if(!retVal)
-		{
-			if(packet->AddChunk(FormID,status,ChunkSize,ChunkType,data) == true)
-				return true;
-			else 
-				return false;
-		}
-	}
-	inline bool Send(UINT32 PlayerID)
-	{
-		OutPacket *packet = m_OutPackets[PlayerID];	
-		bool retval;
-		if(packet == NULL)
-			return false;//TODO: Report bug
-		if(packet->Reliable())
-			retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
-		else
-			retval= SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
-		packet->Reset();
-		return retval;
-	}
+	bool SendChunk(UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data);
+	bool Send(UINT32 PlayerID);
 	bool RegisterTraffic(UINT32 PlayerID,size_t size,BYTE *data,bool reliable);
 	//TODO : Place these in  a callback ?
-	bool SendUnreliableStream(UINT32 PlayerID,size_t length,BYTE *len);
-	bool SendReliableStream(UINT32 PlayerID,size_t length,BYTE *len);
+	bool SendUnreliableStream(UINT32 PlayerID,size_t length,BYTE *data);
+	bool SendReliableStream(UINT32 PlayerID,size_t length,BYTE *data);
 	bool StartReceiveThreads();
 	UINT32 GetPlayerFromAddr(SOCKADDR_IN addr)
 	{

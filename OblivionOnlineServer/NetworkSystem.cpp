@@ -27,14 +27,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <process.h>
 #include <Windows.h>
 #else
-
-
-
-
-
-
 #include <pthread.h>
 #endif
+
 NetworkSystem::~NetworkSystem(void)
 {
 }
@@ -320,4 +315,44 @@ bool NetworkSystem::PlayerDisconnect( UINT32 ID )
 		}
 	}
 	return true;
+}
+
+bool NetworkSystem::Send( UINT32 PlayerID )
+{
+	OutPacket *packet = m_OutPackets[PlayerID];	
+	bool retval;
+	if(packet == NULL)
+		return false;//TODO: Report bug
+#ifdef DO_UDP
+	if(packet->Reliable())
+		retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
+	else
+		retval= SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
+#else
+		retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
+#endif
+	packet->Reset();
+	return retval;
+}
+
+bool NetworkSystem::SendChunk( UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data )
+{
+	OutPacket *packet = m_OutPackets[PlayerID];
+	bool retVal;
+	if(packet == NULL)
+		return false; //TODO: Report bug
+
+	retVal = packet->AddChunk(FormID,status,ChunkSize,ChunkType,data);
+	if( !retVal|| 
+		clock() >= packet->SendTimer )	
+	{
+		Send(PlayerID);
+	}
+	if(!retVal)
+	{
+		if(packet->AddChunk(FormID,status,ChunkSize,ChunkType,data) == true)
+			return true;
+		else 
+			return false;
+	}
 }

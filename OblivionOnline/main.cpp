@@ -63,6 +63,34 @@ extern "C" void OpenLog(int i)
 {
 	gLog.Open("OblivionOnline_bootstrap.log"); // Or else all our macros wouldn't work - discard
 }
+/* UDP is disabled - for now */
+#ifdef DO_UDP
+DWORD WINAPI UDPThread(LPVOID Params)
+{
+	char buf[PACKET_SIZE];
+	int rc;
+	int udpsock = socket(AF_INET,SOCK_DGRAM,0);
+	struct sockaddr_in addr;
+	struct sockaddr_in remoteaddr;
+	InPacket * pkg;
+	if(udpsock == -1)
+	{
+		gClient->GetIO()<< FatalError << "Couldn't create UDP socket "<<endl;
+	}
+	memset(&addr,0,sizeof(addr));
+	addr.sin_port =htons();
+	addr.sin_addr.s_addr = ADDR_ANY;
+	rc = bind(udpsock,(sockaddr *)&addr,sizeof(addr)); //TODO: Error checking
+	while(gClient->GetIsConnected())
+	{
+		int fromlen = sizeof remoteaddr;
+		rc=recvfrom(udpsock,buf,PACKET_SIZE,0,(sockaddr *)&remoteaddr,&fromlen);
+		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *) buf,rc);
+		pkg->HandlePacket();
+		delete pkg;
+	}
+} 
+#endif
 DWORD WINAPI RecvThread(LPVOID Params)
 {
 	char buf[PACKET_SIZE];
@@ -75,7 +103,7 @@ DWORD WINAPI RecvThread(LPVOID Params)
 		if(rc == SOCKET_ERROR)
 		{
 			SetConnectionMessage("Server dropped connection");
-			gClient->GetIO() << "Server droppd connection" << endl;
+			gClient->GetIO() << "Server dropped connection" << endl;
 			gClient->Disconnect();
 		}
 		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *)buf,rc);

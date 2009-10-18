@@ -203,8 +203,7 @@ bool GameClient::Connect()
 			{
 				*IO << "Successfully connected" << endl;
 				
-				outnet = new OutPacketStream(GetSocket(),ServerAddr,IO);
-				
+				outnet = new OutPacketStream(GetSocket(),ServerAddr,IO);			
 
 				hRecvThread = CreateThread(NULL,NULL,RecvThread,NULL,NULL,NULL);
 				//hPredictionEngine = CreateThread(NULL,NULL,PredictionEngine,NULL,NULL,NULL);
