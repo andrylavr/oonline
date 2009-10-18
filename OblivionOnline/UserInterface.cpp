@@ -122,7 +122,7 @@ DWORD WINAPI InitialiseUI()
 		}
 		bUIInitialized = true;
 		gClient->GetIO() << BootMessage << "Successfully loaded GUI" << endl;
-
+		g_bRenderGUI = true;
 	}
 	return 1;
 }
