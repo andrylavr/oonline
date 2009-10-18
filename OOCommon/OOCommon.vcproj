@@ -498,6 +498,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\InNetStream.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\InNetStream.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
