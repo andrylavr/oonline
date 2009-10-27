@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */ 
 #include "EntityManager.h"
 #include "Entity.h"
-#include <unordered_map>
+#include <boost/tr1/unordered_map.hpp>
 const std::list<Entity *>* EntityUpdateManager::GetPlayersInCell( UINT32 CellID ) /* Refactor this */
 {
 	std::tr1::unordered_map<UINT32,std::list<Entity *>>::iterator iter= m_entities_in_cells.find(CellID);

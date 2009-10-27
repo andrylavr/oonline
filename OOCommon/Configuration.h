@@ -1,5 +1,5 @@
 #pragma once
-#include <unordered_map>
+#include <boost/tr1/unordered_map.hpp>
 #include "IOSystem.h"
 class ConfigurationNode
 {

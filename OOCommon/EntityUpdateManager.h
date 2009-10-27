@@ -22,7 +22,7 @@ class Entity;
 class EntityManager;
 class GameServer;
 #include "GlobalDefines.h"
-#include <unordered_map>
+#include <boost/tr1/unordered_map.hpp>
 #include <string>
 // The implementation is  different on client and server */
 OO_API class EntityUpdateManager
