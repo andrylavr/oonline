@@ -116,6 +116,7 @@ DWORD WINAPI RecvThread(LPVOID Params)
 extern "C" {
 static void OO_LoadCallback(void * reserved)
 {
+	_MESSAGE("Load callback from OBSE");
 	if(!gClient)
 	{
 		gClient = new GameClient();

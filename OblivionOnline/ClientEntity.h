@@ -44,19 +44,20 @@ This file is part of OblivionOnline.
 class ClientEntity : public Entity
 {
 private:
+	boost::mutex clientlock;
 public:
 	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")) :
-	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,fatigue,female,race,name,classname)
+	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,fatigue,female,race,name,classname),clientlock()
 	{
 		
 	}
 	UINT32 GetNextEquipItem()
 	{
 		UINT32 retval;
-		lock.lock();
+		clientlock.lock();
 		if(!EquipQueue.empty())
 		{
 			retval = EquipQueue.front();
@@ -64,14 +65,14 @@ public:
 		}
 		else	
 			retval = 0;
-		lock.unlock();
+		clientlock.unlock();
 
 		return retval;
 	}
 	UINT32 GetNextUnequipItem()
 	{
 		UINT32 retval;
-		lock.lock();
+		clientlock.lock();
 		if(!UnEquipQueue.empty())
 		{
 			retval = UnEquipQueue.front();
@@ -79,13 +80,13 @@ public:
 		}
 		else
 			retval = 0;
-		lock.unlock();
+		clientlock.unlock();
 		return retval;
 	}
 	UINT32 GetNextAddItem()
 	{
 		UINT32 retval;
-		lock.lock();
+		clientlock.lock();
 		if(!AddItemQueue.empty())
 		{
 			retval = AddItemQueue.front();
@@ -93,13 +94,13 @@ public:
 		}
 		else
 			retval = 0;
-		lock.unlock();
+		clientlock.unlock();
 		return retval;
 	}
 	UINT32 GetNextRemoveItem()
 	{
 		UINT32 retval;
-		lock.lock();
+		clientlock.lock();
 		if(!RemoveItemQueue.empty())
 		{
 			retval = RemoveItemQueue.front();
@@ -107,32 +108,32 @@ public:
 		}
 		else 
 			retval = 0;
-		lock.unlock();
+		clientlock.unlock();
 		return retval;
 	}
 	void AddEquipItem(UINT32 fo)
 	{
-		lock.lock();
+		clientlock.lock();
 		AddItemQueue.push(fo);
-		lock.unlock();
+		clientlock.unlock();
 	}
 	void AddRemoveItem(UINT32 fo)
 	{
-		lock.lock();
+		clientlock.lock();
 		RemoveItemQueue.push(fo);
-		lock.unlock();
+		clientlock.unlock();
 	}
 	void AddAddItem(UINT32 fo)
 	{
-		lock.lock();
+		clientlock.lock();
 		AddItemQueue.push(fo);
-		lock.unlock();
+		clientlock.unlock();
 	}
 	void AddUnequipItem(UINT32 fo)
 	{
-		lock.lock();
+		clientlock.lock();
 		UnEquipQueue.push(fo);
-		lock.unlock();
+		clientlock.unlock();
 	}
 };
 

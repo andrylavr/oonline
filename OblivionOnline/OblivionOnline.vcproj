@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="shift_jis"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="OblivionOnline"
 	ProjectGUID="{D4DDA734-7E93-4581-8F82-32BB738F69FE}"
 	RootNamespace="obse_plugin_example"
@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static_d.lib CEGUIFalagardWRBase_Static_d.lib DirectX9GUIRenderer_static_d.lib d3dx9d.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetypeMT_d.lib zlibstat_d.lib pcre7_d.lib OOCommon_d.lib winmm.lib"
+				AdditionalDependencies="ws2_32.lib ddraw.lib dinput8.lib dxguid.lib shlwapi.lib CEGUIBase_static.lib CEGUIFalagardWRBase_Static.lib DirectX9GUIRenderer_static.lib d3dx9d.lib dxerr9.lib CEGUITinyXMLParser_Static.lib freetypeMT_d.lib zlibstat_d.lib pcre7_d.lib OOCommon_d.lib winmm.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="false"
