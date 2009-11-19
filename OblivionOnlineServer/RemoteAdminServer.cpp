@@ -22,7 +22,7 @@ RemoteAdminServer::RemoteAdminServer(GameServer *gs) : transmit(),modules(),Head
 	Header += gs->GetLua()->GetString("Name");
 	Header += "</strong></p><table width=\"100%\" border=\"1\"> <tr> <td width=\"150\" align=\"left\"><ul>";
 	Middle = "</ul></td><td>";
-	Footer = "</td></tr></table> <a href=\"http://obliviononline.com/\">OblivionOnline (C) 2006-2008 Julian Bangert </a></body></html>";
+	Footer = "</td></tr></table> <a href=\"http://obliviononline.com/\">OblivionOnline (C) 2006-2009 Julian Bangert </a></body></html>";
 	RegisterModule(new ModuleAdminModule(gs));
 	RegisterModule(new PlayerAdminModule(gs));
 	#ifdef WIN32
@@ -46,7 +46,7 @@ void RemoteAdminServer::Listen(unsigned short port,bool Global)
 	memset(&addr,0,sizeof(SOCKADDR_IN));
 	addr.sin_family=AF_INET;
 	addr.sin_port=htons(port);
-	m_GS->GetIO() << BootMessage << "Loading Remote Admin Server";
+	m_GS->GetIO() << BootMessage << "Loading Remote Admin Server" << endl;
 	if(Global)
 		addr.sin_addr.s_addr = INADDR_ANY;
 	else
@@ -67,7 +67,7 @@ void RemoteAdminServer::Listen(unsigned short port,bool Global)
 	else
 	{
 		
-		m_GS->GetIO()<<BootMessage<<"TCP listening on Remote Admin"<<endl;
+		m_GS->GetIO()<<BootMessage<<"TCP listening on Remote Admin. Port:" << port <<endl;
 	}
 	
 	while(1)
@@ -189,7 +189,9 @@ RemoteAdminModule * RemoteAdminServer::FindModule(std::string name)
 OO_TPROC_RET RemoteAdminServer::RunServer(void *thisptr)
 {
 	RemoteAdminServer *server = (RemoteAdminServer *) thisptr;
-	server->Listen(5000,true);
+	lua_Integer adminport = server->m_GS->GetLua()->GetInteger("AdminPort");
+	if(adminport > 0 || adminport <= 65535)
+		server->Listen(adminport,true);
 }
 void RemoteAdminServer::RegisterModule(RemoteAdminModule *mod)
 {
