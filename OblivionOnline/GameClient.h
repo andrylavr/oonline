@@ -39,7 +39,7 @@ forward this exception.
 #include <deque>
 #include <iostream>
 #include "IOSystem.h"
-#include "EntityManager.h"
+#include "ClientEntityManager.h"
 class OutPacketStream;
 class ClientEntity;
 extern bool g_bRenderGUI;
@@ -50,7 +50,7 @@ private:
 	// Prototypes
 	IOSystem *IOSys;
 	IOStream *IO;
-	EntityManager *Entities;
+	ClientEntityManager *Entities;
 	bool bIsConnected; //TCP / IP connection exists
 	bool bIsMasterClient; // We have "write rigths" to the server entities
 	bool bIsInitialized; // We received a player ID

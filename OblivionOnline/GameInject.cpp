@@ -101,7 +101,7 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 			}
 			//AddOneItemCommand(act,formid);
 			ent->AddAddItem(formid);
-			ent->AddEquipItem(formid);
+			//ent->AddEquipItem(formid);
 		}
 		else
 		{
@@ -112,7 +112,7 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 			if (FindEquipped(act, slot, &getObject, &itemResult)  ) // If we find nothing, there already is no equip
 			{
 				ent->AddUnequipItem(*itemRef);
-				ent->AddRemoveItem(*itemRef);
+				//ent->AddRemoveItem(*itemRef);
 				//UnEquipItemCommand(act,*itemRef);
 				//RemoveOneItemQueue.push(pair<Actor *,UINT32>(act,*itemRef));
 			}
@@ -154,7 +154,7 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 			*((UINT16 *)ParamData) = 0; // Play idle anim
 		*((UINT32 *)(ParamData + 2)) = 1; // Flag to start immediately
 		// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-		//Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
+		Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
 		tempScriptObj->StaticDestructor();
 	}
 	return true;

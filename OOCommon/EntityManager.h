@@ -42,6 +42,7 @@ protected:
 #endif
 	IOStream *m_IO;
 	EntityUpdateManager *m_updatemgr;
+	virtual Entity *CreateEntity(BYTE Status,UINT32 RefID);
 public:
 	const std::map<UINT32,Entity *>& GetPlayerList() // TODO : evaluate if this is necessary
 	{

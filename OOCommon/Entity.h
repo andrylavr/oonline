@@ -36,7 +36,7 @@ protected:
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
 	lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
-		EventLifeChange(),		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()//,m_Class(classname)
+		EventLifeChange()		//,m_Class(classname)
 	{
 		lock.lock();
 		m_mgr = mgr;
@@ -62,9 +62,7 @@ protected:
 		lock.unlock();
 	}
 	boost::mutex lock;
-	//TODO::!!! MOVE THESE TO CLIENTENTITY.CPP ... and create something like EntityFactory...
 
-	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; //Queues for client commands
 private:
 	short m_ActorValues[72];
 	bool m_AnimationStatus[43];

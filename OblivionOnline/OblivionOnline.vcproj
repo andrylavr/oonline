@@ -907,6 +907,10 @@
 			Name="Commands"
 			>
 			<File
+				RelativePath=".\AnimationCommands.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Commands.h"
 				>
 			</File>
@@ -1051,6 +1055,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\ClientEntityManager.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ClientEntityManager.h"
+			>
+		</File>
 		<File
 			RelativePath=".\GameClient.cpp"
 			>

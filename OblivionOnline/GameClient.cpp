@@ -110,7 +110,7 @@ GameClient::GameClient(void) : UpdateQueue()
 	IO = new IOStream(IOSys);
 	IOSys->RegisterIOProvider(new LogIOProvider(IOSys,LogLevel::BootMessage,"OblivionOnline.log"));
 	*IO << BootMessage << "Initializing game client: IO running" <<endl;
-	Entities = new EntityManager(IO);
+	Entities = new ClientEntityManager(IO);
 	Entities->SetUpdateManager(new ClientEntityUpdateManager(Entities));
 	bIsConnected = false;
 	bIsMasterClient = false;

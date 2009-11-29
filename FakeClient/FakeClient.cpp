@@ -145,6 +145,8 @@ void FakeClient::HandleCommand(char *String)
 		NetSendCellID(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
 		outnet->Send();
 		break;
+	case 'n': // Animation
+		//sscanf(String,"n %u %u")
 	case 'a': // Actor Value
 		sscanf(String,"a %u %d",&CellID,&Interior);
 		NetSendActorValue(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);

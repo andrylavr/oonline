@@ -105,9 +105,14 @@ Entity *EntityManager::GetOrCreateEntity( BYTE Status,UINT32 RefID )
 	Entity * retval = GetEntity(Status,RefID);
 	if(!retval)
 	{
-		retval = new Entity(this,RefID,Status);
+		retval = CreateEntity(Status,RefID);
 		if(!retval)
 			throw "Out of Memory";
 	}
 	return retval;
+}
+
+Entity * EntityManager::CreateEntity( BYTE Status,UINT32 RefID )
+{
+	return new Entity(this,RefID,Status);
 }

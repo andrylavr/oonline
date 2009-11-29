@@ -1,8 +1,6 @@
-
 /*
 
 Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
-
 This file is part of OblivionOnline.
 
 OblivionOnline is free software; you can redistribute it and/or modify
@@ -36,92 +34,18 @@ The GNU Affero General Public License gives permission to release a modified ver
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
 */
+
 #include "main.h"
 #include "ClientEntity.h"
 #include "NetSend.h"
-/* Note that these commands need to be called in a particular order:
-FIRST RemoveItem, then UnequipItem, then EquipItem, then AddItem,  */
-bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)
+#if 0
+bool Cmd_MPGetAnimation_Execute (COMMAND_ARGS)
 {
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= ent->GetNextAddItem();
-	ent->AddEquipItem(*refres);
+	*refres= ent->GetNextAnimation();
 	return true;
 }
-bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
-{
-	UINT32 *refres = (UINT32*) result;
-	if(!thisObj)
-		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= ent->GetNextRemoveItem();
-	return true;
-}
-bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
-{
-	UINT32 *refres = (UINT32*) result;
-	if(!thisObj)
-		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= ent->GetNextEquipItem();
-	return true;
-}
-bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
-{
-	UINT32 *refres = (UINT32*) result;
-	if(!thisObj)
-		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= ent->GetNextUnequipItem();
-	ent->AddRemoveItem(*refres);
-	return true;
-}
-
-
-CommandInfo kMPGetAddItemCommand =
-{
-	"MPGetAddItem",
-	"MPGAI",
-	0,
-	"Gets next Item to add",
-	0,		// requires parent obj
-	1,		// 1 param
-	NULL,	// int param table
-	Cmd_MPGetAddItemCommand_Execute
-};
-CommandInfo kMPGetRemoveItemCommand =
-{
-	"MPGetRemoveItem",
-	"MPGRI",
-	0,
-	"Gets next item to remove",
-	0,		// requires parent obj
-	1,		// 1 param
-	NULL,	// int param table
-	Cmd_MPGetRemoveItemCommand_Execute
-};
-CommandInfo kMPGetEquipItemCommand =
-{
-	"MPGetEquipItem",
-	"MPGEI",
-	0,
-	"Gets next item to equip",
-	0,		// requires parent obj
-	1,		// 1 param
-	NULL,	// int param table
-	Cmd_MPGetEquipItemCommand_Execute
-};
-CommandInfo kMPGetUnEquipItemCommand =
-{
-	"MPGetUnequipItem",
-	"MPGUEI",
-	0,
-	"Gets next item to unequip",
-	0,		// requires parent obj
-	1,		// 1 param
-	NULL,	// int param table
-	Cmd_MPGetUnEquipItemCommand_Execute
-};
+#endif
