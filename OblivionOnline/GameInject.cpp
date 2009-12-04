@@ -154,7 +154,7 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 			*((UINT16 *)ParamData) = 0; // Play idle anim
 		*((UINT32 *)(ParamData + 2)) = 1; // Flag to start immediately
 		// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
-		Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
+		//Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
 		tempScriptObj->StaticDestructor();
 	}
 	return true;

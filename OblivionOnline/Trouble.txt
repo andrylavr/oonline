@@ -1,0 +1,10 @@
+a) The server does not send you everything the server knows when you connect
+ Just the things that change
+ ( e.g. you need a complete copy of the world state after you connect )
+ b) The local client still has AI
+ even after TAI
+ thats why you hear fighting sounds
+ and thats why I die
+ althought the bandit should have died
+ and c) Health isn't synched
+ possibly d) SPAWNED npcs aren't synched

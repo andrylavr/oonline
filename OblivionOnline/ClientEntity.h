@@ -45,6 +45,7 @@ class ClientEntity : public Entity
 {
 private:
 	boost::mutex clientlock;
+	//unsigned int m_nextanim;
 	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; //Queues for client commands
 public:
 	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
@@ -55,7 +56,7 @@ public:
 		fatigue,female,race,name,classname),
 		clientlock(),		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()
 	{	
-		
+//		m_nextanim = -1;
 	}
 	UINT32 GetNextEquipItem()
 	{
@@ -138,6 +139,21 @@ public:
 		UnEquipQueue.push(fo);
 		clientlock.unlock();
 	}
+	/*
+	void InjectAnim(UINT32 AnimID)
+	{
+		clientlock.lock();
+		m_nextanim = AnimID;
+		clientlock.unlock();
+	}
+	UINT32 GetNextAnim() //return next anim to be looped or -1
+	{
+		clientlock.lock();
+		UINT32 retval = m_nextanim;
+		m_nextanim = -1;
+		return retval;
+		clientlock.unlock();
+	}*/
 };
 
 #endif
