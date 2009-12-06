@@ -1,10 +1,17 @@
-a) The server does not send you everything the server knows when you connect
- Just the things that change
- ( e.g. you need a complete copy of the world state after you connect )
- b) The local client still has AI
- even after TAI
- thats why you hear fighting sounds
- and thats why I die
- althought the bandit should have died
- and c) Health isn't synched
- possibly d) SPAWNED npcs aren't synched
+-----------------------------------------------------------
+6/12/2009 9h25 am
+-----------------------------------------------------------
+
+a) The server does not send you everything the server knows when you connect Just the things that change ( e.g. you need a complete copy of the world state after you connect )!>
+Maybe a WorldCreateBuffer can resolve it
+
+b) The fix's AI add a problem...Horse and other mounting no working (no move)
+
+c) Health isn't synched possibly => (health not sync correctly. Because LocalPlayerClient not load Sync in good time...Maybe a preload before the connexion 
+can resolve this. We must see again the order in the script. With a DoOnce by step.
+
+d) AI Package OOPLayer no good. No attack, Do NOTHING. So the OOPlayer don't enter in atack mode. At see...
+
+-----------------------------------------------------------
+
+-----------------------------------------------------------
