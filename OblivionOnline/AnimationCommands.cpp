@@ -38,14 +38,23 @@ forward this exception.
 #include "main.h"
 #include "ClientEntity.h"
 #include "NetSend.h"
-#if 0
 bool Cmd_MPGetAnimation_Execute (COMMAND_ARGS)
 {
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
 	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
-	*refres= ent->GetNextAnimation();
+	*refres= ent->GetNextAnim();
 	return true;
 }
-#endif
+CommandInfo kMPGetAnimationCommand =
+{
+	"MPGetAnimation",
+	"MPGA",
+	0,
+	"Gets Next Animation",
+	0,		// requires parent obj
+	0,		// doesn't have params
+	NULL,	// no param table
+	Cmd_MPGetAnimation_Execute
+};

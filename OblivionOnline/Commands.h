@@ -73,3 +73,4 @@ extern CommandInfo kMPGetNewObjectCommand;
 extern CommandInfo kMPShowGUICommand;
 
 extern CommandInfo kGetParentCellCommand;
+extern CommandInfo kMPGetAnimationCommand ;

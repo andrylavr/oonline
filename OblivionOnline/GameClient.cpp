@@ -232,7 +232,7 @@ bool GameClient::Disconnect()
 bool GameClient::RunFrame()
 {
 	ClientEntity * ent;  
-d	Actor  * actor = NULL;
+	Actor  * actor = NULL;
 	BYTE Status;
 	if(!gClient->GetIsInitialized() )
 		return true;

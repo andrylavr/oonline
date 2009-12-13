@@ -130,6 +130,12 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 		return false;
 	else
 	{
+		if(!Playing)
+		{
+			slot = 0;
+		}
+		ent->InjectAnim(slot);
+#if 0
 		//TODO: See CallCommandGeneric
 		double result;
 		// We wish to call PlayGroup. This has the parameters ( which are passed as flat array in arg1 ) 
@@ -156,6 +162,7 @@ bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
 		// Parameter list, parameters, thisOBj, arg3= param count, ScriptEventList ( what to put in there?) , Result ptr, and offset ( is 0 ok ? ) 
 		//Cmd_PlayGroup_Execute(kParams_CmdPlayGroup,ParamData,actor, 2,tempScriptObj,&evlist,&result,0); // NULL denotes incomplete params
 		tempScriptObj->StaticDestructor();
+#endif
 	}
 	return true;
 }
