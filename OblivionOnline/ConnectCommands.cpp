@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64 and Damien Kaufman aka Maghiel
 This file is part of OblivionOnline.
 
 OblivionOnline is free software; you can redistribute it and/or modify
@@ -52,4 +52,7 @@ CommandInfo kMPConnectCommand =
 	0,		// doesn't have params
 	NULL,	// no param table
 	Cmd_MPConnect_Execute
+	Cmd_MPStopAnimationCommand = 0
+	// At fixed by add Obse Source 
+	// con_ToggleIA
 };

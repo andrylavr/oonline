@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64 and Damien Kaufman aka Maghiel
 This file is part of OblivionOnline.
 
 OblivionOnline is free software; you can redistribute it and/or modify
@@ -58,3 +58,32 @@ CommandInfo kMPGetAnimationCommand =
 	NULL,	// no param table
 	Cmd_MPGetAnimation_Execute
 };
+
+/* FIX for IADirector
+
+commandInfo kMPgetStopAnimationCommand =
+{
+	"MPStopAnimation"
+	"MPSA",
+	0,
+	"Stop current Animation state 0",
+	0,
+	0,
+	NULL,
+	cmd_MPStopAnimation_Execute
+}
+commandInfo kMPgetStopAnimationCommand1 =
+{
+	"MPStopAnimation1"
+	"MPSA1"
+	0,
+	"Stop current animation state 1",
+	0,
+	0,
+	NULL,
+	cmd_MPStopAnimation1_Execute
+}
+if MPStopAnimation1 = 1 
+{
+   MPStopAnimation1 = MPStopAnimation ;
+}; 

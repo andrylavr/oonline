@@ -1,7 +1,7 @@
 
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2009   Julian Bangert aka masterfreek64 and Damien Kaufman aka Maghiel
 
 This file is part of OblivionOnline.
 
@@ -74,3 +74,7 @@ extern CommandInfo kMPShowGUICommand;
 
 extern CommandInfo kGetParentCellCommand;
 extern CommandInfo kMPGetAnimationCommand ;
+
+//IA Director
+extern CommandInfo kMPStopAnimationCommand ;
+extern CommandInfo kMPStopAnimationCommand1 ;
