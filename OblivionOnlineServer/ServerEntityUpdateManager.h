@@ -1,6 +1,6 @@
 /*
 This file is part of OblivionOnline Server- An open source game server for the OblivionOnline mod
-Copyright (C)  2008   Julian Bangert
+Copyright (C)  2008   Julian Bangert and Damien Kaufman aka Maghiel
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,7 @@ public:
 	}
 	OO_API virtual void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
 	OO_API virtual void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
-	OO_API virtual  void GlobalSend(Entity *ent,bool Inbound );
+	OO_API virtual void GlobalSend(Entity *ent,bool Inbound );
 	OO_API virtual void OnNameUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound );
 	OO_API virtual void OnClassUpdate(Entity *ent,bool Inbound );
