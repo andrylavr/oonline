@@ -5,7 +5,7 @@ class ConfigurationNode
 {
 	std::tr1::unordered_map<std::string,ConfigurationNode> subnodes;
 public:
-	
+	std::string value;
 };
 class Configuration : ConfigurationNode
 {

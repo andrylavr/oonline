@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ChunkHandler.h"
 #include "InPacket.h"
 #include "Entity.h"
-size_t ChunkHandler::HandlePositionChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+#if 0
+size_t ChunkHandler::HandlePositionChunk(EntityManager *entities,NetworkConnection *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
 	float *floats = (float *)(chunkdata + 2);
@@ -59,3 +60,4 @@ size_t ChunkHandler::HandleAnimationChunk(IOStream *IO,EntityManager *entities,I
 	//(*IO)<<LogLevel::SystemMessage<<"Animation State changed Entity : " << FormID<<" Status "<< (unsigned short)Status<< "animation "<< AnimationID << " On /Off " << AnimStatus;  
 	return GetMinChunkSize(Animation) + sizeof(unsigned short);
 }
+#endif

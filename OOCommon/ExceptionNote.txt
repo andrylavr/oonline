@@ -1,20 +1,7 @@
-/*
-
-Copyright(c) 2007-2010   Julian Bangert 
-This file is part of OblivionOnline.
-
-OblivionOnline is free software; you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version.
-
-OblivionOnline is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+All files with the following notice:
+"This file is part of OblivionOnline Server- An open source game server for the OblivionOnline mod
+Copyright (C)  2008   Julian Bangert"
+that are distributed in this folder are also subject to the following provisions:
 
 Linking OblivionOnline statically or dynamically with other modules is making a combined work based
 on OblivionOnline. Thus, the terms and conditions of the GNU Affero General Public License cover 
@@ -33,13 +20,3 @@ for their modified versions; it is their choice whether to do so.
 The GNU Affero General Public License gives permission to release a modified version without this
 exception; this exception also makes it possible to release a modified version which carries 
 forward this exception.
-*/
-#include "OutPacketStream.h"
-bool NetSendEquip( OutPacketStream *outnet,UINT32 FormID,BYTE Status,BYTE Slot,UINT32 EquipID )
-{
-	BYTE data[5];
-	data[0] = Slot;
-	*(( UINT32 *)(data + 1)) = EquipID;
-	outnet->AddChunk(FormID,Status,GetMinChunkSize(Equip),Equip,data);
-	return true;
-}

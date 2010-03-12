@@ -53,18 +53,16 @@ GameServer::GameServer(void)
 	m_script = new LuaSystem(this);
 	m_script->RunStartupScripts("ServerLaunch.lua");
 	m_Evt = new EventSystem(this);
-	m_IOSys = new IOSystem();
-	m_IO = new IOStream(m_IOSys);
-	m_IO->RegisterIOProvider(new ScreenIOProvider(m_IOSys,BootMessage));//TODO : Fix that
+	IOStream::Instance().RegisterIOProvider(new ScreenIOProvider(m_IOSys,BootMessage));//TODO : Fix that
 	DisplayBootupMessage();
-	*m_IO<<BootMessage<<"Script , Event and Local IO running" << endl;
-	*m_IO<<BootMessage<<"Opening Log file" << endl;
-	m_IO->RegisterIOProvider(new LogIOProvider(m_IOSys,BootMessage,m_script->GetString("Logfile")));	
+	IOStream::Instance <<BootMessage<<"Script , Event and Local IO running" << endl;
+	IOStream::Instance <<BootMessage<<"Opening Log file" << endl;
+	IOStream::Instance.RegisterIOProvider(new LogIOProvider(m_IOSys,BootMessage,m_script->GetString("Logfile")));	
 	m_Netsystem = new NetworkSystem(this);
-	m_Entities = new EntityManager(m_IO);
+	m_Entities = new EntityManager(IOStream::Instance );
 	m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Entities,m_Netsystem));
 	m_Netsystem->StartReceiveThreads();
-	m_IO->RegisterIOProvider(new ChatIOProvider(this,m_IOSys));
+	IOStream::Instance (new ChatIOProvider(this,m_IOSys));
 	//In this thread we now run the server browser update
 	m_Modules = new ModuleManager(this);
 	m_Admin = new RemoteAdminServer(this);
@@ -83,7 +81,6 @@ GameServer::~GameServer(void)
 	delete m_Modules;
 	delete m_Netsystem;
 	delete m_Entities;
-	delete m_IO;
 	delete m_Evt;
 	delete m_script;
 }
@@ -115,7 +112,7 @@ void GameServer::RunServer()
 
 void GameServer::DisplayBootupMessage()
 {
-	*m_IO << "\nOblivionOnline Server version "<<VERSION_STREAM << "\n (c) 2008 by Julian Bangert \n\n" <<
+	IOStream::Instance  <<BootMessage<< "\nOblivionOnline Server version "<<VERSION_STREAM << "\n (c) 2008 by Julian Bangert \n\n" <<
 		"This program is free software: you can redistribute it and/or modify\n" <<
 		"it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE as published by the \n" <<
 		"Free Software Foundation, either version 3 of the License, or (at your option) \n" <<
@@ -127,6 +124,6 @@ void GameServer::DisplayBootupMessage()
 		"GNU AFFERO GENERAL PUBLIC LICENSE for more details.\n" <<
 		"You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE\n" <<
 		"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" << endl;
-	*m_IO << "Please note that you have to offer the source codes to this server software on the web for the users to download" << endl<<
+	IOStream::Instance <<BootMessage<<"Please note that you have to offer the source codes to this server software on the web for the users to download" << endl<<
 		"For the official releases this is taken care of at http://googlecode.com/p/oonline/ , however if you modify ANYTHING you have to make the COMPLETE sources(also client, as that client is a derived work of the server) available to the users"<<endl;
 }

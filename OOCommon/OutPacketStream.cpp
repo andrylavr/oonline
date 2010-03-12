@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2010   Julian Bangert 
 
 This file is part of OblivionOnline.
 
@@ -36,9 +36,11 @@ exception; this exception also makes it possible to release a modified version w
 forward this exception.
 */
 #include "OutPacketStream.h"
+#if 0
 
 bool OutPacketStream::Send()
 {
+
 	if(packet.Size() <= 3)
 		return false;
 	if(packet.Reliable())
@@ -59,3 +61,4 @@ bool OutPacketStream::Send()
 	packet.Reset();
 	return true; //TODO: Error Handling - Fragmentation Handling
 }
+#endif

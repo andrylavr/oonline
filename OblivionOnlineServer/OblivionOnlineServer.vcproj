@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="OblivionOnlineServer"
 	ProjectGUID="{9CEB2A39-13F4-499A-995C-2077F44177DF}"
 	RootNamespace="OblivionOnlineServer"
@@ -250,6 +250,10 @@
 				RelativePath=".\ServerEntityUpdateManager.h"
 				>
 			</File>
+			<Filter
+				Name="PlayerManager"
+				>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Util"
@@ -365,6 +369,14 @@
 		</File>
 		<File
 			RelativePath=".\main.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PlayerManager.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\PlayerManager.h"
 			>
 		</File>
 		<File

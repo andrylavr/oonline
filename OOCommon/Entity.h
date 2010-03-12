@@ -25,14 +25,29 @@ GNU Affero General Public License for more details.
 #define AV_HEALTH 8
 #define AV_MAGICKA 9
 #define AV_FATIGUE 10
-class ChunkHandler;
-
+#include "Packets.h"
+#define MASK_ALL 0xffffffff
+class Entity;
+class EntityPermission
+{
+	UINT32 Mask,Match; // value AND MASK == Match
+public:
+	unsigned int GetMask() {return Mask;}
+	unsigned int GetMatch(){return Match;}
+	void SetMask(UINT32 val){Mask=val;}
+	void SetMatch(UINT32 val){Match=val;}
+	bool operator==(UINT32 EntityID){return (EntityID & Mask) == Match; }
+	bool operator==(Entity *ent);
+	EntityPermission(UINT32 mask,UINT32 match): Mask(mask),Match(match){}
+	~EntityPermission(){}
+	EntityPermission(const EntityPermission &other){Mask = other.Mask; Match=other.Match;}
+};
 class Entity
 {
 	friend class EntityManager;
 protected:
-	Entity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
-		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
+	Entity(EntityManager *mgr,UINT32 refID, bool TriggerEvents = false,bool GlobalSynch= false,
+		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,UINT32 WorldID =0,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")):
 	lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
@@ -41,7 +56,6 @@ protected:
 		lock.lock();
 		m_mgr = mgr;
 		m_RefID = refID;
-		m_Status = Status;
 		m_PosX = posX;
 		m_PosY = posY;
 		m_PosZ = posZ;
@@ -55,31 +69,33 @@ protected:
 		m_Race = race;
 		//m_Name = name;
 		//m_Class = classname;
-		m_IsInInterior = IsInInterior;
+		m_World = WorldID;
 		memset(m_ActorValues,0,72*sizeof(short));
 		memset(m_AnimationStatus,0,43*sizeof(BYTE));
 		m_mgr->RegisterEntity(this);
 		lock.unlock();
 	}
+	~Entity()
+	{
+		m_mgr->DeRegisterEntity(this);
+	}
 	boost::mutex lock;
 
 private:
+	EntityManager *m_mgr;
 	short m_ActorValues[72];
 	bool m_AnimationStatus[43];
-	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enuf 
-	bool   m_EquipChanged[MAX_EQUIPSLOTS];
+	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enough
 	float m_PosX,m_PosY,m_PosZ,m_RotX,m_RotY,m_RotZ;
-	UINT32 m_RefID,m_CellID,m_Race; 
+	UINT32 m_RefID,m_CellID,m_WorldID,m_Race; 
 	bool m_Actor,m_GlobalSynch,m_Female;//Player : is a player , Actor: is an actor , GlobalSynch: Is important for quests and must therefore always be synched
-	bool m_TriggerEvents,m_IsInInterior;
-	BYTE  m_Status;
-	EntityManager *m_mgr;
+	bool m_TriggerEvents;
 	std::string m_Name; // A std::string should not waste TOO much space 
 	//std::string m_Class;
 	void _Move(float PosX,float PosY,float PosZ);
 	void _SetRotation(float RotX,float RotY,float RotZ);
 	void _SetFemale(bool value);
-	void _SetCell(UINT32 value,bool IsInInterior);
+	void _SetCell(UINT32 value,UINT32 WorldID);
 	void _SetGlobalSynch(bool value);
 	void _SetRace(UINT32 value);
 	void _SetEquip(BYTE slot,UINT32 value);
@@ -93,7 +109,7 @@ public:
 	void Rotate(float rX,float rY,float rZ,bool Inbound = false);
 	void MoveNRot(float X,float Y,float Z,float rX,float rY,float rZ,bool Inbound = false);
 	void SetFemale(bool value,bool Inbound = false);
-	void SetCell(UINT32 value,bool IsInInterior,bool Inbound = false);
+	void SetCell(UINT32 value,UINT32 WorldID,bool Inbound = false);
 	void SetGlobalSynch(bool value,bool Inbound = false);
 	void SetRace(UINT32 value,bool Inbound = false);
 	void SetEquip(BYTE slot,UINT32 value,bool Inbound = false);
@@ -167,10 +183,6 @@ public:
 	{
 		return m_ActorValues[statid];
 	}
-	inline BYTE Status()
-	{
-		return m_Status;
-	}
 	inline bool GlobalSynch()
 	{
 		return m_GlobalSynch;
@@ -182,10 +194,6 @@ public:
 	inline bool AnimationStatus(BYTE Status){
 		return m_AnimationStatus[Status];
 	}
-	~Entity(void)
-	{
-		m_mgr->DeRegisterEntity(this);
-	}
 	boost::signal<void(Entity *)>		EventLifeChange; //   value of Life
 	boost::signal<void(Entity *)>		EventDeath; 
 	boost::signal<void(Entity *)>		EventMagicka; // same as above
@@ -193,4 +201,31 @@ public:
 	boost::signal<void(Entity *)>		EventFatigue; // same as above
 	boost::signal<void(Entity *)>		EventFatigueEmpty; // same as above
 	boost::signal<void(Entity *,std::string *)>	EventChat; // On Chat
+};
+using namespace ChunkType;
+struct ChunkPermissions
+{
+	EntityPermission AV;
+	EntityPermission Position;
+	EntityPermission other;
+	bool Match(UINT32 id,PkgChunk t) const 
+	{
+		switch (t)
+		{
+		case ActorValue:
+			return AV == id;
+		case Position:
+		case Animation:
+			return Position == id;
+		default:
+			return other == id;
+		}
+	}
+	bool Match(Entity *ID,PkgChunk t)const
+	{
+		return Match(ID->RefID(),t);
+	}
+	ChunkPermissions(): AV(0,1),Position(0,1),other(0,1) // Keine schreibrechte 
+	{
+	}
 };

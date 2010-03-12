@@ -25,7 +25,8 @@ int main(int argc, char* argv[])
 	GameServer *testGS;
 	testGS = new GameServer();
 	testGS->RunServer(); // that would advertise it, and perform GC on lua, etc
-	getc(stdin);
+	printf("Server terminated!\n");
+	//getc(stdin);
 	
 	return 0;
 }

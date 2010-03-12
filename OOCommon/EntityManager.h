@@ -33,30 +33,24 @@ OO_API class EntityManager
 protected:
 	boost::mutex lock;
 #ifndef OO_USE_HASHMAP	
-	std::map<UINT32,Entity *> m_objects; //Includes actors
-	std::map<UINT32,Entity *> m_players;
+	std::map<UINT32,Entity *> m_entities; //Includes actors
 #else
-	OOHashTable m_objects
-	OOHashTable m_players;
+	OOHashTable m_entities;
 
 #endif
 	IOStream *m_IO;
 	EntityUpdateManager *m_updatemgr;
-	virtual Entity *CreateEntity(BYTE Status,UINT32 RefID);
+	virtual Entity *CreateEntity(UINT32 RefID);
 public:
-	const std::map<UINT32,Entity *>& GetPlayerList() // TODO : evaluate if this is necessary
-	{
-		return m_players;
-	}
 	const map<UINT32,Entity *>::const_iterator BeginObjects()
 	{
-		return m_objects.begin();
+		return m_entities.begin();
 	}
 	const map<UINT32,Entity *>::const_iterator EndObjects()
 	{
-		return m_objects.end();
+		return m_entities.end();
 	}
-	EntityManager(IOStream *io) : lock() , m_objects(),m_players()
+	EntityManager(IOStream *io) : lock() , m_entities()
 	{
 		m_IO = io;
 	}
@@ -80,8 +74,8 @@ public:
 	bool DeleteEntity(Entity *Entity);
 	bool DeRegisterEntity(Entity *Entity);
 	bool DeleteEntities();
-	Entity * GetEntity(BYTE Status,UINT32 RefID);
+	Entity * GetEntity(UINT32 RefID);
 	// Gets You an Entity or creates it
-	Entity * GetOrCreateEntity(BYTE Status,UINT32 RefID);
+	Entity * GetOrCreateEntity(UINT32 RefID);
 };
 

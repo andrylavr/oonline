@@ -15,9 +15,8 @@
 //You should have received a copy of the GNU General Public License
 //along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //*/
-#include "InPacket.h"
-#include "ChunkHandler.h"
 #include "FakeClient.h"
+#if 0
 size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *packet, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 { 
 	(*IO) << Chat << (char *)(chunkdata +2 + sizeof(unsigned short));
@@ -48,3 +47,4 @@ size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager*entities,InPa
 {
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }
+#endif

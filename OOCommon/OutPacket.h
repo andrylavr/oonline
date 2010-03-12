@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GlobalDefines.h"
 #include "Packets.h"
 #include <ctime>
+#if 0 
 class OutPacket
 {
 private:
@@ -177,3 +178,4 @@ public:
 		return *m_Bytes_written;
 	}
 };
+#endif

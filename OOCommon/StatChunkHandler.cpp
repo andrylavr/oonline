@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "InPacket.h"
 #include "IOSystem.h"
 
+#if 0
 size_t ChunkHandler::HandleActorValueChunk(IOStream *IO,EntityManager *entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	Entity *ent = entities->GetEntity(Status,FormID);
@@ -88,3 +89,4 @@ size_t ChunkHandler::HandleEquipChunk(IOStream *IO,EntityManager *entities,InPac
 	ent->SetEquip(*(BYTE*)(chunkdata + 2),*(UINT32 *)(chunkdata + 3),true);
 	return GetMinChunkSize(Equip)  + sizeof(unsigned short);
 }
+#endif

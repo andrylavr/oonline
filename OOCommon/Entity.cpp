@@ -16,10 +16,10 @@ GNU General Public License for more details.
 
 */
 #include "Entity.h"
-void Entity::SetCell( UINT32 value,bool IsInInterior,bool Inbound /*= false*/ )
+void Entity::SetCell( UINT32 value,UINT32 World,bool Inbound /*= false*/ )
 {
 	lock.lock();
-	if(CellID() != value || m_IsInInterior != IsInInterior)
+	if(CellID() != value || m_World != World)
 	{
 		UINT32 oldvalue = m_CellID;
 		_SetCell(value,IsInInterior);
@@ -58,10 +58,10 @@ void Entity::_SetFemale( bool value )
 	m_Female = value;
 }
 
-void Entity::_SetCell( UINT32 value,bool IsInInterior )
+void Entity::_SetCell( UINT32 value,UINT32 WorldID )
 {
 	m_CellID = value;
-	m_IsInInterior = IsInInterior;
+	m_WorldID = WorldID;
 }
 
 void Entity::_SetRace( UINT32 value )
@@ -216,4 +216,9 @@ void Entity::_SetAnimation( BYTE AnimationNo,bool Status )
 {
 	if(AnimationNo < 43)
 		m_AnimationStatus[AnimationNo] = Status;
+}
+
+bool EntityPermission::operator==( Entity *ent )
+{
+	return (*this) == ent->RefID();
 }

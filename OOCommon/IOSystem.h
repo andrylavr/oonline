@@ -46,15 +46,12 @@ class IOSystem : public std::streambuf
 public:
 	boost::mutex lock;
 	LogLevel DefaultLogLevel;
-	IOSystem() : lock() ,m_providers(),std::streambuf()
+	static IOSystem &Instance()
 	{
-		DefaultLogLevel = BootMessage;
-		m_buf = new char[1024];
-		m_buflen = 1024;
-		setp(m_buf, m_buf + 1024);
-		//m_providers.clear();
+		static IOSystem *_instance = 0;
+		if(!_instance) _instance = new IOSystem();
+		return *_instance;
 	}
-	~IOSystem(void);
 	bool DoOutput(LogLevel Level,const std::string & Message);
 	bool DoOutput(LogLevel Level,char * Message)
 	{
@@ -70,6 +67,15 @@ public:
 protected:
 	std::list <IOProvider *> m_providers;
 private:
+	IOSystem() : lock() ,m_providers(),std::streambuf()
+	{
+		DefaultLogLevel = BootMessage;
+		m_buf = new char[1024];
+		m_buflen = 1024;
+		setp(m_buf, m_buf + 1024);
+		//m_providers.clear();
+	}
+	~IOSystem(void);
 	char *m_buf;
 	size_t m_buflen;
 	virtual int sync (void);
@@ -92,32 +98,38 @@ private:
 };
 class IOStream : public std::ostream {
 public:
-	// we initialize the ostream to use our logbuf
-	IOStream(IOSystem *sys)
-		:std::ostream(sys)
+	static IOStream & Instance()
 	{
-		m_system = sys;
+		static IOStream *_instance = NULL;
+		if(!_instance) _instance = new IOStream();
+		return *_instance;
 	}
+	// we initialize the ostream to use our logbuf
 
 	inline bool RegisterIOProvider(IOProvider *provider)
 	{
-		return m_system->RegisterIOProvider(provider);
+		return m_system.RegisterIOProvider(provider);
 	}
 	inline bool RemoveIOProvider(IOProvider *provider)
 	{
-		return m_system->RemoveIOProvider(provider);
+		return m_system.RemoveIOProvider(provider);
 	}
 	inline bool RegisterInput(std::string  *Message)
 	{
-		return m_system->RegisterInput(Message);
+		return m_system.RegisterInput(Message);
 	}
 	  // set priority
 	  void SetLogLevel (LogLevel lvl) {
-		  m_system->DefaultLogLevel = lvl; 
+		  m_system.DefaultLogLevel = lvl; 
 	  }
 
 private:
-	IOSystem *m_system;
+	IOSystem &m_system;
+	IOStream(): m_system(IOSystem::Instance()),
+		std::ostream(&IOSystem::Instance())
+	{
+	}
+	IOStream(const IOStream &other) : m_system(IOSystem::Instance()){}
 };
 inline IOStream& operator<< (IOStream& ls,
 					   LogLevel lvl) 

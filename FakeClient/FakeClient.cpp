@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2010   Julian Bangert 
 
 This file is part of OblivionOnline.
 
@@ -20,7 +20,6 @@ GNU General Public License for more details.
 #include "FakeClient.h"
 #include "IOSystem.h"
 #include "LogIOProvider.h"
-#include "InPacket.h"
 #include "../OblivionOnlineServer/ScreenIOProvider.h"
 #include "OutPacketStream.h"
 #include "NetSend.h"

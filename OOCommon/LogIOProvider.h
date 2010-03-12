@@ -27,21 +27,20 @@ class LogIOProvider :
 public:
 	LogIOProvider(IOSystem *parent,LogLevel threshold, std::string FileName): IOProvider(parent)
 	{
-		FILE *File = fopen(FileName.c_str(),"w");
+		FILE = fopen(FileName.c_str(),"w");
 		if(File)
 		{
 			time_t timestamp = time(NULL);
 			fwrite(ctime(&timestamp),24,1,File);
 			fputc((int)'\t',File);
 			fprintf(File,"Opened Log File");
-			fclose(File);
+			fflush(File);
 		}
 		m_filename = FileName;
 		m_threshold = threshold;
 	}
 	~LogIOProvider(void)
 	{
-				FILE *File = fopen(m_filename.c_str(),"a");
 		if(File)
 		{
 			time_t timestamp = time(NULL);
@@ -56,16 +55,16 @@ public:
 	{
 		if(LogLevel < m_threshold)
 			return false;
-		FILE *File = fopen(m_filename.c_str(),"a");
 		if(File)
 		{
 			fwrite(Message.c_str(),Message.length(),1,File);
 			fputc((int)'\n',File);
-			fclose(File);
+			fflush(File);
 		}
 		return true;
 	}
 private:
+	FILE *File;
 	std::string m_filename;
 	LogLevel m_threshold;
 };

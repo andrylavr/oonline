@@ -1,8 +1,7 @@
 
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64 and Damien Kaufman aka Maghiel
-
+Copyright(c) 2007-2010   Julian Bangert  and Damien Kaufman aka Maghiel
 This file is part of OblivionOnline.
 
 OblivionOnline is free software; you can redistribute it and/or modify

@@ -23,38 +23,23 @@ bool EntityManager::RegisterEntity(Entity *Entity)
 	lock.lock();
 	//(*m_IO)<<SystemMessage<<"Spawning Entity "<<Entity->RefID()<<endl;
 #ifndef OO_USE_HASHMAP
-	if(Entity->Status() == STATUS_PLAYER)
-		m_players.insert(IDEntityPair(Entity->RefID(),Entity));
-	else
-		m_objects.insert(IDEntityPair(Entity->RefID(),Entity));
+	
+		m_entities.insert(IDEntityPair(Entity->RefID(),Entity));
 #else
-	if(Entity->Status())
-		m_players.Insert(Entity);
-	else
-		m_objects.Insert(Entity);
+		m_entities.Insert(Entity);
 #endif	
 	lock.unlock();
-	return true;
-}
-bool EntityManager::DeleteEntity(Entity *Entity)
-{
-	delete Entity;
 	return true;
 }
 bool EntityManager::DeleteEntities()
 {
 	#ifndef OO_USE_HASHMAP
 	lock.lock();
-	for(std::map<UINT32,Entity *>::iterator i = m_objects.begin();i != m_objects.end();i++)
+	for(std::map<UINT32,Entity *>::iterator i = m_entities.begin();i != m_entities.end();i++)
 	{
 		delete i->second;
 	}
-	m_objects.clear();
-	for(std::map<UINT32,Entity *>::iterator i = m_players.begin();i != m_players.end();i++)
-	{
-		delete i->second;
-	}
-	m_players.clear();
+	m_entities.clear();
 	lock.unlock();
 	#else
 	// TODO
@@ -69,34 +54,23 @@ bool EntityManager::DeRegisterEntity(Entity *Entity)
 	if(Entity->Status())
 		m_players.erase(Entity->RefID());
 	else
-		m_objects.erase(Entity->RefID());
+		m_entities.erase(Entity->RefID());
 #else
 	if(Entity->Status())
 		m_players.Remove(Entity);
 	else
-		m_objects.Remove(Entity);
+		m_entities.Remove(Entity);
 #endif	
 	lock.lock();
 	return true;	
 }
 
-Entity * EntityManager::GetEntity( BYTE Status,UINT32 RefID )
+Entity * EntityManager::GetEntity(UINT32 RefID )
 {
-	std::map<UINT32,Entity *>::iterator iter;
-	if(Status == STATUS_PLAYER)
-	{
-		for(iter = m_players.begin();iter!=m_players.end();iter ++)
-		{
-			if(iter->first == RefID)
-				return iter->second;
-		}
-	}
-	else
-	{
-		iter =  m_objects.find(RefID);
-		if(iter != m_objects.end())
+	std::map<UINT32,Entity *>::iterator iter =  m_entities.find(RefID);
+		if(iter != m_entities.end())
 			return iter->second;
-	}
+
 	return NULL;
 }
 
@@ -107,12 +81,12 @@ Entity *EntityManager::GetOrCreateEntity( BYTE Status,UINT32 RefID )
 	{
 		retval = CreateEntity(Status,RefID);
 		if(!retval)
-			throw "Out of Memory";
+			throw std::runtime_error("Out of Memory");
 	}
 	return retval;
 }
 
-Entity * EntityManager::CreateEntity( BYTE Status,UINT32 RefID )
+Entity * EntityManager::CreateEntity( UINT32 RefID )
 {
-	return new Entity(this,RefID,Status);
+	return new Entity(this,RefID);
 }

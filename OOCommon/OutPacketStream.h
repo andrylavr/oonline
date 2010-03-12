@@ -1,6 +1,6 @@
 /*
 
-Copyright(c) 2007-2009   Julian Bangert aka masterfreek64
+Copyright(c) 2007-2010   Julian Bangert 
 
 This file is part of OblivionOnline.
 
@@ -37,6 +37,7 @@ forward this exception.
 */
 #include "OutPacket.h"
 #include "IOSystem.h"
+#if 0
 
 // Provides an abstract way to send data both via UDP and via TCP
 OO_API class OutPacketStream
@@ -74,3 +75,4 @@ public:
 	}
 	OO_API bool Send();
 };
+#endif

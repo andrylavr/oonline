@@ -35,7 +35,7 @@ public:
 	void RunServer();
 	IOStream & GetIO()
 	{
-		return *m_IO;
+		return IOSystem::Instance();
 	}
 	EventSystem *GetEventSys()
 	{
@@ -61,8 +61,6 @@ public:
 protected:
 	int m_tickrate; /*TODO add a way to update this from lua*/
 	LuaSystem *m_script;
-	IOStream *m_IO;
-	IOSystem *m_IOSys;
 	EventSystem *m_Evt;
 	EntityManager *m_Entities;
 	NetworkSystem *m_Netsystem;
