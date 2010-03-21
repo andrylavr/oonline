@@ -21,8 +21,6 @@ GNU General Public License for more details.
 #include "IOSystem.h"
 #include "LogIOProvider.h"
 #include "../OblivionOnlineServer/ScreenIOProvider.h"
-#include "OutPacketStream.h"
-#include "NetSend.h"
 #include "EntityManager.h"
 SOCKET ServerSocket;
 bool g_plot = true;

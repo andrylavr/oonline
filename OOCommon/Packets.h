@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 #include "GlobalDefines.h"
+#include "Entity.h"
+class NetworkConnection;
 /*
 OO Advanced Packet System:
 Packets are streams of bytes transported either over an unreliable (UDP ) or a reliable (TCP) carrier:
@@ -62,49 +64,51 @@ TYPE#	Description
 #define PAYLOAD_SIZE 3
 #define PACKET_SIZE 1024
 #define PACKET_HEADER_SIZE 3
-
-namespace ChunkType{
-	enum PkgChunk
-	{
-		Position = 2,
-		CellID	 = 3,
-		RPCRequest = 4,
-		RPCReply = 5,
-		Race     = 8,
-		Class    = 9,
-		Name     = 10,
-		ActorValue= 11,
-		ActorValueMod=12,
-		Equip	 = 13,
-		Chat     = 14,
-		Auth	 = 15,
-		ClientType = 16,
-		Version	= 17,
-		PlayerID = 18,
-		Animation = 19,
-		End
-	};
-
+enum PkgChunk
+{
+	pkg_Position = 2,
+	pkg_CellID	 = 3,
+	pkg_RPCRequest = 4,
+	pkg_RPCReply = 5,
+	pkg_Race     = 8,
+	pkg_Class    = 9,
+	pkg_Name     = 10,
+	pkg_ActorValue= 11,
+	pkg_ActorValueMod=12,
+	pkg_Equip	 = 13,
+	pkg_Chat     = 14,
+	pkg_Auth	 = 15,
+	pkg_ClientType = 16,
+	pkg_Version	= 17,
+	pkg_PlayerID = 18,
+	pkg_Animation = 19,
+	pkg_End
 };
-class NetworkConnection;
+class ProtocolSecurityExcpetion : public std::runtime_error
+{
+public:
+	ProtocolSecurityExcpetion(NetworkConnection *who,PkgChunk t): std::runtime_error("A protocol security violation was detected. Unauthorized Chunk.")
+	{}
+};
+	
 class EntityManager;
-typedef size_t (*ChunkHandler)(NetworkConnection *whom,EntityManager *ent,char *data,char *dataend);
 namespace raw
 {
 struct Chunk
 {
 	UINT32 formID;
-	BYTE chunkType;
+	PkgChunk ChunkType;
 };
+#define MAX(x,y) ((x)>(y)?(x):(y))
 struct ANSIString
 {
 	unsigned short strlen;
 	char data[0];
-	size_t Size() //String size, in bytes
+	size_t Size(const char *end) const //String size, in bytes
 	{
-		return max(end-data,strlen)
+		return MAX(end-data,strlen);
 	}
-	std::string GetData(char *end)
+	std::string GetData(const char *end) const
 	{
 		return string(data,max(end-data,strlen));
 	}
@@ -112,9 +116,9 @@ struct ANSIString
 struct Position
 {
 	raw::Chunk header;
-	static const ChunkType::PkgChunk Type= ChunkType::Position;
+	static const PkgChunk Type= pkg_Position;
 	static const bool Reliable=false;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
 	float PosX;
 	float PosY;
 	float PosZ;
@@ -125,8 +129,8 @@ struct Position
 struct CellID
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::CellID;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_CellID;
 	static const bool Reliable=true;
 	UINT32 cellID;
 	UINT32 WorldID; // NULL for Interiors
@@ -134,8 +138,8 @@ struct CellID
 struct Race
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Race;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Race;
 	static const bool Reliable=true;
 	UINT32 Value;
 	BYTE IsFemale;
@@ -144,24 +148,24 @@ struct Class
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Class;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Class;
 	ANSIString Name;
 };
 struct Name
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Name;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Name;
 	ANSIString Value;
 };
 struct ActorValue
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::ActorValue;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_ActorValue;
 	UINT8 code;
 	short Value;
 };
@@ -169,16 +173,16 @@ struct ActorValueMod
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::ActorValueMod;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_ActorValueMod;
 	UINT8 code;
 	short Value;
 };
 struct Equip
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Equip;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Equip;
 	static const bool Reliable=true;
 	UINT8 slot;
 	UINT32 Value;
@@ -186,16 +190,16 @@ struct Equip
 struct Chat
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Chat;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Chat;
 	static const bool Reliable=true;
 	ANSIString Message;
 };
 struct Auth 
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Auth;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Auth;
 	static const bool Reliable=true;
 	BYTE SHA512[64];
 	ANSIString Data;
@@ -203,24 +207,24 @@ struct Auth
 struct Animation
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Animation;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Animation;
 	static const bool Reliable=true;
 	BYTE AnimationGroup;
 };
 struct ClientType
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::ClientType;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_ClientType;
 	static const bool Reliable=true;
 	BYTE IsMaster;
 };
 struct Version
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::Version;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_Version;
 	static const bool Reliable=true;
 	BYTE super;
 	BYTE major;
@@ -230,8 +234,8 @@ struct Version
 struct PlayerID
 {
 	raw::Chunk header;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::PlayerID;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_PlayerID;
 	static const bool Reliable=true;
 	UINT32 ID;
 };
@@ -239,8 +243,8 @@ struct RPCRequest //Experimental Script RPC.
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::RPCRequest;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_RPCRequest;
 	UINT32 functioncode; // 0x0 = Enumerate functions?
 	UINT32 requestid; // To repeat requests, etc
 	UINT16 seqno; // Which element of the parameters this request entails
@@ -251,8 +255,8 @@ struct RPCReply
 {
 	raw::Chunk header;
 	static const bool Reliable=true;
-	size_t Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd);
-	static const ChunkType::PkgChunk Type= ChunkType::RPCReply;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static const PkgChunk Type= pkg_RPCReply;
 	UINT32 requestid;
 	UINT16 seqno; // Which element of the parameters this request entails
 	UINT16 seqsize;  //  Maximum number of requests 
@@ -261,39 +265,38 @@ struct RPCReply
 }
 
 #pragma pack(pop)
-using namespace ChunkType;
 inline bool RequiresReliable(PkgChunk type)
 {
 	switch (type) // No breaks here
 
 	{
-	case	Position:
+	case	pkg_Position:
 		return false;
-	case CellID:
+	case pkg_CellID:
 		return true;
-	case Race:
+	case pkg_Race:
 		return true;
-	case Class:
+	case pkg_Class:
 		return true;
-	case Name:
+	case pkg_Name:
 		return true;
-	case ActorValue:
+	case pkg_ActorValue:
 		return true;
-	case ActorValueMod:
+	case pkg_ActorValueMod:
 		return true;
-	case Equip:
+	case pkg_Equip:
 		return true;
-	case Chat:
+	case pkg_Chat:
 		return true;
-	case Auth:
+	case pkg_Auth:
 		return true;
-	case ClientType:
+	case pkg_ClientType:
 		return true;
-	case Version:
+	case pkg_Version:
 		return true;
-	case PlayerID:
+	case pkg_PlayerID:
 		return true;
-	case Animation:
+	case pkg_Animation:
 		return false;
 
 	default:
@@ -304,76 +307,65 @@ inline size_t GetMinChunkSize(PkgChunk type)
 {
 	switch(type)
 	{
-	case	Position:
+	case	pkg_Position:
 		return sizeof(raw::Position);
-	case CellID:
+	case pkg_CellID:
 		return sizeof(raw::CellID);
-	case Race:
+	case pkg_Race:
 		return sizeof(raw::Race);
-	case Class:
+	case pkg_Class:
 		return sizeof(raw::Class);
-	case Name:
+	case pkg_Name:
 		return sizeof(raw::Name);
-	case ActorValueMod:
+	case pkg_ActorValueMod:
 		return sizeof(raw::ActorValueMod);
-	case ActorValue:
+	case pkg_ActorValue:
 		return sizeof(raw::ActorValue);
-	case Chat:
+	case pkg_Chat:
 		return sizeof(raw::Chat);
-	case Auth:
+	case pkg_Auth:
 		return sizeof(raw::Auth);
-	case ClientType:
+	case pkg_ClientType:
 		return sizeof(raw::ClientType);
-	case Version:
+	case pkg_Version:
 		return sizeof(raw::Version);
-	case PlayerID:
+	case pkg_PlayerID:
 		return sizeof(raw::PlayerID);
-	case Animation:
+	case pkg_Animation:
 		return sizeof(raw::Animation);
-	case Equip:
+	case pkg_Equip:
 		return sizeof(raw::Equip);
 	default:
 		throw std::logic_error("Invalid Chunk Type!");
 	}
 }
-size_t HandleChunk(NetworkConnection *net,EntityManager *ent,raw::Chunk *chunk,char *end)
-{
-	if(!net->GetPermissions().Match(chunk->formID,chunk->chunkType))
-		throw ProtocolSecurityExcpetion(net,chunk->chunkType);
-	switch(chunk->chunkType)
-	{
-	case ActorValue:
-		return reinterpret_cast<raw::ActorValue*>(chunk)->Handle(net,ent,end);
-	case ActorValueMod:
-		return reinterpret_cast<raw::ActorValueMod*>(chunk)->Handle(net,ent,end);
-	case Animation:
-		return reinterpret_cast<raw::Animation*>(chunk)->Handle(net,ent,end);
-	case Auth:
-		return reinterpret_cast<raw::Auth*>(chunk)->Handle(net,ent,end);
-	case CellID:
-		return reinterpret_cast<raw::CellID*>(chunk)->Handle(net,ent,end);
-	case Chat:
-		return reinterpret_cast<raw::Chat*>(chunk)->Handle(net,ent,end);
-	case Class:
-		return reinterpret_cast<raw::Class*>(chunk)->Handle(net,ent,end);
-	case ClientType:
-		return reinterpret_cast<raw::ClientType*>(chunk)->Handle(net,ent,end);
-	case Equip:
-		return reinterpret_cast<raw::Equip*>(chunk)->Handle(net,ent,end);
-	case Name:
-		return reinterpret_cast<raw::Name*>(chunk)->Handle(net,ent,end);	
-	case PlayerID:
-		return reinterpret_cast<raw::PlayerID*>(chunk)->Handle(net,ent,end);
-	case Position:
-		return reinterpret_cast<raw::Position*>(chunk)->Handle(net,ent,end);
-	case Race:
-		return reinterpret_cast<raw::Race*>(chunk)->Handle(net,ent,end);
-	case Version:
-		return reinterpret_cast<raw::Version*>(chunk)->Handle(net,ent,end);
-	default: 
-		return 0;
-	}
-}
-
+size_t HandleChunk(NetworkConnection *net,EntityManager *ent,const raw::Chunk *chunk,const char *end);
 #define GAME_OBLIVION 1
 #define GAME_FALLOUT3 2
+
+struct ChunkPermissions
+{
+	EntityPermission AV;
+	EntityPermission Position;
+	EntityPermission other;
+	bool Match(UINT32 id,PkgChunk t) const 
+	{
+		switch (t)
+		{
+		case pkg_ActorValue:
+			return AV == id;
+		case pkg_Position:
+		case pkg_Animation:
+			return Position == id;
+		default:
+			return other == id;
+		}
+	}
+	bool Match(Entity *ID,PkgChunk t)const
+	{
+		return Match(ID->RefID(),t);
+	}
+	ChunkPermissions(): AV(0,1),Position(0,1),other(0,1) // Keine schreibrechte 
+	{
+	}
+};

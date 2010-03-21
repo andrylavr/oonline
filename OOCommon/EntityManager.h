@@ -17,7 +17,6 @@ GNU Affero General Public License for more details.
 #include <boost/thread/thread.hpp>
 #include <boost/tr1/tr1/unordered_map>
 #include "GlobalDefines.h"
-#include "Packets.h"
 #include "EntityUpdateManager.h"
 #ifndef OO_USE_HASHMAP	//Slower and more secure 
 #include <map>
@@ -32,15 +31,9 @@ OO_API class EntityManager
 {	
 protected:
 	boost::mutex lock;
-#ifndef OO_USE_HASHMAP	
-	std::map<UINT32,Entity *> m_entities; //Includes actors
-#else
-	OOHashTable m_entities;
-
-#endif
+	std::map<UINT32,Entity *> m_entities;
 	IOStream *m_IO;
 	EntityUpdateManager *m_updatemgr;
-	virtual Entity *CreateEntity(UINT32 RefID);
 public:
 	const map<UINT32,Entity *>::const_iterator BeginObjects()
 	{

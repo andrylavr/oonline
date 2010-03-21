@@ -108,28 +108,25 @@ public:
 
 	inline bool RegisterIOProvider(IOProvider *provider)
 	{
-		return m_system.RegisterIOProvider(provider);
+		return IOSystem::Instance().RegisterIOProvider(provider);
 	}
 	inline bool RemoveIOProvider(IOProvider *provider)
 	{
-		return m_system.RemoveIOProvider(provider);
+		return IOSystem::Instance().RemoveIOProvider(provider);
 	}
 	inline bool RegisterInput(std::string  *Message)
 	{
-		return m_system.RegisterInput(Message);
+		return IOSystem::Instance().RegisterInput(Message);
 	}
 	  // set priority
 	  void SetLogLevel (LogLevel lvl) {
-		  m_system.DefaultLogLevel = lvl; 
+		  IOSystem::Instance().DefaultLogLevel = lvl; 
 	  }
 
 private:
-	IOSystem &m_system;
-	IOStream(): m_system(IOSystem::Instance()),
-		std::ostream(&IOSystem::Instance())
+	IOStream(): std::ostream(&IOSystem::Instance())
 	{
 	}
-	IOStream(const IOStream &other) : m_system(IOSystem::Instance()){}
 };
 inline IOStream& operator<< (IOStream& ls,
 					   LogLevel lvl) 

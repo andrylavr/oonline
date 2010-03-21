@@ -171,6 +171,10 @@
 				RelativePath=".\IOSystem.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TaskHandler.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="include"
@@ -207,6 +211,10 @@
 				RelativePath=".\LogIOProvider.h"
 				>
 			</File>
+			<File
+				RelativePath=".\TaskHandler.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Netcode"
@@ -240,10 +248,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NetworkSystem.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\OutPacket.h"
 				>
 			</File>
@@ -266,38 +270,10 @@
 			<Filter
 				Name="ChunkHandler"
 				>
-				<File
-					RelativePath=".\PositionChunkHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\StatChunkHandler.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="NetSend"
 				>
-				<File
-					RelativePath=".\NetSend.h"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendActorValue.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendChat.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendEquip.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\NetSendPosition.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -59,16 +59,16 @@ public:
 	~OutPacketStream()
 	{
 	}
-	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
+	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ,BYTE *data)
 	{
-		if(!packet.AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+		if(!packet.AddChunk(FormID,Status,ChunkSize,,data))
 		{
 			Send();
 			return true;
 		}
-		if(!packet.AddChunk(FormID,Status,ChunkSize,ChunkType,data))
+		if(!packet.AddChunk(FormID,Status,ChunkSize,,data))
 		{
-			*IO << Error << " Chunk couldn't be written into fresh packet " << ChunkType << endl;
+			*IO << Error << " Chunk couldn't be written into fresh packet " <<  << endl;
 			return false;
 		}
 		return true;

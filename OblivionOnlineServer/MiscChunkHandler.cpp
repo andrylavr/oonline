@@ -51,13 +51,13 @@ size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager *entities,InP
 		//TODO: kick him
 		(*IO)<<SystemMessage<<"Client "<<FormID <<" tried to authenticate with an incorrect version:"<<*chunkdata<<*(chunkdata+1)<<*(chunkdata+2)<< endl;
 	}
-	return GetMinChunkSize(Version) + sizeof(unsigned short);
+	return GetMinChunkSize(pkg_Version) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager *entities,InPacket *pkg,BYTE* chunkdata,size_t len,UINT32 FormID,BYTE Status)
 {
-	return GetMinChunkSize(ClientType);
+	return GetMinChunkSize(pkg_ClientType);
 }
 size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
-	return GetMinChunkSize(PlayerID);
+	return GetMinChunkSize(pkg_PlayerID);
 }

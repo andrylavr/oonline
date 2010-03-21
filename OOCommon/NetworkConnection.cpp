@@ -17,27 +17,22 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-NetworkConnection::NetworkConnection( EntityManager *mgr,SOCKET tcp,boost::function1<void,NetworkConnection *> callback ):sendlock(),recvlock(),tcpsock(tcp),mgr(Manager),activechunk(0)
+#include "NetworkBuffer.h"
+#include "IOSystem.h"
+NetworkConnection::NetworkConnection( EntityManager *manager,SOCKET tcp,void (*callback) (NetworkConnection *)):sendlock(),
+	recvlock(),tcpsock(tcp),mgr(manager),activechunk(0)
 {
 	FD_ZERO(&readSet);
 	FD_ZERO(&writeSet);
 	recvtcp = NetworkBufferManager::Instance().GetNew();
 	sendtcp = NetworkBufferManager::Instance().GetNew();
-	OnDisconnect	+=	boost::bind(callback,this);
+	OnDisconnect.connect(callback);
 }
 NetworkConnection::~NetworkConnection(void)
 {
 	recvtcp->Release();
 	sendtcp->Release();
 }
-NetworkConnection & NetworkConnection::operator<<( NetworkBuffer &nbuf )
-{
-	nbuf.Acquire();
-	
-	nbuf.Release();
-}
-
 bool NetworkConnection::Poll()
 {
 	timeval timeout =
@@ -53,14 +48,14 @@ bool NetworkConnection::Poll()
 	}
 	if(FD_ISSET(tcpsock,&readSet))
 	{
-		boost::lock_guard<boost::mutex> lock(lock);
+		boost::lock_guard<boost::mutex> guard(recvlock);
 		FD_CLR(tcpsock,&readSet);
 		int rc=recv(tcpsock,recvtcp->GetWrite(),recvtcp->size(),0);
 		if(rc<0)	return false; //Socket closed, remov connection	
-		char *end = ParseInput(recvtcp->GetData(),rc);
+		char *end = const_cast<char *>(ParseInput(recvtcp->GetData(),rc)); //It does not point to const memory
 		ptrdiff_t misseddata = rc-(end-recvtcp->GetData());
 		//TODO: introduce zero copy buffering here. Would this be worthwhile?
-		memcpy(recvtcp->GetData(),end,misseddata);// If not all data was parsed, handle the rest
+		memcpy((void*)recvtcp->GetData(),end,misseddata);// If not all data was parsed, handle the rest
 		recvtcp->SetWrite(misseddata);
 	}
 	if(FD_ISSET(tcpsock,&writeSet))
@@ -78,21 +73,21 @@ bool NetworkConnection::Process()
 {
 	if(!Poll())
 	{
-		OnDisconnect();
+		OnDisconnect(this);
 		return false;
 	}
 	return true;
 }
 
-char * NetworkConnection::ParseInput( char *data,int datasize ) // returns last byte or NULL to drop connection
+const char * NetworkConnection::ParseInput(const char *data,int datasize ) // returns last byte or NULL to drop connection
 {
-	char *end=data+datasize;
+	const char *end=data+datasize;
 	assert(datasize > 0);
 	try
 	{
 		while(data<end)
 		{ 
-			size_t offset = HandleChunk(this,mgr,reinterpret_cast<raw::Chunk *>(data),end);
+			size_t offset = HandleChunk(this,mgr,reinterpret_cast<const raw::Chunk *>(data),end);
 			if(!offset){
 				break; // Stop parsing this packet. ( Not enough data for all chunks )
 			}
@@ -107,14 +102,14 @@ char * NetworkConnection::ParseInput( char *data,int datasize ) // returns last 
 }
 char * NetworkConnection::GetChunkSpace( bool Reliable,int size )
 {
-	boost::lock_guard<boost::mutex> guard(sendlock);
+	boost::unique_lock <boost::mutex> guard(sendlock);
 	if(size > sendtcp->size())
 	{
 			return NULL;
 	}
 	if(size > sendtcp->remaining())
 	{
-		assert(chunks>0)
+		assert(chunks>0);
 		while(activechunk > 0)
 			readytosend.wait(guard);
 		Send();

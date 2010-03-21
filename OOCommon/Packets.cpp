@@ -38,124 +38,165 @@ forward this exception.
 // Contains chunk handling functions
 #include "GlobalDefines.h"
 #include "Packets.h"
-size_t raw::Position::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+#include "NetworkConnection.h"
+size_t raw::Position::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Position ==  header.chunkType);
+	assert(pkg_Position ==  header.ChunkType);
 	Entity *ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->Move(PosX,PosY,PosZ,true);
 	return sizeof(*this);
 }
 
-size_t raw::CellID::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::CellID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::CellID == header.chunkType);
+	assert(pkg_CellID == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetCell(cellID,WorldID,true);
 	return sizeof(*this);
 }
-size_t raw::Race::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Race::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Race == header.chunkType);
-	Entity * ent=manager->GetOrCreateEntity(header.formID);
+	assert(pkg_Race == header.ChunkType);
+	Entity * ent= manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetRace(Value,true);
 	return sizeof(*this);
 }
-size_t raw::Class::Handle(NetworkConnection *who,EntityManager *manager,char *DataEnd)
+size_t raw::Class::Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const
 {
-	assert(ChunkType::Class == header.chunkType);
+	assert(pkg_Class == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->SetClassName(Name.GetData(),true);
-	return sizeof(*this)+Name.Size();
+	ent->SetClassName(Name.GetData(DataEnd),true);
+	return sizeof(*this)+Name.Size(DataEnd);
 }
 
-size_t raw::Name::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Name::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Name == header.chunkType);
+	assert(pkg_Name == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->SetName(Value.GetData(),true);
-	return sizeof(*this)+Value.Size();
+	ent->SetName(Value.GetData(DataEnd),true);
+	return sizeof(*this)+Value.Size(DataEnd);
 }
 
-size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::ActorValue== header.chunkType);
+	assert(pkg_ActorValue== header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetActorValue(code,Value);
 	return sizeof(*this);
 }
 
-size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::ActorValueMod == header.chunkType);
+	assert(pkg_ActorValueMod == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetActorValueMod(code,Value);
 	return sizeof(*this);
 }
 
-size_t raw::Equip::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Equip::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Equip == header.chunkType);
+	assert(pkg_Equip == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetEquip(slot,Value,true);
 	return sizeof(*this);
 }
 
-size_t raw::Chat::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Chat::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Chat == header.chunkType);
+	assert(pkg_Chat == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->Chat(Message.GetData(),true);
-	return sizeof(*this)+Message.Size();
+	manager->GetUpdateMgr()->Chat(ent,Message.GetData(DataEnd),true);
+	return sizeof(*this)+Message.Size(DataEnd);
 }
 
-size_t raw::Auth::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Auth::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Auth == header.chunkType);
+	assert(pkg_Auth == header.ChunkType);
 	return sizeof(*this);
 }
 
-size_t raw::Animation::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Animation::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Animation == header.chunkType);
+	assert(pkg_Animation == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetAnimation(AnimationGroup,true,true);//TODO: refactor
 	return sizeof(*this);
 }
 
-size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::ClientType == header.chunkType);
+	assert(pkg_ClientType == header.ChunkType);
 	assert(0); // Not implemented
 	return sizeof(*this);
 }
 
-size_t raw::Version::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::Version::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	assert(ChunkType::Version == header.chunkType);
+	assert(pkg_Version == header.ChunkType);
 	if(super!=VERSION_SUPER|| minor!=VERSION_MINOR|| major!=VERSION_MAJOR) return NULL; // Drop if version missmatch
-	return sizeof(*this)+Value.Size();
+	return sizeof(*this);
 }
 
-size_t raw::PlayerID::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::PlayerID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
+	return NULL;
 }
 
-size_t raw::RPCRequest::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::RPCRequest::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-
+	return NULL;
 }
 
-size_t raw::RPCReply::Handle( NetworkConnection *who,EntityManager *manager,char *DataEnd )
+size_t raw::RPCReply::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd ) const
 {
+	return NULL;
+}
 
+size_t HandleChunk( NetworkConnection *net,EntityManager *ent,const raw::Chunk *chunk,const char *end )
+{
+	if(!net->GetPermissions().Match(chunk->formID,chunk->ChunkType))
+			throw ProtocolSecurityExcpetion(net,chunk->ChunkType);
+		switch(chunk->ChunkType)
+		{
+		case pkg_ActorValue:
+			return reinterpret_cast<const raw::ActorValue*>(chunk)->Handle(net,ent,end);
+		case pkg_ActorValueMod:
+			return reinterpret_cast<const raw::ActorValueMod*>(chunk)->Handle(net,ent,end);
+		case pkg_Animation:
+			return reinterpret_cast<const raw::Animation*>(chunk)->Handle(net,ent,end);
+		case pkg_Auth:
+			return reinterpret_cast<const raw::Auth*>(chunk)->Handle(net,ent,end);
+		case pkg_CellID:
+			return reinterpret_cast<const raw::CellID*>(chunk)->Handle(net,ent,end);
+		case pkg_Chat:
+			return reinterpret_cast<const raw::Chat*>(chunk)->Handle(net,ent,end);
+		case pkg_Class:
+			return reinterpret_cast<const raw::Class*>(chunk)->Handle(net,ent,end);
+		case pkg_ClientType:
+			return reinterpret_cast<const raw::ClientType*>(chunk)->Handle(net,ent,end);
+		case pkg_Equip:
+			return reinterpret_cast<const raw::Equip*>(chunk)->Handle(net,ent,end);
+		case pkg_Name:
+			return reinterpret_cast<const raw::Name*>(chunk)->Handle(net,ent,end);	
+		case pkg_PlayerID:
+			return reinterpret_cast<const raw::PlayerID*>(chunk)->Handle(net,ent,end);
+		case pkg_Position:
+			return reinterpret_cast<const raw::Position*>(chunk)->Handle(net,ent,end);
+		case pkg_Race:
+			return reinterpret_cast<const raw::Race*>(chunk)->Handle(net,ent,end);
+		case pkg_Version:
+			return reinterpret_cast<const raw::Version*>(chunk)->Handle(net,ent,end);
+		default: 
+			return 0;
+		}
 }

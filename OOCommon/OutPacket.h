@@ -149,7 +149,7 @@ public:
 		m_ObjectsWritten = 0;
 		SendTimer = clock() + RESEND_TICK;
 	}
-	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data)
+	inline bool AddChunk(UINT32 FormID,BYTE Status,size_t ChunkSize,PkgChunk ,BYTE *data)
 	{
 		if(*m_Chunks_written >= 0xff) // TOO many chunks
 			return false;
@@ -158,10 +158,10 @@ public:
 		BYTE ObjectID = GetObjectID(FormID,Status);
 		if( ObjectID == MAX_OBJECTS_PER_PACKET)
 			return false; // TOO many objects or too less space
-		WriteWord(((UINT16)ChunkType & CHUNKMASK)|(ObjectID & OBJECTMASK));
+		WriteWord(((UINT16) & CHUNKMASK)|(ObjectID & OBJECTMASK));
 		Write(ChunkSize,data);
 		(*m_Chunks_written)++;
-		if(RequiresReliable(ChunkType))
+		if(RequiresReliable())
 			m_Reliable = true;
 		return true;
 	}

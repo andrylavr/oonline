@@ -62,7 +62,7 @@ size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InP
 	if(bUIInitialized)
 		SetConnectionMessage("Good to go");
 	//NetSendName(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
-	return GetMinChunkSize(PlayerID) + sizeof(unsigned short);
+	return GetMinChunkSize(pkg_PlayerID) + sizeof(unsigned short);
 }
 size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
@@ -78,5 +78,5 @@ size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager*entities,I
 		gClient->GetIO() << GameMessage << "Received Passive Client" << endl;
 		Console_Print("Passive Client");
 	}
-	return GetMinChunkSize(ClientType) + sizeof(unsigned short);
+	return GetMinChunkSize(pkg_ClientType) + sizeof(unsigned short);
 }

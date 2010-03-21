@@ -18,8 +18,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "Entity.h"
 class NetworkBuffer;
+class EntityManager;
+#include "Packets.h"
 class NetworkConnection  
 { 
 	boost::mutex recvlock,sendlock;
@@ -34,12 +35,12 @@ class NetworkConnection
 	FD_SET writeSet;
 	int activechunk; // Number of active chunks, must be zero
 	int chunks;
-	void ParseInput(char *data,int datasize);
+	const char * ParseInput(const char *data,int datasize);
 	bool Poll(); // Poll this network connection for any inbound traffic.
 	bool Send();
 public:
-	boost::signal OnDisconnect;
-	NetworkConnection(EntityManager *mgr,SOCKET tcp,boost::function1<void,NetworkConnection *> callback);
+	boost::signal<void(NetworkConnection*) > OnDisconnect;
+	NetworkConnection(EntityManager *mgr,SOCKET tcp,void (*callback) (NetworkConnection *));
 	~NetworkConnection(void);
 	char *GetChunkSpace(bool Reliable,int size); // Only to be called from chunk constructor.
 	void ChunkFinish();
@@ -48,9 +49,8 @@ public:
 };
 class BadProtocolException :public  std::runtime_error
 {
-	BadProtocolException():std::runtime_error("An error was encountered parsing a packet.");
-};
-class ProtocolSecurityExcpetion : public std::runtime_error
-{
-	ProtocolSecurityExcpetion(NetworkConnection *who,PkgChunk t): std::runtime_error("A protocol security violation was detected. Unauthorized Chunk.");
+	BadProtocolException():std::runtime_error("An error was encountered parsing a packet.")
+	{
+
+	}
 };

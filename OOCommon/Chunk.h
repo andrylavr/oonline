@@ -22,7 +22,7 @@ protected:
 	rawCHUNK *data;
 	Chunk(NetworkConnection *buf,rawCHUNK *Data,UINT32 FormID):BaseChunk(buf),data(Data);
 	{
-		data->header.chunkType = rawCHUNK::Type;
+		data->header. = rawCHUNK::Type;
 		data->formID = FormID;
 	}
 	~Chunk()

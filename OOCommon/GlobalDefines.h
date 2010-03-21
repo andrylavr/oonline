@@ -21,8 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _GLOBAL_DEFINES_H
 
 #include <boost/thread.hpp>
+#include <boost/thread/locks.hpp>
+#include <boost/signal.hpp>
 #include <string>
 #include <cstring>
+#include <algorithm>
 #include <stdlib.h>
 #define VERSION_SUPER 0
 #define VERSION_MAJOR 4

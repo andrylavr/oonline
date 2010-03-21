@@ -50,18 +50,8 @@ bool EntityManager::DeleteEntities()
 bool EntityManager::DeRegisterEntity(Entity *Entity)
 {
 	lock.lock();
-#ifndef OO_USE_HASHMAP
-	if(Entity->Status())
-		m_players.erase(Entity->RefID());
-	else
-		m_entities.erase(Entity->RefID());
-#else
-	if(Entity->Status())
-		m_players.Remove(Entity);
-	else
-		m_entities.Remove(Entity);
-#endif	
-	lock.lock();
+	m_entities.erase(Entity->RefID());
+	lock.unlock();
 	return true;	
 }
 
@@ -74,19 +64,14 @@ Entity * EntityManager::GetEntity(UINT32 RefID )
 	return NULL;
 }
 
-Entity *EntityManager::GetOrCreateEntity( BYTE Status,UINT32 RefID )
+Entity *EntityManager::GetOrCreateEntity(UINT32 RefID )
 {
-	Entity * retval = GetEntity(Status,RefID);
+	Entity * retval = GetEntity(RefID);
 	if(!retval)
 	{
-		retval = CreateEntity(Status,RefID);
+		retval = new Entity(this,RefID);
 		if(!retval)
 			throw std::runtime_error("Out of Memory");
 	}
 	return retval;
-}
-
-Entity * EntityManager::CreateEntity( UINT32 RefID )
-{
-	return new Entity(this,RefID);
 }

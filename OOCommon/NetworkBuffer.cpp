@@ -1,18 +1,14 @@
 #include "NetworkBuffer.h"
 
-NetworkBuffer::NetworkBuffer(void)
-{
-	SetWrite(0);
-}
-
+NetworkBufferManager  NetworkBufferManager::_inst = NetworkBufferManager();
 NetworkBuffer::NetworkBuffer() :data(),refcount(0)
 {
-
+	SetWrite(0);
 }
 void NetworkBufferManager::Release( NetworkBuffer * buffer )
 {
 	assert(buffer->refcount <=0);
-	boost::lock_guard<boost::mutex>(_queuelock);
+	boost::lock_guard<boost::mutex> guard(_queuelock);
 	std::set<NetworkBuffer *>::iterator i = _inuse.find(buffer);
 	assert(i!= _inuse.end());
 	_inuse.erase(i);
@@ -31,7 +27,7 @@ NetworkBuffer * NetworkBufferManager::GetNew()
 }
 NetworkBufferManager::NetworkBufferManager():_inuse(),_free(),_queuelock()
 {
-	boost::lock_guard<boost::mutex>(_queuelock);
+	boost::lock_guard<boost::mutex> guard(_queuelock);
 	for(int i=0;i<minbuffers;i++)
 		_free.push(new NetworkBuffer);
 };

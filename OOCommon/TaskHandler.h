@@ -1,4 +1,5 @@
 #pragma once
+#
 /*
 This file is part of OblivionOnline Server- An open source game server for the OblivionOnline mod
 Copyright (C)  2008   Julian Bangert
@@ -17,54 +18,37 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef GAMESERVER_H
-#define GAMESERVER_H
-#include "IOSystem.h"
+#define DEFAULT_NUMBER_OF_THREADS 4
 #include "GlobalDefines.h"
-#include "EntityManager.h"
-
-class LuaSystem;
-class NetworkSystem;
-class ModuleManager;
-class RemoteAdminServer;
-class GameServer
+#include "threadpool.hpp"
+class TaskHandler
 {
+	static TaskHandler _instance;
+	TaskHandler(void);
+	~TaskHandler(void);
+	TaskHandler(const TaskHandler &other);
+	boost::threadpool::pool pool; 
+	/*static bool EndlessTrampoline(boost::function0<void> &t)
+	{
+		t();
+		return true;
+	} */
 public:
-	GameServer(void);
-	~GameServer(void);
-	void RunServer();
-	IOStream & GetIO()
+	static TaskHandler & Instance()
 	{
-		return IOStream::Instance();
+		return _instance;		
 	}
-	EventSystem *GetEventSys()
+	void ScheduleOnce(boost::function0<void> &Task)
 	{
-		return m_Evt;
+		pool.schedule(Task);
 	}
-	LuaSystem *GetLua()
+	void ScheduleLoop(boost::function0<bool> &LoopTask,unsigned int mininterval)
 	{
-		return m_script;
+		pool.schedule(boost::threadpool::looped_task_func(LoopTask,mininterval));
 	}
-	EntityManager *GetEntities()
+	/*
+	void ScheduleEndlessLoop(boost::function0<void> &LoopTask,unsigned int mininterval)
 	{
-		return m_Entities;
-	}
-	NetworkSystem *GetNetwork()
-	{
-		return m_Netsystem;
-	}
-	ModuleManager *GetModules()
-	{
-		return m_Modules;
-	}
-	OO_API void DisplayBootupMessage();
-protected:
-	int m_tickrate; /*TODO add a way to update this from lua*/
-	LuaSystem *m_script;
-	EventSystem *m_Evt;
-	EntityManager *m_Entities;
-	NetworkSystem *m_Netsystem;
-	ModuleManager *m_Modules;
-	RemoteAdminServer *m_Admin;
+		pool.schedule(boost::threadpool::looped_task_func(boost::bind(EndlessTrampoline,LoopTask),mininterval );
+	}*/
 };
-#endif

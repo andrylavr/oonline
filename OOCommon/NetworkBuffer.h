@@ -9,7 +9,7 @@ class NetworkBufferManager
 {
 	static const int minbuffers = 100;
 	boost::mutex _queuelock;
-	static NetworkBufferManager *_inst=NULL;
+	static NetworkBufferManager _inst;
 	std::set<NetworkBuffer *> _inuse;
 	std::queue<NetworkBuffer *> _free;
 public:
@@ -17,7 +17,7 @@ public:
 	~NetworkBufferManager(void);
 	static NetworkBufferManager & Instance()
 	{
-		if(!_inst) _inst =new NetworkBufferManager();
+		//if(!_inst) _inst =new NetworkBufferManager();
 		return _inst;
 	}
 	void Release(NetworkBuffer * buffer);
@@ -37,7 +37,7 @@ public:
 		if(--refcount<=0){
 			refcount=0;
 			write=data;
-			NetworkBufferManager::Instance()->Release(this):
+			NetworkBufferManager::Instance().Release(this);
 		}
 	}
 	void Acquire()

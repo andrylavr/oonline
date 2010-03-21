@@ -19,10 +19,10 @@ GNU General Public License for more details.
 void Entity::SetCell( UINT32 value,UINT32 World,bool Inbound /*= false*/ )
 {
 	lock.lock();
-	if(CellID() != value || m_World != World)
+	if(CellID() != value || m_WorldID != World)
 	{
 		UINT32 oldvalue = m_CellID;
-		_SetCell(value,IsInInterior);
+		_SetCell(value,World);
 		m_mgr->GetUpdateMgr()->OnCellChange(this,oldvalue,Inbound);
 	}
 	lock.unlock();
@@ -74,7 +74,6 @@ void Entity::_SetEquip( BYTE slot,UINT32 value )
 	if(slot < MAX_EQUIPSLOTS)
 	{
 		m_Equip[slot ] = value;
-		m_EquipChanged[slot]  = true;
 	}
 }
 
@@ -218,7 +217,43 @@ void Entity::_SetAnimation( BYTE AnimationNo,bool Status )
 		m_AnimationStatus[AnimationNo] = Status;
 }
 
-bool EntityPermission::operator==( Entity *ent )
+Entity::~Entity()
+{
+	m_mgr->DeRegisterEntity(this);
+}
+
+Entity::Entity( EntityManager *mgr,UINT32 refID, bool TriggerEvents /*= false*/,bool GlobalSynch/*= false*/, float posX /*= 0 */, float posY /*= 0 */, float posZ /*= 0*/,UINT32 CellID /*= 0*/,UINT32 WorldID /*=0*/, float rotX /*= 0 */, float rotY /*= 0 */, float rotZ /*= 0*/,short health /*= 0*/,short magicka /*= 0 */, short fatigue /*= 0 */, bool female /*= false*/,UINT32 race /*= 0*/,std::string name /*= std::string("Unnamed")*/,std::string classname /*= std::string("")*/ ) :
+lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
+EventLifeChange()		//,m_Class(classname)
+{
+	lock.lock();
+	m_mgr = mgr;
+	m_RefID = refID;
+	m_PosX = posX;
+	m_PosY = posY;
+	m_PosZ = posZ;
+	m_RotX = rotX;
+	m_RotY = rotY;
+	m_RotZ = rotZ;
+	m_CellID = CellID;
+	m_GlobalSynch = true;
+	m_TriggerEvents = TriggerEvents;
+	m_Female = female;
+	m_Race = race;
+	//m_Name = name;
+	//m_Class = classname;
+	m_WorldID = WorldID;
+	memset(m_ActorValues,0,72*sizeof(short));
+	memset(m_AnimationStatus,0,43*sizeof(BYTE));
+	m_mgr->RegisterEntity(this);
+	lock.unlock();
+}
+
+void Entity::_SetActorValueMod( BYTE ActorValue,short Mod )
+{
+	m_ActorValueMod[ActorValue] = Mod;
+}
+bool EntityPermission::operator==( Entity *ent ) const
 {
 	return (*this) == ent->RefID();
 }

@@ -27,7 +27,7 @@ class LogIOProvider :
 public:
 	LogIOProvider(IOSystem *parent,LogLevel threshold, std::string FileName): IOProvider(parent)
 	{
-		FILE = fopen(FileName.c_str(),"w");
+		FILE *File= fopen(FileName.c_str(),"w");
 		if(File)
 		{
 			time_t timestamp = time(NULL);

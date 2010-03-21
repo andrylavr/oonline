@@ -229,7 +229,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	 m_AddressPlayer[addr.sin_addr.s_addr] = ID;
 	 m_TCPSockets[ID] = TCPSock;
 	 m_OutPackets[ID] = new OutPacket();	
-	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(PlayerID),PlayerID,(BYTE *)&ID);
+	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(pkg_PlayerID),pkg_PlayerID,(BYTE *)&ID);
 	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
 	 m_GS->GetIO()<<GameMessage<< "New player" << ID << "joined from address"<< inet_ntoa(addr.sin_addr) << ":" <<ntohs(addr.sin_port)<<endl;
 	 if(m_MasterClientDefined == 0)
@@ -238,7 +238,7 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 		 masterclient = 1;
 		 m_MasterClient = ID;
 		 m_GS->GetIO()<<GameMessage<<"Selected new master client"<<ID<<endl;
-		 m_OutPackets[ID]->AddChunk(ID,STATUS_PLAYER,GetMinChunkSize(ClientType),ClientType,(BYTE *)&masterclient);
+		 m_OutPackets[ID]->AddChunk(ID,STATUS_PLAYER,GetMinChunkSize(pkg_ClientType),pkg_ClientType,(BYTE *)&masterclient);
 	 }
 	 m_GS->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,ID);
 	 Send(ID);
@@ -304,7 +304,7 @@ bool NetworkSystem::PlayerDisconnect( UINT32 ID )
 		if(GetPlayerCount() > 0) // We have already reduced it
 		{
 			m_MasterClient = m_OutPackets.begin()->first;
-			m_OutPackets.begin()->second->AddChunk(m_MasterClient,true,GetMinChunkSize(ClientType),ClientType,&masterclient);
+			m_OutPackets.begin()->second->AddChunk(m_MasterClient,true,GetMinChunkSize(pkg_ClientType),pkg_ClientType,&masterclient);
 			Send( m_OutPackets.begin()->first);
 			m_GS->GetIO()<<GameMessage<<"Selected new master client"<<m_MasterClient<<endl;
 		}
@@ -335,14 +335,14 @@ bool NetworkSystem::Send( UINT32 PlayerID )
 	return retval;
 }
 
-bool NetworkSystem::SendChunk( UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data )
+bool NetworkSystem::SendChunk( UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ,BYTE *data )
 {
 	OutPacket *packet = m_OutPackets[PlayerID];
 	bool retVal;
 	if(packet == NULL)
 		return false; //TODO: Report bug
 
-	retVal = packet->AddChunk(FormID,status,ChunkSize,ChunkType,data);
+	retVal = packet->AddChunk(FormID,status,ChunkSize,,data);
 	if( !retVal|| 
 		clock() >= packet->SendTimer )	
 	{
@@ -350,7 +350,7 @@ bool NetworkSystem::SendChunk( UINT32 PlayerID,UINT32 FormID,BYTE status,size_t 
 	}
 	if(!retVal)
 	{
-		if(packet->AddChunk(FormID,status,ChunkSize,ChunkType,data) == true)
+		if(packet->AddChunk(FormID,status,ChunkSize,,data) == true)
 			return true;
 		else 
 			return false;

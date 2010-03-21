@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <map>
 #include <ctime>
-#include "ChunkHandler.h"
 #include "GameServer.h"
 class NetworkSystem
 {
@@ -59,7 +58,7 @@ public:
 	}
 	UINT32 AddNewPlayer(SOCKADDR_IN addr,SOCKET TCPSock);
 	bool PlayerDisconnect(UINT32 ID);
-	bool SendChunk(UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ChunkType,BYTE *data);
+	bool SendChunk(UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ,BYTE *data);
 	bool Send(UINT32 PlayerID);
 	bool RegisterTraffic(UINT32 PlayerID,size_t size,BYTE *data,bool reliable);
 	//TODO : Place these in  a callback ?
