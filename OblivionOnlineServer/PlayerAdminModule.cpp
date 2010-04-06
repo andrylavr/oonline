@@ -16,12 +16,13 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include "boost/foreach.hpp"
+#include "PlayerManager.h"
 #include "ModuleManager.h"
 #include "CoreAdminModules.h"
 
 #include "GameServer.h"
-#include "Entity.h"
+#include "Player.h"
  const char *PlayerAdminModule::GetDisplayName()
 {
 	return "Players";
@@ -39,21 +40,18 @@ std::string * PlayerAdminModule::GetData(std::list<std::string> *parameters)
 	std::string *retval = new std::string();
 	//TODO: Add Private messaging and kicking players
 	*retval = "<div align=\"center\"><strong>Players</strong><table><tr><td>ID</td><td>Name</td><td>IP</td><td></td><td></td></tr>";
-	std::map<UINT32,Entity *>::const_iterator iter =  m_gs->GetEntities()->GetPlayerList().begin();
-	std::map<UINT32,Entity *>::const_iterator end=  m_gs->GetEntities()->GetPlayerList().end();
-	while(iter != end)
+	BOOST_FOREACH(Player *p,*m_gs->GetPlayerManager())
 	{
 		*retval += "<tr><td>";
-		*retval += (*iter->second).RefID();
+		*retval += p->RefID();
 		*retval += "</td><td>";
-		*retval += (*iter->second).Name();
+		*retval += p->Name();
 		*retval += "</td><td>";
 		*retval += "</td><td> <a href=\"players,kick,";
-		*retval += (*iter->second).RefID();
+		*retval += p->RefID();
 
 		*retval += "\"></td><td>";
 		*retval += " </td></tr>";
-		iter++;
 	}
 	*retval += "</table>";
 	return retval;

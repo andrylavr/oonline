@@ -17,19 +17,19 @@
 //*/
 #include "FakeClient.h"
 #if 0
-size_t ChunkHandler::HandleChatChunk(IOStream *IO,EntityManager *entities,InPacket *packet, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleChatChunk(IOStream &IOStream::Instance(),EntityManager *entities,InPacket *packet, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 { 
-	(*IO) << Chat << (char *)(chunkdata +2 + sizeof(unsigned short));
+	(&IOStream::Instance()) << Chat << (char *)(chunkdata +2 + sizeof(unsigned short));
 	return (sizeof(unsigned short)+ sizeof(unsigned short) + sizeof(unsigned short) + (len < *(unsigned short *)(chunkdata +2) ) ? (len) : *(unsigned short *)(chunkdata +2));
 }
-size_t ChunkHandler::HandlePlayerIDChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandlePlayerIDChunk(IOStream &IOStream::Instance(),EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	g_fake->SetPlayerID(*(UINT32 *)(chunkdata + 2));
-	*IO << GameMessage << "Player No " << *(UINT32 *)(chunkdata + 2) << endl;
+	&IOStream::Instance() << GameMessage << "Player No " << *(UINT32 *)(chunkdata + 2) << endl;
 	//NetSendName(outnet.GetPacket(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)(*g_thePlayer)->GetName(),strlen((*g_thePlayer)->GetName()));
 	return GetMinChunkSize(PlayerID) + sizeof(unsigned short);
 }
-size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleClientTypeChunk(IOStream &IOStream::Instance(),EntityManager*entities,InPacket *pkg, BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	if((chunkdata + 2) > 0)
 	{
@@ -43,7 +43,7 @@ size_t ChunkHandler::HandleClientTypeChunk(IOStream *IO,EntityManager*entities,I
 	}
 	return GetMinChunkSize(ClientType) + sizeof(unsigned short);
 }
-size_t ChunkHandler::HandleVersionChunk(IOStream *IO,EntityManager*entities,InPacket *pkg,BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
+size_t ChunkHandler::HandleVersionChunk(IOStream &IOStream::Instance(),EntityManager*entities,InPacket *pkg,BYTE* chunkdata,size_t len ,UINT32 FormID,BYTE Status)
 {
 	return GetMinChunkSize(PkgChunk::Version) + sizeof(unsigned short);
 }

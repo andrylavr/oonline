@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "LuaSystem.h"
 #include "DefaultSettings.h"
 #include "ModuleManager.h"
+#include "PlayerManager.h"
 int oolua_LoadModule(lua_State *state)
 {
 	const char *buf;
@@ -37,6 +38,29 @@ int oolua_LoadModule(lua_State *state)
 	}
 	else
 		return -2;
+}
+int oolua_AddPlayerID(lua_State *state)
+{
+	const char *buf;
+	GameServer *serv;
+	unsigned int PlayerID;
+	buf =  lua_tostring(state,lua_gettop(state));
+	if(!buf)
+		return -1;
+	PlayerID = atol(buf);
+	if(PlayerID == 0)
+		return -2;
+	lua_getglobal(state,"_OOCONTEXT");
+	if(!lua_isuserdata(state,lua_gettop(state)))
+	return 0;
+	serv = (GameServer *)lua_touserdata(state,lua_gettop(state));
+	if(serv)
+	{
+		serv->GetPlayerManager()->AssignPlayerID(PlayerID);
+		return 0;
+	}
+	else
+	return -2;
 }
 LuaSystem::LuaSystem(GameServer *gs) : lock()
 {
@@ -146,12 +170,14 @@ void LuaSystem::SetFunction(std::string Name,lua_CFunction value)
 }
 void LuaSystem::DefaultSettings()
 {
+	luaL_openlibs(m_Lua); //TODO: check if this is "safe"
 	SetInteger("ServicePort",DEFAULT_GAMEPORT);
 	SetInteger("AdminPort",DEFAULT_ADMINPORT);
 	SetInteger("TickRate",DEFAULT_TICKRATE);
 	SetString("Name",DEFAULT_SERVERNAME);
 	SetString("RealmlistURI",DEFAULT_REALMLIST);
 	SetString("Logfile",DEFAULT_LOGFILE);
+	lua_register(m_Lua,"AddPlayerID",oolua_AddPlayerID);
 	lua_pushcfunction(m_Lua,oolua_LoadModule);
 	lua_setglobal(m_Lua,"LoadModule");
 	lua_pushlightuserdata(m_Lua,m_GS);

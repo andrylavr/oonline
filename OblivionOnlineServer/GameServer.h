@@ -27,6 +27,7 @@ class LuaSystem;
 class NetworkSystem;
 class ModuleManager;
 class RemoteAdminServer;
+class PlayerManager;
 class GameServer
 {
 public:
@@ -57,6 +58,10 @@ public:
 	{
 		return m_Modules;
 	}
+	PlayerManager *GetPlayerManager()
+	{
+		return m_Players;
+	}
 	OO_API void DisplayBootupMessage();
 protected:
 	int m_tickrate; /*TODO add a way to update this from lua*/
@@ -66,5 +71,6 @@ protected:
 	NetworkSystem *m_Netsystem;
 	ModuleManager *m_Modules;
 	RemoteAdminServer *m_Admin;
+	PlayerManager *m_Players;
 };
 #endif

@@ -16,7 +16,7 @@ GNU Affero General Public License for more details.
 #pragma once
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 #include "EntityManager.h"
 #include "EntityUpdateManager.h"
 #include <vector>
@@ -55,7 +55,7 @@ private:
 	EntityManager *m_mgr;
 	short m_ActorValues[72];
 	short m_ActorValueMod[72];
-	bool m_AnimationStatus[43];
+	BYTE m_Animation;
 	UINT32 m_Equip[MAX_EQUIPSLOTS]; // Enough
 	float m_PosX,m_PosY,m_PosZ,m_RotX,m_RotY,m_RotZ;
 	UINT32 m_RefID,m_CellID,m_WorldID,m_Race; 
@@ -74,7 +74,7 @@ private:
 	void _SetClassName(std::string Class);
 	void _SetActorValue(BYTE ActorValue,short Value);
 	void _SetActorValueMod(BYTE ActorValue,short Mod);
-	void _SetAnimation(BYTE AnimationNo,bool Status);
+	void _SetAnimation(BYTE Animation);
 public:
 	
 	void Move(float X,float Y,float Z,bool Inbound = false);
@@ -89,7 +89,7 @@ public:
 	void SetClassName(std::string Class,bool Inbound = false);
 	void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false);
 	void SetActorValueMod(BYTE ActorValue,short Mod,bool Inbound = false);
-	void SetAnimation(BYTE AnimationNo,bool Status,bool Inbound = false);
+	void SetAnimation(BYTE AnimationNo,bool Inbound = false);
 	inline std::string Name()
 	{
 		return m_Name;
@@ -113,9 +113,9 @@ public:
 	{
 		return m_RefID;
 	}
-	inline bool IsInInterior()
+	inline UINT32 WorldID()
 	{
-		return m_WorldID==0;
+		return m_WorldID;
 	}
 	inline UINT32 Equip(UINT32 slot)
 	{
@@ -152,9 +152,17 @@ public:
 	{
 		return m_RotZ;
 	};
-	inline signed short ActorValue(BYTE statid)
+	inline signed short BaseActorValue(BYTE statid)
 	{
 		return m_ActorValues[statid];
+	}
+	inline short ActorValueMod(BYTE slot)
+	{
+		return m_ActorValueMod[slot];
+	}
+	inline short EffectiveActorValue(BYTE statid)
+	{
+		return m_ActorValues[statid] + m_ActorValueMod[statid];
 	}
 	inline bool GlobalSynch()
 	{
@@ -164,14 +172,15 @@ public:
 	{
 		return m_Race;
 	}
-	inline bool AnimationStatus(BYTE Status){
-		return m_AnimationStatus[Status];
+	inline BYTE AnimationStatus()
+	{
+		return m_Animation;
 	}
-	boost::signal<void(Entity *)>		EventLifeChange; //   value of Life
-	boost::signal<void(Entity *)>		EventDeath; 
-	boost::signal<void(Entity *)>		EventMagicka; // same as above
-	boost::signal<void(Entity *)>		EventMagickaEmpty; // same as above 
-	boost::signal<void(Entity *)>		EventFatigue; // same as above
-	boost::signal<void(Entity *)>		EventFatigueEmpty; // same as above
-	boost::signal<void(Entity *,std::string *)>	EventChat; // On Chat
+	boost::signals2::signal<void(Entity *)>		EventLifeChange; //   value of Life
+	boost::signals2::signal<void(Entity *)>		EventDeath; 
+	boost::signals2::signal<void(Entity *)>		EventMagicka; // same as above
+	boost::signals2::signal<void(Entity *)>		EventMagickaEmpty; // same as above 
+	boost::signals2::signal<void(Entity *)>		EventFatigue; // same as above
+	boost::signals2::signal<void(Entity *)>		EventFatigueEmpty; // same as above
+	boost::signals2::signal<void(Entity *,std::string *)>	EventChat; // On Chat
 };

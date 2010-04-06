@@ -19,11 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "NetworkBuffer.h"
 #include "IOSystem.h"
-NetworkConnection::NetworkConnection( EntityManager *manager,SOCKET tcp,void (*callback) (NetworkConnection *)):sendlock(),
-	recvlock(),tcpsock(tcp),mgr(manager),activechunk(0)
+#ifdef WIN32
+#define errno WSAGetLastError()
+#endif
+NetworkConnection::NetworkConnection( EntityManager *manager,SOCKET tcp,boost::function<void (NetworkConnection *)> callback):sendlock(),
+	recvlock(),tcpsock(tcp),mgr(manager),activechunk(0),chunks(0)
 {
-	FD_ZERO(&readSet);
-	FD_ZERO(&writeSet);
 	recvtcp = NetworkBufferManager::Instance().GetNew();
 	sendtcp = NetworkBufferManager::Instance().GetNew();
 	OnDisconnect.connect(callback);
@@ -40,8 +41,13 @@ bool NetworkConnection::Poll()
 		0, // sec
 		0 // millisec
 	};
+	fd_set readSet;	
+	fd_set writeSet;
+	FD_ZERO(&readSet);
+	FD_ZERO(&writeSet);
 	FD_SET(tcpsock,&readSet);
-	if(select(0,&readSet,NULL,NULL,&timeout)<0)
+	FD_SET(tcpsock,&writeSet);
+	if(select(0,&readSet,&writeSet,NULL,&timeout)<0)
 	{
 		IOStream::Instance() << Error << "Error calling select()" << errno<<endl;
 		return false;
@@ -71,12 +77,41 @@ bool NetworkConnection::Poll()
 
 bool NetworkConnection::Process()
 {
-	if(!Poll())
+	try
 	{
-		OnDisconnect(this);
+		if(!Poll())
+		{
+			OnDisconnect(this);
+			delete this; // VERY DANGEROUS !!
+			return false;
+		}
+		return true;
+	}
+	catch(std::exception e)
+	{
+		IOStream::Instance() << Error << "An error occured while handling connection data!:"<< e.what()<<endl;
+		try
+		{
+			OnDisconnect(this);
+			delete this; // VERY DANGEROUS !!
+			return false;
+		}
+		catch(std::exception x)
+		{
+			IOStream::Instance() << Error << "An error occured dropping a player connection! Server restart recommended! Error: "<<x.what()<<endl;
+			return false;
+		}
+		catch(...)
+		{
+			IOStream::Instance() << Error << "Bad exception type dropping a player connection!"<<endl;
+			return false;
+		}
+	}
+	catch(...)
+	{
+		IOStream::Instance()<< Error<< "A non std:: exception occured handling connection data! Complain to the developers!"<<endl;
 		return false;
 	}
-	return true;
 }
 
 const char * NetworkConnection::ParseInput(const char *data,int datasize ) // returns last byte or NULL to drop connection
@@ -100,7 +135,7 @@ const char * NetworkConnection::ParseInput(const char *data,int datasize ) // re
 	}
 	return data;
 }
-char * NetworkConnection::GetChunkSpace( bool Reliable,int size )
+char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 {
 	boost::unique_lock <boost::mutex> guard(sendlock);
 	if(size > sendtcp->size())

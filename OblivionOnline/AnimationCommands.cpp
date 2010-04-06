@@ -37,7 +37,6 @@ forward this exception.
 
 #include "main.h"
 #include "ClientEntity.h"
-#include "NetSend.h"
 bool Cmd_MPGetAnimation_Execute (COMMAND_ARGS)
 {
 	UINT32 *refres = (UINT32*) result;

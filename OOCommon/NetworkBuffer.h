@@ -2,7 +2,7 @@
 #include "GlobalDefines.h"
 #include "Packets.h"
 #include <set>
-#include <queue>
+#include <deque>
 #include <boost/thread.hpp>
 class NetworkBuffer;
 class NetworkBufferManager
@@ -11,7 +11,7 @@ class NetworkBufferManager
 	boost::mutex _queuelock;
 	static NetworkBufferManager _inst;
 	std::set<NetworkBuffer *> _inuse;
-	std::queue<NetworkBuffer *> _free;
+	std::deque<NetworkBuffer *> _free;
 public:
 	NetworkBufferManager(void);
 	~NetworkBufferManager(void);

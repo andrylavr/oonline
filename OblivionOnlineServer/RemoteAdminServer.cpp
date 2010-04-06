@@ -39,6 +39,10 @@ RemoteAdminServer::~RemoteAdminServer(void)
 void RemoteAdminServer::Listen(unsigned short port,bool Global)
 {
 	char data[4096];
+#ifdef WIN32
+	WSADATA wsa;
+	WSAStartup(MAKEWORD(2,2),&wsa);
+#endif
 	acceptSocket = socket(AF_INET,SOCK_STREAM,0);
 	SOCKADDR_IN addr;
 	FD_SET fdSet;

@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "EventSystem.h"
 #include "ModuleManager.h"
 #include "RemoteAdminServer.h"
+#include "PlayerManager.h"
 #include "ServerEntityUpdateManager.h"
 #include <string>
 #include <sstream>
@@ -53,21 +54,21 @@ GameServer::GameServer(void)
 	m_script = new LuaSystem(this);
 	m_script->RunStartupScripts("ServerLaunch.lua");
 	m_Evt = new EventSystem(this);
-	IOStream::Instance().RegisterIOProvider(new ScreenIOProvider(m_IOSys,BootMessage));//TODO : Fix that
+	IOStream::Instance().RegisterIOProvider(new ScreenIOProvider(&IOSystem::Instance(),BootMessage));//TODO : Fix that
 	DisplayBootupMessage();
-	IOStream::Instance <<BootMessage<<"Script , Event and Local IO running" << endl;
-	IOStream::Instance <<BootMessage<<"Opening Log file" << endl;
-	IOStream::Instance.RegisterIOProvider(new LogIOProvider(m_IOSys,BootMessage,m_script->GetString("Logfile")));	
+	IOStream::Instance() <<BootMessage<<"Script , Event and Local IO running" << endl;
+	IOStream::Instance() <<BootMessage<<"Opening Log file" << endl;
+	IOStream::Instance().RegisterIOProvider(new LogIOProvider(&IOSystem::Instance(),BootMessage,m_script->GetString("Logfile")));	
 	m_Netsystem = new NetworkSystem(this);
-	m_Entities = new EntityManager(IOStream::Instance );
-	m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Entities,m_Netsystem));
-	m_Netsystem->StartReceiveThreads();
-	IOStream::Instance (new ChatIOProvider(this,m_IOSys));
-	//In this thread we now run the server browser update
+	m_Entities = new EntityManager(&IOStream::Instance() );
+	m_Players = new PlayerManager(m_Entities,m_Netsystem);
+	m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Players,m_Entities,m_Netsystem));
+	IOStream::Instance().RegisterIOProvider(new ChatIOProvider(this,&IOSystem::Instance()));
 	m_Modules = new ModuleManager(this);
 	m_Admin = new RemoteAdminServer(this);
 	m_script->RunScriptLine("OnLoad()");
 	m_Evt->DefaultEvents.EventBoot();
+	m_Netsystem->Start();
 	//m_script->PrintStatistics();
 	//AdvertiseGameServer();
 	
@@ -112,7 +113,7 @@ void GameServer::RunServer()
 
 void GameServer::DisplayBootupMessage()
 {
-	IOStream::Instance  <<BootMessage<< "\nOblivionOnline Server version "<<VERSION_STREAM << "\n (c) 2008 by Julian Bangert \n\n" <<
+	IOStream::Instance()  <<BootMessage<< "\nOblivionOnline Server version "<<VERSION_STREAM << "\n (c) 2008 by Julian Bangert \n\n" <<
 		"This program is free software: you can redistribute it and/or modify\n" <<
 		"it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE as published by the \n" <<
 		"Free Software Foundation, either version 3 of the License, or (at your option) \n" <<
@@ -124,6 +125,6 @@ void GameServer::DisplayBootupMessage()
 		"GNU AFFERO GENERAL PUBLIC LICENSE for more details.\n" <<
 		"You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE\n" <<
 		"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" << endl;
-	IOStream::Instance <<BootMessage<<"Please note that you have to offer the source codes to this server software on the web for the users to download" << endl<<
+	IOStream::Instance() <<BootMessage<<"Please note that you have to offer the source codes to this server software on the web for the users to download" << endl<<
 		"For the official releases this is taken care of at http://googlecode.com/p/oonline/ , however if you modify ANYTHING you have to make the COMPLETE sources(also client, as that client is a derived work of the server) available to the users"<<endl;
 }

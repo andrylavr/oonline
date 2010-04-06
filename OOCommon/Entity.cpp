@@ -38,7 +38,10 @@ void Entity::Move( float X,float Y,float Z,bool Inbound /*= false*/ )
 	}
 	lock.unlock();
 }
-
+void Entity::_SetAnimation(BYTE Animation)
+{
+	m_Animation = Animation;
+}
 void Entity::_Move( float PosX,float PosY,float PosZ )
 {
 	m_PosX = PosX;
@@ -126,7 +129,7 @@ void Entity::SetFemale( bool value,bool Inbound /*= false*/ )
 {
 	lock.lock();
 	_SetFemale(value);
-	m_mgr->GetUpdateMgr()->OnGenderUpdate(this,Inbound);
+	m_mgr->GetUpdateMgr()->OnRaceUpdate(this,Inbound);
 	lock.unlock();
 }
 
@@ -174,48 +177,54 @@ void Entity::SetClassName( std::string Class,bool Inbound /*= false*/ )
 void Entity::SetActorValue( BYTE ActorValue,short Value,bool Inbound /*= false*/ )
 {
 	lock.lock();
-	if(this->ActorValue(ActorValue) != Value)
+	if(this->BaseActorValue(ActorValue) != Value)
 	{
 		_SetActorValue(ActorValue,Value);
 		m_mgr->GetUpdateMgr()->OnAVUpdate(this,ActorValue,Inbound);
-		if(ActorValue == AV_HEALTH)
+		
+	}
+	lock.unlock();
+}
+void Entity::SetActorValueMod( BYTE ActorValue,short Mod,bool Inbound /*= false*/ )
+{
+	lock.lock();
+	if(ActorValueMod(ActorValue) != Mod)
+	{
+		_SetActorValueMod(ActorValue,Mod);
+		m_mgr->GetUpdateMgr()->OnAVModUpdate(this,ActorValue,Inbound);
+	if(ActorValue == AV_HEALTH)
 		{
 			EventLifeChange(this);
-			if(Value <= 0)
+			if(EffectiveActorValue(AV_HEALTH) <= 0)
 				EventDeath(this);
 		}
 		else if(ActorValue == AV_MAGICKA)
 		{
 			EventMagicka(this);
-			if(Value <= 0)
+			if(EffectiveActorValue(AV_MAGICKA) <= 0)
 				EventMagickaEmpty(this);
 		}
 		else if(ActorValue == AV_FATIGUE)
 		{
 			EventFatigue(this);
-			if(Value <= 0)
+			if(EffectiveActorValue(AV_FATIGUE) <= 0)
 				EventFatigueEmpty(this);
 		}
 	}
 	lock.unlock();
 }
 
-void Entity::SetAnimation( BYTE AnimationNo,bool Status,bool Inbound /*= false*/ )
+void Entity::SetAnimation( BYTE Animation,bool Inbound /*= false*/ )
 {
 	lock.lock();
-	if(AnimationStatus(AnimationNo) != Status)
+	if(AnimationStatus() != Animation)
 	{
-		_SetAnimation(AnimationNo,Status);
-		m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,AnimationNo,Inbound);
+		_SetAnimation(Animation);
+		m_mgr->GetUpdateMgr()->OnAnimationUpdate(this,Inbound);
 	}		
 	lock.unlock();
 }
 
-void Entity::_SetAnimation( BYTE AnimationNo,bool Status )
-{
-	if(AnimationNo < 43)
-		m_AnimationStatus[AnimationNo] = Status;
-}
 
 Entity::~Entity()
 {
@@ -223,7 +232,7 @@ Entity::~Entity()
 }
 
 Entity::Entity( EntityManager *mgr,UINT32 refID, bool TriggerEvents /*= false*/,bool GlobalSynch/*= false*/, float posX /*= 0 */, float posY /*= 0 */, float posZ /*= 0*/,UINT32 CellID /*= 0*/,UINT32 WorldID /*=0*/, float rotX /*= 0 */, float rotY /*= 0 */, float rotZ /*= 0*/,short health /*= 0*/,short magicka /*= 0 */, short fatigue /*= 0 */, bool female /*= false*/,UINT32 race /*= 0*/,std::string name /*= std::string("Unnamed")*/,std::string classname /*= std::string("")*/ ) :
-lock(),m_Name(name),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
+lock(),m_Name(name),m_Animation(0),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
 EventLifeChange()		//,m_Class(classname)
 {
 	lock.lock();
@@ -244,7 +253,6 @@ EventLifeChange()		//,m_Class(classname)
 	//m_Class = classname;
 	m_WorldID = WorldID;
 	memset(m_ActorValues,0,72*sizeof(short));
-	memset(m_AnimationStatus,0,43*sizeof(BYTE));
 	m_mgr->RegisterEntity(this);
 	lock.unlock();
 }

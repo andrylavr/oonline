@@ -5,6 +5,7 @@
 
 #include <string>
 #include "GlobalDefines.h"
+#include "PlayerManager.h"
 #include "ExternInterface.h"
 #include "GameServer.h"
 #include "EventSystem.h"
@@ -25,7 +26,7 @@ void PlayerChange(struct sockaddr_in *addr)
 	char databuf[1024];
 	if(!g_gs || !Socket)
 		return;
-	sprintf(databuf,"p%u",g_gs->GetNetwork()->GetPlayerCount());
+	sprintf(databuf,"p%u",g_gs->GetPlayerManager()->size());
 	send(Socket,databuf,1024,0); //TODO: Handle return value
 }
 static void StartServerBrowser()

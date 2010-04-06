@@ -29,6 +29,7 @@ ChatIOProvider::~ChatIOProvider(void)
 
 bool ChatIOProvider::DoOutput( LogLevel LogLevel,const std::string  & Message )
 {
+	/*
 	BYTE * data = new BYTE[Message.length()+ 2];
 	*(UINT16 *)data = (UINT16)Message.length(); 
 	memcpy(data + 2,Message.c_str(),Message.length());
@@ -36,6 +37,6 @@ bool ChatIOProvider::DoOutput( LogLevel LogLevel,const std::string  & Message )
 	{
 		//m_gs->GetNetwork()->SendChunk(i->second->RefID(),i->second->RefID(),true,Message.length() + 2,PkgChunk::Chat,data);
 		//m_gs->GetNetwork()->Send(i->second->RefID());
-	}
+	}*/
 	return true;
 }

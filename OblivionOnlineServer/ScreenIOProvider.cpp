@@ -56,7 +56,7 @@ OO_TPROC_RET ScreenIOProvider::QueryProc(ScreenIOProvider *thisptr)
 	{
 		msg = new std::string (); //TODO : Handle deletion of this
 		std::cin >> (*msg);
-		thisptr->GetIOSystem()->RegisterInput(msg);
+		IOSystem::Instance().RegisterInput(msg);
 	}
 		
 }

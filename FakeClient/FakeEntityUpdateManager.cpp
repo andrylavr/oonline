@@ -16,78 +16,130 @@ GNU General Public License for more details.
 
 */
 #include "GlobalDefines.h"
+#include "Packets.h"
 #include "IOSystem.h"
 #include "Entity.h"
 #include "FakeClient.h"
-void FakeEntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
+using namespace raw;
+extern NetworkConnection *conn;
+void FakeEntityUpdateManager::OnAnimationUpdate(Entity *ent,bool Inbound)
 {
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << "Object";
-	m_mgr->GetIO() << 
-		ent->RefID() << "("<<ent->Name() << ") Animation " << (unsigned int)AnimationID <<
-		(ent->AnimationStatus(AnimationID) ? "Started" : "Stopped") << endl;
+	if(!Inbound)
+	{
+		Animation::Send(*conn,ent);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object";
+		m_mgr->GetIO() << ent->RefID() << "("<<ent->Name() << ") Animation " <<ent->AnimationStatus()<<endl;
+	}
+}
+void FakeEntityUpdateManager::OnAVModUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
+{
+	if(!Inbound)
+	{
+		ActorValueMod::Send(*conn,ent,AVCode);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object: "<< ent->Name() << " Animation " <<ent->ActorValueMod(AVCode)<<endl;
+	}
 }
 void FakeEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << "Object" << 
-		ent->RefID() << "("<< ent->Name() << ") ActorValue" << (unsigned int)AVCode << ": " << ent->ActorValue(AVCode) <<endl;
+	if(!Inbound)
+	{
+		ActorValue::Send(*conn,ent,AVCode);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object" << 
+			ent->RefID() << "("<< ent->Name() << ") BaseActorValue" << (unsigned int)AVCode << ": " << ent->BaseActorValue(AVCode) <<endl;
+	}
 }
 void FakeEntityUpdateManager::OnCellChange(Entity *ent,UINT32 OldCell,bool Inbound)
 {
-	EntityUpdateManager::OnCellChange(ent,OldCell,Inbound);
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << "Object"<< 
-		ent->RefID() << "("<<ent->Name() << ")Cell: " << ent->CellID() <<endl;
+	if(!Inbound)
+	{
+		CellID::Send(*conn,ent);
+	}
+	{
+		EntityUpdateManager::OnCellChange(ent,OldCell,Inbound);
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object"<< 
+			ent->RefID() << "("<<ent->Name() << ")Cell: " << ent->CellID() <<endl;
+	}
 }
 void FakeEntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
 {
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << "Object" << 
-		ent->RefID() << "("<<ent->Name() << ")Class: " << ent->ClassName() <<endl;
+	if(!Inbound)
+	{
+		Class::Send(*conn,ent);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object" << 
+			ent->RefID() << "("<<ent->Name() << ")Class: " << ent->ClassName() <<endl;
+	}
 }
 void FakeEntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound)
 {
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << "Object" << 
-		ent->RefID() << "("<<ent->Name() << ") Equip" <<(unsigned int)slot << ": " << ent->Equip(slot) <<endl;
-}
-void FakeEntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
-{
-	if(!g_plot)
-		return;
-
-	m_mgr->GetIO() << GameMessage << "Object" << 
-		ent->RefID() << "("<<ent->Name() << ")female: " << ent->Female() <<endl;
+	if(!Inbound)
+	{
+		Equip::Send(*conn,ent,slot);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object" << 
+			ent->RefID() << "("<<ent->Name() << ") Equip" <<(unsigned int)slot << ": " << ent->Equip(slot) <<endl;
+	}
 }
 void FakeEntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
 {
-	if(!g_plot)
-		return;
+	if(!Inbound)
+	{
+		Name::Send(*conn,ent);
+	}
+	{
+		if(!g_plot)
+			return;
 
-	m_mgr->GetIO() << GameMessage << "Object" << 
+		m_mgr->GetIO() << GameMessage << "Object" << 
 		ent->RefID() << "("<<ent->Name() << ")Name: " << ent->Name() <<endl;
+	}
 }
 void FakeEntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
 {
-	if(!g_plot)
-		return;
-
-	m_mgr->GetIO() << GameMessage << ((ent->Status()==STATUS_PLAYER)?"Player ":"Object ") << 
-		ent->RefID() << "("<<ent->Name() << ")Position: " << ent->PosX() << "Y:"<<ent->PosY() << "Z:" << ent->PosZ()
-		<< "rX" << ent->RotX() << "rY:" << ent->RotY() << "rZ" << ent->RotZ()<<endl;
+	if(!Inbound)
+	{
+		Position::Send(*conn,ent);
+	}
+	{		
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object " << 
+			ent->RefID() << "("<<ent->Name() << ")Position: " << ent->PosX() << "Y:"<<ent->PosY() << "Z:" << ent->PosZ()
+			<< "rX" << ent->RotX() << "rY:" << ent->RotY() << "rZ" << ent->RotZ()<<endl;
+	}
 }
 void FakeEntityUpdateManager::OnRaceUpdate(Entity *ent,bool Inbound)
 {
-	if(!g_plot)
-		return;
-	m_mgr->GetIO() << GameMessage << ((ent->Status()==STATUS_PLAYER)?"Player ":"Object ") << 
-		ent->RefID() << "("<<ent->Name() << ")race: " << ent->Race() <<endl;
+	if(!Inbound)
+	{
+		Race::Send(*conn,ent);
+	}
+	{
+		if(!g_plot)
+			return;
+		m_mgr->GetIO() << GameMessage << "Object " << 
+			ent->RefID() << "("<<ent->Name() << ")Race: " << ent->Race()  << "Gender" << ent->Gender()<<endl;
+	}
 }
 void FakeEntityUpdateManager::GlobalSend(Entity *ent, bool Inbound)
 {

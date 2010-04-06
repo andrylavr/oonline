@@ -73,6 +73,7 @@
 				AdditionalLibraryDirectories="$(SolutionDir)\Lib\;&quot;$(BoostLibs)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
+				GenerateMapFile="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -195,10 +196,6 @@
 			Name="Netcode"
 			>
 			<File
-				RelativePath=".\MiscChunkHandler.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\NetworkSystem.cpp"
 				>
 			</File>
@@ -243,6 +240,22 @@
 			Name="Entity"
 			>
 			<File
+				RelativePath=".\Player.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Player.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ServerEntityUpdateManager.cpp"
 				>
 			</File>
@@ -258,34 +271,10 @@
 		<Filter
 			Name="Util"
 			>
-			<File
-				RelativePath=".\DefaultSettings.h"
-				>
-			</File>
 			<Filter
 				Name="lua"
 				>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Event"
-			>
-			<File
-				RelativePath=".\Event.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Event.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EventSystem.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\EventSystem.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Extendibility"
@@ -363,20 +352,36 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Event"
+			>
+			<File
+				RelativePath=".\Event.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Event.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EventSystem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EventSystem.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ChangeLog.txt"
 			>
 		</File>
 		<File
+			RelativePath=".\DefaultSettings.h"
+			>
+		</File>
+		<File
 			RelativePath=".\main.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PlayerManager.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\PlayerManager.h"
 			>
 		</File>
 		<File

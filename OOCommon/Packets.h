@@ -112,6 +112,11 @@ struct ANSIString
 	{
 		return string(data,max(end-data,strlen));
 	}
+	void Write(const std::string &Message)
+	{
+		strlen= (unsigned short) MAX(Message.length(),65534); // DO not transmit a very long chat message ;)
+		memcpy(data,Message.c_str(),strlen);
+	}
 };
 struct Position
 {
@@ -119,6 +124,7 @@ struct Position
 	static const PkgChunk Type= pkg_Position;
 	static const bool Reliable=false;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	float PosX;
 	float PosY;
 	float PosZ;
@@ -130,6 +136,7 @@ struct CellID
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_CellID;
 	static const bool Reliable=true;
 	UINT32 cellID;
@@ -139,6 +146,7 @@ struct Race
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_Race;
 	static const bool Reliable=true;
 	UINT32 Value;
@@ -149,6 +157,7 @@ struct Class
 	raw::Chunk header;
 	static const bool Reliable=true;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_Class;
 	ANSIString Name;
 };
@@ -157,6 +166,7 @@ struct Name
 	raw::Chunk header;
 	static const bool Reliable=true;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_Name;
 	ANSIString Value;
 };
@@ -165,6 +175,7 @@ struct ActorValue
 	raw::Chunk header;
 	static const bool Reliable=true;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent,BYTE slot);
 	static const PkgChunk Type= pkg_ActorValue;
 	UINT8 code;
 	short Value;
@@ -174,6 +185,7 @@ struct ActorValueMod
 	raw::Chunk header;
 	static const bool Reliable=true;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent,BYTE slot);
 	static const PkgChunk Type= pkg_ActorValueMod;
 	UINT8 code;
 	short Value;
@@ -182,6 +194,7 @@ struct Equip
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent,BYTE slot);
 	static const PkgChunk Type= pkg_Equip;
 	static const bool Reliable=true;
 	UINT8 slot;
@@ -191,6 +204,7 @@ struct Chat
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent, std::string Message);
 	static const PkgChunk Type= pkg_Chat;
 	static const bool Reliable=true;
 	ANSIString Message;
@@ -199,6 +213,7 @@ struct Auth
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent, BYTE *SHA512,std::string Data);
 	static const PkgChunk Type= pkg_Auth;
 	static const bool Reliable=true;
 	BYTE SHA512[64];
@@ -208,6 +223,7 @@ struct Animation
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_Animation;
 	static const bool Reliable=true;
 	BYTE AnimationGroup;
@@ -216,6 +232,7 @@ struct ClientType
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, UINT32 ent, BYTE IsMaster);
 	static const PkgChunk Type= pkg_ClientType;
 	static const bool Reliable=true;
 	BYTE IsMaster;
@@ -224,6 +241,7 @@ struct Version
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent);
 	static const PkgChunk Type= pkg_Version;
 	static const bool Reliable=true;
 	BYTE super;
@@ -235,6 +253,7 @@ struct PlayerID
 {
 	raw::Chunk header;
 	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn, Entity *ent,UINT32 ID);
 	static const PkgChunk Type= pkg_PlayerID;
 	static const bool Reliable=true;
 	UINT32 ID;
@@ -248,7 +267,7 @@ struct RPCRequest //Experimental Script RPC.
 	UINT32 functioncode; // 0x0 = Enumerate functions?
 	UINT32 requestid; // To repeat requests, etc
 	UINT16 seqno; // Which element of the parameters this request entails
-	UINT16 seqsize;  //  Maximum number of requests 
+	UINT16 seqsize;  //  Maximum number of packets this contains
 	ANSIString Parameters; // Encoded parameters
 };
 struct RPCReply

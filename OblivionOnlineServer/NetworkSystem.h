@@ -1,6 +1,6 @@
 /*
 This file is part of OblivionOnline Server- An open source game server for the OblivionOnline mod
-Copyright (C)  2008   Julian Bangert
+Copyright (C)  2008-2010   Julian Bangert
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -23,68 +23,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef WIN32
 #include <netdb.h>
 #endif
-#include <vector>
-#include <map>
+#include <set>
 #include <ctime>
 #include "GameServer.h"
 class NetworkSystem
 {
 private:
+	bool _work;
+	boost::condition_variable _work_notify;
+	boost::mutex _listlock;
+	std::set<NetworkConnection *> _connections;
+	boost::thread _tcp;
 	GameServer *m_GS;
-	SOCKET m_UDPSock;
-	DWORD m_resendinterval;
-	DWORD m_lastsent;
-	OO_THREAD m_TCPThread;
-	OO_THREAD m_UDPThread;
-	UINT32 m_MasterClient;
-	//TODO : Defer packet processing to some other threads -use boost thread queue
-	std::map<UINT32,OutPacket *> m_OutPackets; // All packets the server is currently writing to
-	std::map<UINT32,SOCKET> m_TCPSockets;
-	std::map<UINT32,SOCKADDR_IN> m_PlayerAddresses;
-	std::map<u_long,UINT32> m_AddressPlayer; // This is the type of INET_ADDR.sin_addr.s_addr
-	BYTE m_MasterClientDefined;
-	clock_t m_sendtimer;
-	static bool ValidatePacketLength(BYTE *data,size_t reportedSize)
+	void AcceptThread();
+	void AddPlayer(SOCKET sock);
+	NetworkSystem(const NetworkSystem &other)
 	{
-		return (*(UINT16 *)((BYTE *)data+1)) < reportedSize;
+		throw std::logic_error("Networksystem noncopiable");
 	}
-	
 public:
+	void OnDisconnect(NetworkConnection *ptr);
 	NetworkSystem(GameServer *Server);
 	~NetworkSystem(void);
+	void Start() { _work = true; _work_notify.notify_all();}
 	GameServer * GetGS()
 	{
 		return m_GS;
 	}
-	UINT32 AddNewPlayer(SOCKADDR_IN addr,SOCKET TCPSock);
-	bool PlayerDisconnect(UINT32 ID);
-	bool SendChunk(UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ,BYTE *data);
-	bool Send(UINT32 PlayerID);
-	bool RegisterTraffic(UINT32 PlayerID,size_t size,BYTE *data,bool reliable);
-	//TODO : Place these in  a callback ?
-	bool SendUnreliableStream(UINT32 PlayerID,size_t length,BYTE *data);
-	bool SendReliableStream(UINT32 PlayerID,size_t length,BYTE *data);
-	bool StartReceiveThreads();
-	UINT32 GetPlayerFromAddr(SOCKADDR_IN addr)
-	{
-		std::map<u_long,UINT32>::iterator iter = m_AddressPlayer.find(
-		#ifdef WIN32 
-			addr.sin_addr.S_un.S_addr);
-		#else
-			addr.sin_addr.s_addr);
-		#endif
-		if(iter != m_AddressPlayer.end())
-			return iter->second;
-		return -1;
-	}
-	UINT32 GetPlayerCount()
-	{
-		return  m_PlayerAddresses.size();
-	}
-	UINT32 GetMasterClient()
-	{
-		return m_MasterClient;
-	}
-	static OO_TPROC_RET UDPProc(void *thisptr);
-	static OO_TPROC_RET TCPProc(void *thisptr);
 };

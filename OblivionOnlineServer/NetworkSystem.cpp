@@ -17,141 +17,102 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "NetworkSystem.h"
-#include "InPacket.h"
 #include "GameServer.h"
 #include "LuaSystem.h"
 #include "EventSystem.h"
+#include "NetworkConnection.h"
 #include <sstream>
 #include "Entity.h"
+#include "TaskHandler.h"
+#include "PlayerManager.h"
 #ifdef WIN32
 #include <process.h>
 #include <Windows.h>
 #else
 #include <pthread.h>
 #endif
-
+using namespace boost;
 NetworkSystem::~NetworkSystem(void)
 {
 }
-bool NetworkSystem::StartReceiveThreads()
+NetworkSystem::NetworkSystem( GameServer *Server ) :m_GS(Server), _work(false),_work_notify(),_listlock(), _tcp(boost::bind<void>(&NetworkSystem::AcceptThread,ref(*this)))
 {
-	m_GS->GetIO()<<BootMessage<<"Starting receive threads"<< endl;
-	//TODO: Implement synchback
-#ifdef WIN32
-	_beginthread(TCPProc,0,(LPVOID) this);
-	Sleep(200); // allows TCP to bind
-	_beginthread(UDPProc,0,(LPVOID) this);
-	Sleep(200);
-#else
-	//POSIX pthread
-	pthread_t temp;
-	pthread_create(&temp,NULL,TCPProc,(void *) this);
-	usleep(200000); // 200 millisec
-	pthread_create(&temp,NULL,UDPProc,(void *) this);
-	usleep(200000); //TODO: use better synchronisation here
-#endif
-	m_MasterClient = 0;
-	return true;
 }
-OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
+void NetworkSystem::AcceptThread() // Run accept and listen on a TCP socket
 {
-	BYTE data[PACKET_SIZE];
-	NetworkSystem *netsys = (NetworkSystem *) _netsys;
-	unsigned short port = (unsigned short) netsys->GetGS()->GetLua()->GetInteger("ServicePort");
+	{
+		boost::unique_lock<boost::mutex> guard(_listlock);
+		while(!_work)
+			_work_notify.wait(guard);
+	}
+#ifdef WIN32
+	WSADATA wsad;
+	WSAStartup(MAKEWORD(2,2),&wsad);
+#endif
+	unsigned short port = m_GS->GetLua()->GetInteger("ServicePort");
 	SOCKET acceptSocket = socket(AF_INET,SOCK_STREAM,0);
 	SOCKADDR_IN addr;
-	FD_SET fdSet;
 	long rc;
 	memset(&addr,0,sizeof(SOCKADDR_IN));
 	addr.sin_family=AF_INET;
 	addr.sin_port=htons(port);
 	addr.sin_addr.s_addr=INADDR_ANY;
-	rc = bind(acceptSocket,(SOCKADDR*)&addr,sizeof(SOCKADDR_IN));
+	rc = ::bind(acceptSocket,(SOCKADDR*)&addr,sizeof(SOCKADDR_IN));
 	if( rc == SOCKET_ERROR)
 	{
-		netsys->GetGS()->GetIO()<<FatalError<<"Couldn't bind TCP"<< endl;
-		#ifdef WIN32
-			return ;
-		#else
-			return NULL;
-		#endif
+		IOStream::Instance()<<FatalError<<"Couldn't bind TCP"<< endl;
 	}
 	else
 	{
-		netsys->GetGS()->GetIO()<<BootMessage<<"TCP Bound to port " << port <<endl;
+		IOStream::Instance()<<BootMessage<<"TCP Bound to port " << port <<endl;
 	}
 	rc = listen(acceptSocket,4);
 	if(rc == SOCKET_ERROR)
 	{
-
-		netsys->GetGS()->GetIO()<<FatalError<<"Couldn't listen on TCP"<<endl;
-		#ifdef WIN32
-                        return ;
-                #else
-                        return NULL;
-                #endif
-
+		IOStream::Instance()<<FatalError<<"Couldn't listen on TCP"<<endl;
 	}
 	else
 	{
-		
-		netsys->GetGS()->GetIO()<<BootMessage<<"TCP listening"<<endl;
+		IOStream::Instance()<<BootMessage<<"TCP listening"<<endl;
 	}
 	while(1)
 	{
-		FD_ZERO(&fdSet);
-		FD_SET(acceptSocket,&fdSet);
-		for(std::map<UINT32,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!=netsys->m_TCPSockets.end();i++)
-		{
-			FD_SET(i->second,&fdSet);
-		}
-		if(select(0,&fdSet,NULL,NULL,NULL) == SOCKET_ERROR)
-		{
-			netsys->GetGS()->GetIO()<<FatalError<<"Error calling select()"<<endl;
-			#ifdef WIN32
-	                        return ;
-        	        #else
-                	        return NULL;
-                	#endif
-
-		}
-		if(FD_ISSET(acceptSocket,&fdSet))
-		{
-			SOCKADDR_IN addr;
-#ifndef WIN32 
-			socklen_t addr_size;
-#else		  
+			SOCKADDR_IN remoteaddr;
 			int addr_size;
-#endif		
 			addr_size = sizeof(SOCKADDR_IN);			
 			SOCKET sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
-			netsys->AddNewPlayer(addr,sock);
-		}
-		for(std::map<UINT32,SOCKET>::iterator i = netsys->m_TCPSockets.begin();i!= netsys->m_TCPSockets.end();i++)
-		{
-			if(FD_ISSET(i->second,&fdSet))
+			try
 			{
-				rc = recv(i->second,(char *)data,PACKET_SIZE,0);
-				if(rc==0 || rc==SOCKET_ERROR)
-				{
-					netsys->PlayerDisconnect(i->first); // These sockets will be read after the next select()
-					i = netsys->m_TCPSockets.begin();
-					break;
-				}	
-				else
-				{
-					netsys->RegisterTraffic(i->first,rc,data,true);
-				}
+				AddPlayer(sock);
 			}
-		}
+			catch (std::exception e)
+			{
+				if(e.what())
+					IOStream::Instance()<<Error<<"Exception encountered opening connection: "<< e.what() <<endl;
+				else 
+					IOStream::Instance()<<Error<<"Exception encountered opening connection: "<<endl;
+			}
+			catch(...)
+			{
+			}
 	}
-	#ifdef WIN32
-	           return ;
-        #else
-                  return NULL;
-        #endif
-
 }
+void NetworkSystem::AddPlayer( SOCKET sock )
+{
+	boost::lock_guard<boost::mutex> guard(_listlock);
+	NetworkConnection *net = m_GS->GetPlayerManager()->GetPlayer(sock);
+	_connections.insert(net);
+	boost::function0<bool> callback = boost::bind(&NetworkConnection::Process,ref(*net));
+	TaskHandler::Instance().ScheduleLoop(callback,m_GS->GetLua()->GetInteger("TickRate"));
+}
+void NetworkSystem::OnDisconnect( NetworkConnection *ptr )
+{
+	boost::lock_guard<boost::mutex> guard(_listlock);
+	_connections.erase(ptr);
+	//delete ptr; // the calling function only returns false.
+}
+
+/*
  OO_TPROC_RET NetworkSystem::UDPProc(void *thisptr)
 {
 	SOCKADDR_IN listenaddr;
@@ -200,159 +161,4 @@ OO_TPROC_RET NetworkSystem::TCPProc(void* _netsys)
 	free(PacketBuffer);
 }
 
- bool NetworkSystem::RegisterTraffic( UINT32 PlayerID,size_t size,BYTE *data,bool reliable )
- {
-	/*
-	 if(!reliable && !ValidatePacketLength(data,size))
-	{
-		m_GS->GetIO()<<Warning<<"Found Packet with wrong size - ignoring"<<endl;
-		return false;
-	}*/
-	InPacket *pkg = new InPacket(m_GS->GetEntities(),&m_GS->GetIO(),data,size);
-	pkg->HandlePacket();
-	return true;
- } 
-
- UINT32 NetworkSystem::AddNewPlayer( SOCKADDR_IN addr,SOCKET TCPSock )
- {
-	BYTE masterclient;
-	 UINT32 ID = 0;
-	 std::map<UINT32,SOCKADDR_IN>::iterator iter;
-	 //Find a new RefID
-	 for(iter = m_PlayerAddresses.begin();iter != m_PlayerAddresses.end();iter++)
-	 {
-		  if(ID != iter->first)
-			  break;
-		  ID++;
-	 }
-	 m_PlayerAddresses[ID] = addr;
-	 m_AddressPlayer[addr.sin_addr.s_addr] = ID;
-	 m_TCPSockets[ID] = TCPSock;
-	 m_OutPackets[ID] = new OutPacket();	
-	 m_OutPackets[ID]->AddChunk(0,STATUS_PLAYER,GetMinChunkSize(pkg_PlayerID),pkg_PlayerID,(BYTE *)&ID);
-	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
-	 m_GS->GetIO()<<GameMessage<< "New player" << ID << "joined from address"<< inet_ntoa(addr.sin_addr) << ":" <<ntohs(addr.sin_port)<<endl;
-	 if(m_MasterClientDefined == 0)
-	 {
-		 m_MasterClientDefined = 1;
-		 masterclient = 1;
-		 m_MasterClient = ID;
-		 m_GS->GetIO()<<GameMessage<<"Selected new master client"<<ID<<endl;
-		 m_OutPackets[ID]->AddChunk(ID,STATUS_PLAYER,GetMinChunkSize(pkg_ClientType),pkg_ClientType,(BYTE *)&masterclient);
-	 }
-	 m_GS->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,ID);
-	 Send(ID);
-	 m_GS->GetEventSys()->DefaultEvents.EventConnect(&addr);
-	 return ID;
-}
-
-NetworkSystem::NetworkSystem( GameServer *Server )
-{
-	m_GS = Server;
-#ifdef WIN32
-	WSADATA wsad;
-	WSAStartup(MAKEWORD(2,2),&wsad);
-#endif
-	m_TCPSockets.clear();
-	m_UDPSock = socket(AF_INET,SOCK_DGRAM,0);
-	m_MasterClientDefined = 0;
-	m_sendtimer = clock() + RESEND_TICK;
-}
-
-bool NetworkSystem::SendReliableStream( UINT32 PlayerID,size_t length,BYTE *data )
-{
-	std::map<UINT32,SOCKET>::iterator iter = m_TCPSockets.find(PlayerID);
-	if(iter == m_TCPSockets.end())
-		return false;
-	long rc = send(iter->second,(const char *)data,length,0);
-	if(rc == SOCKET_ERROR)
-	{
-#ifdef WIN32
-		m_GS->GetIO()<<Error<<"Sending TCP/IP failed . Error:"<<WSAGetLastError();
-#else
-		m_GS->GetIO()<<Error<<"Sending TCP/IP failed . Error:"<<errno;
-#endif
-	}
-	if(rc!= length)
-	{
-		m_GS->GetIO()<<Error<<"Sending TCP/IP failed . Sent "<<rc<<"bytes instead of"<<length<<endl;
-	}
-	return true;
-}
-bool NetworkSystem::SendUnreliableStream( UINT32 PlayerID,size_t length,BYTE *data )
-{
-	std::map<UINT32,SOCKADDR_IN>::iterator iter = m_PlayerAddresses.find(PlayerID);
-	if(iter == m_PlayerAddresses.end())
-		return false;
-	sendto(m_UDPSock,(const char *)data,length,0,(SOCKADDR *)&iter->second,sizeof(SOCKADDR_IN));
-	return true;
-}
-
-bool NetworkSystem::PlayerDisconnect( UINT32 ID )
-{
-	BYTE masterclient = 1;
-	m_GS->GetIO()<<GameMessage<<"Client "<<ID<< "disconnected" <<endl;
-	m_GS->GetEventSys()->DefaultEvents.EventDisconnect(&m_PlayerAddresses[ID]);
-	m_AddressPlayer.erase(m_PlayerAddresses[ID].sin_addr.s_addr);
-	m_PlayerAddresses.erase(ID);
-	delete m_OutPackets[ID];
-	m_OutPackets.erase(ID);
-	m_TCPSockets.erase(ID);
-	m_GS->GetIO()<<GameMessage<<"We now have"<<GetPlayerCount()<< "players" <<endl;
-	if(m_MasterClient == ID)
-	{
-		if(GetPlayerCount() > 0) // We have already reduced it
-		{
-			m_MasterClient = m_OutPackets.begin()->first;
-			m_OutPackets.begin()->second->AddChunk(m_MasterClient,true,GetMinChunkSize(pkg_ClientType),pkg_ClientType,&masterclient);
-			Send( m_OutPackets.begin()->first);
-			m_GS->GetIO()<<GameMessage<<"Selected new master client"<<m_MasterClient<<endl;
-		}
-		else
-		{
-			m_MasterClient = 0;
-			m_MasterClientDefined = 0;
-		}
-	}
-	return true;
-}
-
-bool NetworkSystem::Send( UINT32 PlayerID )
-{
-	OutPacket *packet = m_OutPackets[PlayerID];	
-	bool retval;
-	if(packet == NULL)
-		return false;//TODO: Report bug
-#ifdef DO_UDP
-	if(packet->Reliable())
-		retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
-	else
-		retval= SendUnreliableStream(PlayerID,packet->Size(),packet->GetData());
-#else
-		retval= SendReliableStream(PlayerID,packet->Size(),packet->GetData());
-#endif
-	packet->Reset();
-	return retval;
-}
-
-bool NetworkSystem::SendChunk( UINT32 PlayerID,UINT32 FormID,BYTE status,size_t ChunkSize,PkgChunk ,BYTE *data )
-{
-	OutPacket *packet = m_OutPackets[PlayerID];
-	bool retVal;
-	if(packet == NULL)
-		return false; //TODO: Report bug
-
-	retVal = packet->AddChunk(FormID,status,ChunkSize,,data);
-	if( !retVal|| 
-		clock() >= packet->SendTimer )	
-	{
-		Send(PlayerID);
-	}
-	if(!retVal)
-	{
-		if(packet->AddChunk(FormID,status,ChunkSize,,data) == true)
-			return true;
-		else 
-			return false;
-	}
-}
+*/

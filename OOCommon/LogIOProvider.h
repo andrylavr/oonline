@@ -18,16 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 #include "IOProvider.h"
+#include <boost/thread.hpp>
 #include <fstream>
 #include <ios>
 #include <ctime>
 class LogIOProvider :
 	public IOProvider
 {
+	boost::mutex _lock;
 public:
-	LogIOProvider(IOSystem *parent,LogLevel threshold, std::string FileName): IOProvider(parent)
+	LogIOProvider(IOSystem *parent,LogLevel threshold, std::string FileName): IOProvider(parent),_lock(),File(NULL)
 	{
-		FILE *File= fopen(FileName.c_str(),"w");
+		boost::unique_lock<boost::mutex>(_lock);
+		File= fopen(FileName.c_str(),"w");
 		if(File)
 		{
 			time_t timestamp = time(NULL);
@@ -57,6 +60,7 @@ public:
 			return false;
 		if(File)
 		{
+			boost::unique_lock<boost::mutex>(_lock);
 			fwrite(Message.c_str(),Message.length(),1,File);
 			fputc((int)'\n',File);
 			fflush(File);

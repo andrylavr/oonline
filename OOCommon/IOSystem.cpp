@@ -110,3 +110,14 @@ int IOSystem::sync( void )
 	lock.unlock();
 	return 0;
 }
+
+IOSystem::IOSystem() : std::streambuf()
+{
+	DefaultLogLevel = BootMessage;
+	m_buf = new char[1024];
+	m_buflen = 1024;
+	setp(m_buf, m_buf + 1024);
+	//m_providers.clear();
+} 
+boost::mutex IOSystem::lock;
+std::list<IOProvider *> IOSystem::m_providers;

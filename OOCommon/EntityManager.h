@@ -27,7 +27,7 @@ class EventSystem;
 class NetworkSystem;
 class IOStream;
 typedef std::pair<UINT32,Entity *> IDEntityPair;
-OO_API class EntityManager
+ class EntityManager
 {	
 protected:
 	boost::mutex lock;
@@ -63,12 +63,12 @@ public:
 	{
 		return *m_IO;
 	}
-	bool RegisterEntity(Entity *Entity);
-	bool DeleteEntity(Entity *Entity);
-	bool DeRegisterEntity(Entity *Entity);
-	bool DeleteEntities();
-	Entity * GetEntity(UINT32 RefID);
+	OO_API bool RegisterEntity(Entity *Entity);
+	OO_API bool DeleteEntity(Entity *Entity);
+	OO_API bool DeRegisterEntity(Entity *Entity);
+	OO_API bool DeleteEntities();
+	OO_API Entity * GetEntity(UINT32 RefID);
 	// Gets You an Entity or creates it
-	Entity * GetOrCreateEntity(UINT32 RefID);
+	OO_API Entity * GetOrCreateEntity(UINT32 RefID);
 };
 

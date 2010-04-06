@@ -25,8 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ctime>
 #include <ostream>
 #include <iostream>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
+#include <boost/thread.hpp>
 class IOProvider;
 enum LogLevel
 {
@@ -44,12 +43,12 @@ enum LogLevel
 class IOSystem : public std::streambuf
 {
 public:
-	boost::mutex lock;
+	static boost::mutex lock;
 	LogLevel DefaultLogLevel;
 	static IOSystem &Instance()
 	{
-		static IOSystem *_instance = 0;
-		if(!_instance) _instance = new IOSystem();
+		static boost::thread_specific_ptr<IOSystem> _instance;
+		if(!_instance.get()) _instance.reset(new IOSystem());
 		return *_instance;
 	}
 	bool DoOutput(LogLevel Level,const std::string & Message);
@@ -64,18 +63,11 @@ public:
 	bool RegisterIOProvider(IOProvider *provider);
 	bool RemoveIOProvider(IOProvider *system);
 	bool RegisterInput(std::string  *Message);//TODO : tune performance here , the input still locks 
-protected:
-	std::list <IOProvider *> m_providers;
-private:
-	IOSystem() : lock() ,m_providers(),std::streambuf()
-	{
-		DefaultLogLevel = BootMessage;
-		m_buf = new char[1024];
-		m_buflen = 1024;
-		setp(m_buf, m_buf + 1024);
-		//m_providers.clear();
-	}
 	~IOSystem(void);
+protected:
+	static std::list <IOProvider *> m_providers;
+private:
+	IOSystem();
 	char *m_buf;
 	size_t m_buflen;
 	virtual int sync (void);
@@ -100,8 +92,8 @@ class IOStream : public std::ostream {
 public:
 	static IOStream & Instance()
 	{
-		static IOStream *_instance = NULL;
-		if(!_instance) _instance = new IOStream();
+		static boost::thread_specific_ptr<IOStream> _instance ;
+		if(!_instance.get()) _instance.reset(new IOStream());
 		return *_instance;
 	}
 	// we initialize the ostream to use our logbuf

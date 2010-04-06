@@ -31,9 +31,9 @@ void ClientEntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char Anim
 void ClientEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!Inbound)
-		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->ActorValue(AVCode));
+		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->BaseActorValue(AVCode));
 	else
-		InjectActorValue((ClientEntity *)ent,AVCode,(UINT32)ent->ActorValue(AVCode));// This causes C++ to raw re-interpret the data
+		InjectActorValue((ClientEntity *)ent,AVCode,(UINT32)ent->BaseActorValue(AVCode));// This causes C++ to raw re-interpret the data
 }
 void ClientEntityUpdateManager::OnCellChange(Entity *ent,UINT32 OldCell,bool Inbound)
 {

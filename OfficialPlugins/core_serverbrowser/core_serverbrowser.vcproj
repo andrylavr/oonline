@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="core_serverbrowser"
 	ProjectGUID="{D2456E98-1069-4DF9-9C18-68D6D7CAAD01}"
 	RootNamespace="core_serverbrowser"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib OblivionOnlineServer.lib"
+				AdditionalDependencies="ws2_32.lib OblivionOnlineServer.lib OOCommon_d.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)\Lib\;&quot;$(BoostLibs)&quot;;$(SolutionDir)\bin\$(ConfigurationName)\"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib OblivionOnlineServer.lib"
+				AdditionalDependencies="ws2_32.lib OblivionOnlineServer.lib OOCommon.lib"
 				OutputFile="$(SolutionDir)\bin\$(ConfigurationName)\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)\Lib\;&quot;$(BoostLibs)&quot;;$(SolutionDir)\bin\$(ConfigurationName)\"

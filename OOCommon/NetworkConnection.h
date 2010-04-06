@@ -31,18 +31,21 @@ class NetworkConnection
 //	SOCKET udpsock;
 	SOCKET tcpsock;
 	ChunkPermissions permissions;
-	FD_SET readSet;	
-	FD_SET writeSet;
 	int activechunk; // Number of active chunks, must be zero
 	int chunks;
 	const char * ParseInput(const char *data,int datasize);
 	bool Poll(); // Poll this network connection for any inbound traffic.
 	bool Send();
+	NetworkConnection(const NetworkConnection &other)
+	{
+		throw std::logic_error("NetworkConnection noncopiable");
+	}
 public:
-	boost::signal<void(NetworkConnection*) > OnDisconnect;
-	NetworkConnection(EntityManager *mgr,SOCKET tcp,void (*callback) (NetworkConnection *));
+	boost::signals2::signal<void(NetworkConnection*) > OnDisconnect;
+	NetworkConnection(EntityManager *mgr,SOCKET tcp,boost::function<void (NetworkConnection *)>);
 	~NetworkConnection(void);
-	char *GetChunkSpace(bool Reliable,int size); // Only to be called from chunk constructor.
+	SOCKET GetTCPSocket() { return tcpsock;} //for using Select() syscall
+ 	char *GetChunkSpace(bool Reliable,unsigned int size); // Only to be called from chunk constructor.
 	void ChunkFinish();
 	bool Process(); // Mostly poll and destroy if connection was dropped.
 	const ChunkPermissions &GetPermissions() const {return permissions;}
@@ -50,7 +53,5 @@ public:
 class BadProtocolException :public  std::runtime_error
 {
 	BadProtocolException():std::runtime_error("An error was encountered parsing a packet.")
-	{
-
-	}
+	{	}
 };

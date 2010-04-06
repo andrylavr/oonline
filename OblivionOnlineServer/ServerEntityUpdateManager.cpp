@@ -16,150 +16,93 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "GlobalDefines.h"
 #include "GameServer.h"
 #include "ServerEntityUpdateManager.h"
 #include "Entity.h"
 #include "NetworkSystem.h"
 #include "Packets.h"
 #include <map>
+#include "boost/foreach.hpp"
 #include "boost/lambda/lambda.hpp"
 #include "boost/lambda/if.hpp"
 #include "boost/lambda/bind.hpp"
 
 using namespace std;
 using namespace boost::lambda;
+using namespace raw;
 void ServerEntityUpdateManager::OnRaceUpdate( Entity *ent ,bool Inbound )
 {
-	UINT32 race = ent->Race();
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		if(i->second != ent || !Inbound)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Race),pkg_Race,(BYTE*)&race);
-		}
-	}
-}
-
-void ServerEntityUpdateManager::OnGenderUpdate( Entity *ent ,bool Inbound)
-{
-	BYTE Data = ent->Gender();
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-	{
-		if(i->second != ent || !Inbound)
-	{
-
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(Gender),Gender,&Data);
+			Race::Send(*p,ent);
 		}
 	}
 }
 
 void ServerEntityUpdateManager::OnClassUpdate( Entity *ent ,bool Inbound)
 {
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		if(i->second != ent || !Inbound)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			//Send out data
+			Class::Send(*p,ent);
 		}
 	}
 }
 
 void ServerEntityUpdateManager::OnNameUpdate( Entity *ent ,bool Inbound)
 {
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		if(i->second != ent || !Inbound)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			//Send out data
+			Name::Send(*p,ent);
 		}
 	}
 }
 
 void ServerEntityUpdateManager::GlobalSend( Entity *ent ,bool Inbound)
 {
-	float ChunkData[6] =
-	{
-		ent->PosX(),
-		ent->PosY(),
-		ent->PosZ(),
-		ent->RotX(),
-		ent->RotY(),
-		ent->RotZ()
-	};
-
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-	{
-		if(i->second != ent || !Inbound)
-		{
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Position),pkg_Position,(BYTE *)&ChunkData);
-			m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_CellID),pkg_CellID,(BYTE*)&ChunkData);
-			//TODO: send out stats
-		}
-	}
+	OnNameUpdate(ent,Inbound);
+	OnRaceUpdate(ent,Inbound);
+	OnNameUpdate(ent,Inbound);
+	OnPositionUpdate(ent,Inbound);
+	OnClassUpdate(ent,Inbound);
+	OnCellChange(ent,ent->CellID(),Inbound);
 }
 void ServerEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
-
-	BYTE Data[3];
-	Data[0] = AVCode;
-	*(short *)(Data+1) = ent->ActorValue(AVCode);
-	if(ent->Status() < STATUS_PLAYER)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			if(i->first != m_net->GetMasterClient()  || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_ActorValue),pkg_ActorValue,(BYTE *)&Data);
-			}
+			ActorValue::Send(*p,ent,AVCode);
 		}
 	}
-	else
+}
+
+OO_API  void ServerEntityUpdateManager::OnAVModUpdate( Entity *ent,unsigned char AVCode,bool Inbound )
+{
+	BOOST_FOREACH(Player *p,_players)
 	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{
-			if(i->first != ent->RefID() || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_ActorValue),pkg_ActorValue,(BYTE *)&Data);
-			}
-		}
+		if(!Inbound || (p!=ent) )
+			ActorValueMod::Send(*p,ent,AVCode);
 	}
 }
 void ServerEntityUpdateManager::OnPositionUpdate( Entity *ent,bool Inbound) /*Triggers Events and network code */
 {
-	float ChunkData[6] =
+	BOOST_FOREACH(Player *p,_players)
 	{
-		ent->PosX(),
-		ent->PosY(),
-		ent->PosZ(),
-		ent->RotX(),
-		ent->RotY(),
-		ent->RotZ()
-	};
-	
-	if(ent->Status() < STATUS_PLAYER)
-	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{			
-			//&& i->second->CellID() == ent->CellID()
-			if((m_net->GetMasterClient() != i->first ) || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Position),pkg_Position,(BYTE*)&ChunkData);
-			}
-		}
-	}
-	else
-	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{			
-			// && i->second->CellID() == ent->CellID()
-			if((ent->RefID() != i->first) || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Position),pkg_Position,(BYTE*)&ChunkData);
-			}
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
+		{
+			Position::Send(*p,ent);
 		}
 	}
 }
-bool SendWorldState( Entity * Player,bool LimitCell /*= true*/,EntityManager *m_mgr)
+bool SendWorldState( Player * Player,bool LimitCell /*= true*/,EntityManager *m_mgr)
 {
 	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->BeginObjects(); i != m_mgr->EndObjects() ; i++)
 	{
@@ -167,102 +110,54 @@ bool SendWorldState( Entity * Player,bool LimitCell /*= true*/,EntityManager *m_
 			continue;
 		else
 		{
-			//TODO: Send out player data
+			//TODO: Send data
 		}
 	}
 	return true;
 }
 void ServerEntityUpdateManager::OnCellChange( Entity *ent,UINT32 OldID,bool Inbound)
 {
-	BYTE ChunkData[5];
-	*((UINT32 *)ChunkData) = ent->CellID();
-	ChunkData[4] = ent->IsInInterior() ? 1 : 0;
-	if(ent->Status() < STATUS_PLAYER)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			if( i->first != m_net->GetMasterClient()  || !Inbound) // !Inbound means that MC will be overriden
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_CellID),pkg_CellID,(BYTE*)&ChunkData);
-			}
-		}
-	}
-	else
-	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{
-			if( i->first != ent->RefID()  || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_CellID),pkg_CellID,(BYTE*)&ChunkData);
-			}
-			else
-			{
-				SendWorldState(i->second,false,m_mgr);
-			}
+			Position::Send(*p,ent);
 		}
 	}
 }
 
 void ServerEntityUpdateManager::OnEquipUdate( Entity *ent,BYTE slot,bool Inbound)
 {
-	BYTE ChunkData[5];
-	ChunkData[0] = slot;
-	*(UINT32 *)(ChunkData +1) = ent->Equip(slot);
-
-	if(ent->Status() < STATUS_PLAYER)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			if( i->first != m_net->GetMasterClient() || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Equip),pkg_Equip,(BYTE*)&ChunkData);
-			}
-		}
-	}
-	else
-	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{
-			if(i->first != ent->RefID() || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Equip),pkg_Equip,(BYTE*)&ChunkData);
-			}
+			Equip::Send(*p,ent,slot);
 		}
 	}
 }
 
-void ServerEntityUpdateManager::OnAnimationUpdate( Entity *ent,unsigned char AnimationID ,bool Inbound )
+void ServerEntityUpdateManager::OnAnimationUpdate( Entity *ent ,bool Inbound )
 {
-	BYTE ChunkData[2] = {AnimationID,ent->AnimationStatus(AnimationID)};
-	if(ent->Status() < STATUS_PLAYER)
+	BOOST_FOREACH(Player *p,_players)
 	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			if( i->first != m_net->GetMasterClient() || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Animation),pkg_Animation,(BYTE*)&ChunkData);
-			}
-		}
-	}
-	else
-	{
-		for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
-		{
-			if(i->first != ent->RefID() || !Inbound)
-			{
-				m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),GetMinChunkSize(pkg_Animation),pkg_Animation,(BYTE*)&ChunkData);
-			}
+			Animation::Send(*p,ent);
 		}
 	}
 }
 void ServerEntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
 {
-	BYTE *buf = (BYTE *)malloc(Message.length() + 2);
-	*(UINT16 *) buf = Message.length();
-	memcpy(buf + 2,Message.c_str(),Message.length());
-	for(map<UINT32,Entity *>::const_iterator i =  m_mgr->GetPlayerList().begin(); i != m_mgr->GetPlayerList().end() ; i++)
+	std::stringstream messagebuf;
+	messagebuf << ent->Name() << ":"<< Message;
+	IOStream::Instance() << PlayerChat << messagebuf<<endl;
+	BOOST_FOREACH(Player *p,_players)
 	{
-		m_net->SendChunk(i->second->RefID(),ent->RefID(),ent->Status(),Message.length() + 2,::Chat,buf);
+		raw::Chat::Send(*p,ent,messagebuf.str());
 	}
-	free(buf);
+}
+OO_API  bool ServerEntityUpdateManager::NewPlayerID( UINT32 ID )
+{
+	throw std::runtime_error("Illicit PlayerID chunk sent to server!");
 }

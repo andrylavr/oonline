@@ -38,7 +38,6 @@ forward this exception.
 */
 #include "main.h"
 #include "ClientEntity.h"
-#include "NetSend.h"
 /* Note that these commands need to be called in a particular order:
 FIRST RemoveItem, then UnequipItem, then EquipItem, then AddItem,  */
 bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)

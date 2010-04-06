@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 #include <string>
 #include <cstring>
 #include <algorithm>

@@ -48,11 +48,11 @@ private:
 	unsigned int m_nextanim;
 	std::queue<UINT32> EquipQueue,UnEquipQueue,AddItemQueue,RemoveItemQueue; //Queues for client commands
 public:
-	ClientEntity(EntityManager *mgr,UINT32 refID,BYTE Status, bool TriggerEvents = false,bool GlobalSynch= false,
+	ClientEntity(EntityManager *mgr,UINT32 refID, bool TriggerEvents = false,bool GlobalSynch= false,
 		float posX = 0 , float posY = 0 , float posZ = 0,UINT32 CellID = 0,bool IsInInterior = false,
 		float rotX = 0 , float rotY = 0 , float rotZ = 0,short health = 0,short magicka = 0 , short fatigue = 0 ,
 		bool female = false,UINT32 race = 0,std::string name = std::string("Unnamed"),std::string classname = std::string("")) :
-	Entity(mgr,refID,Status,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,
+	Entity(mgr,refID,TriggerEvents,GlobalSynch,posX,posY,posZ,CellID,IsInInterior,rotX,rotY,rotZ,health,magicka,
 		fatigue,female,race,name,classname),
 		clientlock(),		EquipQueue(),UnEquipQueue(),AddItemQueue(),RemoveItemQueue()
 	{	

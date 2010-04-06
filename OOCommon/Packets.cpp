@@ -48,6 +48,19 @@ size_t raw::Position::Handle( NetworkConnection *who,EntityManager *manager,cons
 	return sizeof(*this);
 }
 
+void raw::Position::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Position *chunk= (raw::Position*)conn.GetChunkSpace(Reliable,sizeof raw::Position);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->PosX = ent->PosX();
+	chunk->PosY = ent->PosY();
+	chunk->PosZ = ent->PosZ();
+	chunk->RotX = ent->RotX();
+	chunk->RotY = ent->RotY();
+	chunk->RotZ = ent->RotZ();
+	conn.ChunkFinish();
+}
 size_t raw::CellID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_CellID == header.ChunkType);
@@ -56,6 +69,17 @@ size_t raw::CellID::Handle( NetworkConnection *who,EntityManager *manager,const 
 	ent->SetCell(cellID,WorldID,true);
 	return sizeof(*this);
 }
+
+void raw::CellID::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::CellID *chunk = (raw::CellID*)conn.GetChunkSpace(Reliable,sizeof raw::CellID);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->cellID = ent->CellID();
+	chunk->WorldID = ent->WorldID();
+
+	conn.ChunkFinish();
+}
 size_t raw::Race::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Race == header.ChunkType);
@@ -63,6 +87,17 @@ size_t raw::Race::Handle( NetworkConnection *who,EntityManager *manager,const ch
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetRace(Value,true);
 	return sizeof(*this);
+}
+
+void raw::Race::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Race *chunk = (raw::Race*) conn.GetChunkSpace(Reliable,sizeof raw::Race);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->IsFemale = ent->Female();
+	chunk->Value = ent->Race();
+
+	conn.ChunkFinish();
 }
 size_t raw::Class::Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const
 {
@@ -73,6 +108,14 @@ size_t raw::Class::Handle(NetworkConnection *who,EntityManager *manager,const ch
 	return sizeof(*this)+Name.Size(DataEnd);
 }
 
+void raw::Class::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Class *chunk = (raw::Class *)conn.GetChunkSpace(Reliable,sizeof raw::Class + ent->ClassName().size());
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->Name.Write(ent->ClassName());
+	conn.ChunkFinish();
+}
 size_t raw::Name::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Name == header.ChunkType);
@@ -82,6 +125,14 @@ size_t raw::Name::Handle( NetworkConnection *who,EntityManager *manager,const ch
 	return sizeof(*this)+Value.Size(DataEnd);
 }
 
+void raw::Name::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Name * chunk = (raw::Name *)conn.GetChunkSpace(Reliable,sizeof raw::Name + ent->Name().size());
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->Value.Write(ent->Name());
+	conn.ChunkFinish();
+}
 size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ActorValue== header.ChunkType);
@@ -91,6 +142,15 @@ size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,co
 	return sizeof(*this);
 }
 
+void raw::ActorValue::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
+{
+	raw::ActorValue * chunk = (raw::ActorValue *)conn.GetChunkSpace(Reliable,sizeof raw::ActorValue);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->code = slot;
+	chunk->Value = ent->BaseActorValue(slot);
+	conn.ChunkFinish();
+}
 size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ActorValueMod == header.ChunkType);
@@ -100,6 +160,15 @@ size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager
 	return sizeof(*this);
 }
 
+void raw::ActorValueMod::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
+{
+	raw::ActorValueMod * chunk = (raw::ActorValueMod *)conn.GetChunkSpace(Reliable,sizeof raw::ActorValueMod);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->code = slot;
+	chunk->Value = ent->ActorValueMod(slot);
+	conn.ChunkFinish();
+}
 size_t raw::Equip::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Equip == header.ChunkType);
@@ -109,6 +178,15 @@ size_t raw::Equip::Handle( NetworkConnection *who,EntityManager *manager,const c
 	return sizeof(*this);
 }
 
+void raw::Equip::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
+{
+	raw::Equip * chunk = (raw::Equip *)conn.GetChunkSpace(Reliable,sizeof raw::Equip);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->slot = slot;
+	chunk->Value = ent->Equip(slot);
+		conn.ChunkFinish();
+}
 size_t raw::Chat::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Chat == header.ChunkType);
@@ -118,21 +196,48 @@ size_t raw::Chat::Handle( NetworkConnection *who,EntityManager *manager,const ch
 	return sizeof(*this)+Message.Size(DataEnd);
 }
 
+void raw::Chat::Send( NetworkConnection &conn, Entity *ent, std::string Message )
+{
+
+	raw::Chat * chunk = (raw::Chat *)conn.GetChunkSpace(Reliable,sizeof raw::Chat+ Message.size());
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	chunk->Message.Write(Message);
+		conn.ChunkFinish();
+}
 size_t raw::Auth::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Auth == header.ChunkType);
 	return sizeof(*this);
 }
 
+void raw::Auth::Send( NetworkConnection &conn, Entity *ent, BYTE *SHA512,std::string Data )
+{
+
+	raw::Auth * chunk = (raw::Auth *)conn.GetChunkSpace(Reliable,sizeof raw::Auth + Data.size());
+	chunk->header.ChunkType = Type;
+	chunk->header.formID = ent->RefID();
+	memcpy(chunk->SHA512,SHA512,sizeof(chunk->SHA512));
+	chunk->Data.Write(Data);
+	conn.ChunkFinish();
+}
 size_t raw::Animation::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Animation == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->SetAnimation(AnimationGroup,true,true);//TODO: refactor
+	ent->SetAnimation(AnimationGroup,true);
 	return sizeof(*this);
 }
 
+void raw::Animation::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Animation * chunk = (raw::Animation *)conn.GetChunkSpace(Reliable,sizeof raw::Animation);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID =ent->RefID();
+	chunk->AnimationGroup = ent->AnimationStatus();
+	conn.ChunkFinish();
+}
 size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ClientType == header.ChunkType);
@@ -140,6 +245,14 @@ size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,co
 	return sizeof(*this);
 }
 
+void raw::ClientType::Send( NetworkConnection &conn, UINT32 ent, BYTE IsMaster )
+{
+	raw::ClientType * chunk = (raw::ClientType *)conn.GetChunkSpace(Reliable,sizeof raw::ClientType);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID =ent;
+	chunk->IsMaster = IsMaster;
+		conn.ChunkFinish();
+}
 size_t raw::Version::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Version == header.ChunkType);
@@ -147,11 +260,31 @@ size_t raw::Version::Handle( NetworkConnection *who,EntityManager *manager,const
 	return sizeof(*this);
 }
 
+void raw::Version::Send( NetworkConnection &conn, Entity *ent )
+{
+	raw::Version * chunk = (raw::Version *)conn.GetChunkSpace(Reliable,sizeof raw::Version);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID =ent->RefID();
+	chunk->game = 255;
+	chunk->major = VERSION_MAJOR;
+	chunk->minor = VERSION_MINOR;
+	chunk->super = VERSION_SUPER;
+		conn.ChunkFinish();
+}
 size_t raw::PlayerID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
-	return NULL;
+	assert(pkg_PlayerID == header.ChunkType);
+	return manager->GetUpdateMgr()->NewPlayerID(ID)? sizeof(*this) : 0; //Drop if chunk is rejected
 }
 
+void raw::PlayerID::Send( NetworkConnection &conn, Entity *ent,UINT32 ID )
+{
+	raw::PlayerID * chunk = (raw::PlayerID *)conn.GetChunkSpace(Reliable,sizeof raw::PlayerID);
+	chunk->header.ChunkType = Type;
+	chunk->header.formID =ent->RefID();
+	chunk->ID = ID;
+		conn.ChunkFinish();
+}
 size_t raw::RPCRequest::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	return NULL;

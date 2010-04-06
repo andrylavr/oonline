@@ -16,15 +16,16 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "PlayerManager.h"
 #include "EntityUpdateManager.h"
 
 class  ServerEntityUpdateManager : public EntityUpdateManager
 {
 protected:
-
+	PlayerManager &_players;
 	NetworkSystem *m_net;
 public:
-	ServerEntityUpdateManager(EntityManager * mgr,NetworkSystem * netsys) : EntityUpdateManager(mgr)
+	ServerEntityUpdateManager(PlayerManager *players,EntityManager * mgr,NetworkSystem * netsys) : EntityUpdateManager(mgr),_players(*players)
 	{
 		m_net = netsys;
 	}
@@ -34,13 +35,14 @@ public:
 	}
 	OO_API virtual void OnPositionUpdate(Entity *ent,bool Inbound );//Triggers Events and network code;
 	OO_API virtual void OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound );
+	OO_API virtual void OnAVModUpdate(Entity *ent,unsigned char AVCode,bool Inbound);
 	OO_API virtual  void GlobalSend(Entity *ent,bool Inbound );
 	OO_API virtual void OnNameUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound );
 	OO_API virtual void OnClassUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void OnCellChange(Entity *ent,UINT32 oldCell, bool Inbound );
 	OO_API virtual void OnRaceUpdate(Entity *ent,bool Inbound );
-	OO_API virtual void OnGenderUpdate(Entity *ent,bool Inbound );
-	OO_API virtual void OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound );
+	OO_API virtual void OnAnimationUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void Chat(Entity *ent,std::string Message,bool Inbound );
+	OO_API virtual bool NewPlayerID(UINT32 ID);
 };

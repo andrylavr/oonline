@@ -22,41 +22,32 @@ GNU General Public License for more details.
 #include "LogIOProvider.h"
 #include "../OblivionOnlineServer/ScreenIOProvider.h"
 #include "EntityManager.h"
+#include "NetworkConnection.h"
 SOCKET ServerSocket;
 bool g_plot = true;
 
-OutPacketStream * outnet;
+NetworkConnection *conn;
 int TotalPlayers;
-DWORD WINAPI RecvThread(LPVOID Params)
+Entity *myself = NULL;
+FakeClient *g_fake;
+void Drop(NetworkConnection *netconn)
 {
-	char buf[PACKET_SIZE];
-	int rc;
-	InPacket * pkg;
-	g_fake->GetIO() << "Receive thread started" <<endl;
+	IOStream::Instance() << FatalError << "Client dropped" <<endl;
+	exit(-1);
+}
+void Receive()
+{
 	while(1)
 	{
-		rc = recv(ServerSocket,buf,PACKET_SIZE,0);
-		if(rc == SOCKET_ERROR)
-		{
-			g_fake->GetIO() << "Server dropped connection.Press any key to quit" << endl;
-			getc(stdin);
-			exit(1);
-		}
-		pkg = new InPacket(g_fake->GetEntities(),&g_fake->GetIO(),(BYTE *)buf,rc);
-		pkg->HandlePacket();
-		delete pkg;
+		conn->Process();
 	}
-	return 0;
 }
-
 FakeClient::FakeClient(void)
 {
-	IOSys = new IOSystem();
-	IO = new IOStream(IOSys);
-	//new LogIOProvider(IOSys,LogLevel::BootMessage,"OblivionOnline.log");
-	IO->RegisterIOProvider(new ScreenIOProvider(IOSys,LogLevel::BootMessage));
-	*IO << BootMessage << "Initializing game client: IO running" <<endl;
-	Entities = new EntityManager(IO);
+	//new LogIOProvider(&IOSystem::Instance(),LogLevel::BootMessage,"OblivionOnline.log");
+	IOSystem::Instance().RegisterIOProvider(new ScreenIOProvider(&IOSystem::Instance(),LogLevel::BootMessage));
+	IOStream::Instance() << BootMessage << "Initializing game client: IO running" <<endl;
+	Entities = new EntityManager(&IOStream::Instance());
 	Entities->SetUpdateManager(new FakeEntityUpdateManager(Entities,NULL));
 	bIsConnected = false;
 	bIsMasterClient = false;
@@ -66,9 +57,6 @@ FakeClient::FakeClient(void)
 FakeClient::~FakeClient(void)
 {
 	delete Entities;
-	delete IO;
-	delete IOSys;
-
 }
 void FakeClient::run()
 {
@@ -79,15 +67,13 @@ void FakeClient::run()
 	unsigned short ClientPort = 41805;
 	rc = WSAStartup(MAKEWORD(2,0),&wsa);
 	ServerSocket = socket(AF_INET,SOCK_STREAM,0);
-	*IO << "OblivionOnline connecting" <<endl;
-	*IO <<"Initializing GUI" <<endl;
-	//InitialiseUI();
+	IOStream::Instance() << "OblivionOnline connecting" <<endl;
 	bIsInitialized = false;
 	//Entities->DeleteEntities();
 	TotalPlayers = 0;
 	LocalPlayer = -1;
-	*IO <<		BootMessage << "OblivionOnline debug client"<<endl;
-	*IO << BootMessage << "Trying to connect to "<< IP << " : " << ClientPort <<endl;
+	IOStream::Instance() <<		BootMessage << "OblivionOnline debug client"<<endl;
+	IOStream::Instance() << BootMessage << "Trying to connect to "<< IP << " : " << ClientPort <<endl;
 	memset(&ServerAddr,NULL,sizeof(SOCKADDR_IN));
 	ServerAddr.sin_addr.s_addr = inet_addr(IP);
 	ServerAddr.sin_port = htons(ClientPort);
@@ -95,20 +81,18 @@ void FakeClient::run()
 	rc = connect(ServerSocket,(SOCKADDR *)&ServerAddr,sizeof(SOCKADDR));
 	if(rc == SOCKET_ERROR)
 	{
-		*IO << Error << "Error" << WSAGetLastError() << " establishing connection " <<endl;
+		IOStream::Instance() << Error << "Error" << WSAGetLastError() << " establishing connection " <<endl;
 		return;
 	}
 	else 
 	{
-		*IO << "Successfully connected" << endl;
+		IOStream::Instance() << "Successfully connected" << endl;
+		
+		conn=new NetworkConnection(Entities,ServerSocket,Drop);
 
-		outnet = new OutPacketStream(ServerSocket,ServerAddr,IO);
-
-		//RecvThread(NULL);
-		CreateThread(NULL,NULL,RecvThread,NULL,NULL,NULL);
-		//hPredictionEngine = CreateThread(NULL,NULL,PredictionEngine,NULL,NULL,NULL);
+		boost::thread recvthread(Receive);
 		Sleep(100);
-		*IO << BootMessage << "Waiting for Player ID" <<endl;
+		IOStream::Instance() << BootMessage << "Waiting for Player ID" <<endl;
 		bIsConnected = true;
 		while(1)
 		{
@@ -123,47 +107,59 @@ void FakeClient::HandleCommand(char *String)
 	switch(String[0])
 	{
 		UINT32 CellID;
-		UINT32 Interior;
+		UINT32 Integer;
+		int AV;
 		float f[6];
 		UINT32	formID;
-		BYTE	status;
 	case 'p': //position
 		sscanf(String,"p %f %f %f %f %f %f ",f,f+1,f+2,f+3,f+4,f+5);
-		NetSendPosition(outnet,LocalPlayer,STATUS_PLAYER,f[0],f[1],f[2],f[3],f[4],f[5]);
-		outnet->Send();
+		myself->MoveNRot(f[0],f[1],f[2],f[3],f[4],f[5]);
+		conn->Process();
 		break;
 	case 'P': //position of another item
-		sscanf(String,"P %U %u %f %f %f %f %f %f",&formID,&status,f,f+1,f+2,f+3,f+4,f+5);
-		NetSendPosition(outnet,LocalPlayer,STATUS_PLAYER,f[0],f[1],f[2],f[3],f[4],f[5]);
-		outnet->Send();
+		sscanf(String,"P %U %f %f %f %f %f %f",&formID,f,f+1,f+2,f+3,f+4,f+5);
+		g_fake->GetEntities()->GetOrCreateEntity(formID)->MoveNRot(f[0],f[1],f[2],f[3],f[4],f[5]);
+		conn->Process();
 		break;
 	case 'c': //cell
-		sscanf(String,"c %u %u",&CellID,&Interior);
-		NetSendCellID(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
-		outnet->Send();
+		sscanf(String,"c %u %u",&CellID,&Integer);
+		myself->SetCell(CellID,Integer);
+		conn->Process();
 		break;
 	case 'n': // Animation
-		sscanf(String,"n %u %u",&CellID,Interior);
-		NetSendAnimation(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
-		outnet->Send();
+		sscanf(String,"n %u ",&CellID);
+		myself->SetAnimation(CellID);
+		conn->Process();
 		break;
 	case 'a': // Actor Value
-		sscanf(String,"a %u %d",&CellID,&Interior);
-		NetSendActorValue(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
-		outnet->Send();
+		sscanf(String,"a %u %d",&CellID,&AV);
+		myself->SetActorValue(CellID,AV);
+		conn->Process();
 		break;
 	case 'e': // Actor Value
-		sscanf(String,"e %u %d",&CellID,&Interior);
-		NetSendEquip(outnet,LocalPlayer,STATUS_PLAYER,CellID,Interior);
-		outnet->Send();
+		sscanf(String,"e %u %d",&CellID,&Integer);
+		myself->SetEquip(CellID,Integer);
+		conn->Process();
 		break;
 	
 	}
 }
-FakeClient *g_fake;
+
+void FakeClient::SetPlayerID( UINT32 value )
+{
+//	if(myself) delete myself;
+	myself =g_fake->GetEntities()->GetOrCreateEntity(value);
+}
 void main()
 {
+	Sleep(2000);//Debugging
 	g_fake = new FakeClient();
 	g_fake->run();
 	delete g_fake;
+}
+
+bool FakeEntityUpdateManager::NewPlayerID( UINT32 ID )
+{
+	g_fake->SetPlayerID(ID);
+	return true;
 }
