@@ -34,9 +34,9 @@ GameServer::GameServer(void)
 {
 	//Initialize all subsystems
 	/*
-	1. Lua system - Configurations  Done - add operator[] perhaps
-	2. Event - it triggers everything and IO needs it Done
-	3. IO Done
+	1. IO System -- logging obviously comes first
+	2. Lua system - Configurations  Done - add operator[] perhaps
+	3. Event - it triggers everything - IO doesn't need event anymore
 	4 .ScreenIOProvider Done
 	5 .LogIOProvider Done	
 	6. Netsystem  Done TCP(DONE) UDP(DONE)
@@ -51,24 +51,39 @@ GameServer::GameServer(void)
 	Perhaps some other stuff
 	Finish of with a onload event
 	*/
-	m_script = new LuaSystem(this);
-	m_script->RunStartupScripts("ServerLaunch.lua");
-	m_Evt = new EventSystem(this);
 	IOStream::Instance().RegisterIOProvider(new ScreenIOProvider(&IOSystem::Instance(),BootMessage));//TODO : Fix that
-	DisplayBootupMessage();
-	IOStream::Instance() <<BootMessage<<"Script , Event and Local IO running" << endl;
-	IOStream::Instance() <<BootMessage<<"Opening Log file" << endl;
-	IOStream::Instance().RegisterIOProvider(new LogIOProvider(&IOSystem::Instance(),BootMessage,m_script->GetString("Logfile")));	
-	m_Netsystem = new NetworkSystem(this);
-	m_Entities = new EntityManager(&IOStream::Instance() );
-	m_Players = new PlayerManager(m_Entities,m_Netsystem);
-	m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Players,m_Entities,m_Netsystem));
-	IOStream::Instance().RegisterIOProvider(new ChatIOProvider(this,&IOSystem::Instance()));
-	m_Modules = new ModuleManager(this);
-	m_Admin = new RemoteAdminServer(this);
-	m_script->RunScriptLine("OnLoad()");
-	m_Evt->DefaultEvents.EventBoot();
-	m_Netsystem->Start();
+	try{
+		DisplayBootupMessage();
+		m_script = new LuaSystem(this);
+
+		m_script->RunStartupScripts("ServerLaunch.lua");
+		m_Evt = new EventSystem(this);
+		IOStream::Instance() <<BootMessage<<"Opening Log file" << endl;
+		IOStream::Instance().RegisterIOProvider(new LogIOProvider(&IOSystem::Instance(),BootMessage,m_script->GetString("Logfile")));	
+		IOStream::Instance() <<BootMessage<<"Script , Event and Local IO running" << endl;
+		m_Netsystem = new NetworkSystem(this);
+		m_Entities = new EntityManager(&IOStream::Instance() );
+		m_Players = new PlayerManager(m_Entities,m_Netsystem);
+		m_Entities->SetUpdateManager(new ServerEntityUpdateManager(m_Players,m_Entities,m_Netsystem));
+		IOStream::Instance().RegisterIOProvider(new ChatIOProvider(this,&IOSystem::Instance()));
+		m_Modules = new ModuleManager(this);
+		m_Admin = new RemoteAdminServer(this);
+		m_script->RunScriptLine("OnLoad()");
+		m_Evt->DefaultEvents.EventBoot();
+		m_Netsystem->Start();
+	}
+	catch(std::exception e)
+	{
+		IOStream::Instance() << FatalError << "Error during initialization:"<<e.what()<<"--Quitting!"<<endl;
+		exit(-1);
+	}
+	catch(...)
+	{
+		IOStream::Instance() << FatalError << "Unknown error occured during initialization. Quitting "<<endl;
+		volatile int x=1;
+		x--;
+		sprintf(NULL,"%u",1/x); // THIS WILL DUMP CORE!
+	}
 	//m_script->PrintStatistics();
 	//AdvertiseGameServer();
 	

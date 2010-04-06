@@ -40,11 +40,19 @@ Player * PlayerManager::GetPlayer( SOCKET connection )
 	raw::PlayerID::Send(*retval,retval,retval->RefID());
 	if(!m_MasterClient)
 	{
+		ChunkPermissions permissions(MATCH_ALL);
+		//permissions.other = EntityPermission(MASK_ALL,retval->RefID()); //TODO: Might be better!
 		raw::ClientType::Send(*retval,retval->RefID(),1);
 		m_MasterClient = retval->RefID();
+		retval->SetPermissions(permissions);
 	}
 	else
+	{
+		ChunkPermissions permissions(MASK_ALL,retval->RefID()); // Allowed to change self only
+		permissions.AVMod= EntityPermission(MATCH_ALL); // Affect others!
 		raw::ClientType::Send(*retval,retval->RefID(),0);
+		retval->SetPermissions(permissions);
+	}
 	return retval;
 }
 

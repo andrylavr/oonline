@@ -25,6 +25,9 @@ GNU Affero General Public License for more details.
 #define AV_MAGICKA 9
 #define AV_FATIGUE 10
 #define MASK_ALL 0xffffffff
+#define MASK_NONE 0x00000000
+#define MATCH_ALL MASK_NONE,0
+#define MATCH_NONE MASK_NONE,1
 class Entity;
 class EntityPermission
 {

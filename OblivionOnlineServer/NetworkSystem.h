@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class NetworkSystem
 {
 private:
+	ChunkPermissions _playerdefault;
 	bool _work;
 	boost::condition_variable _work_notify;
 	boost::mutex _listlock;

@@ -87,9 +87,9 @@ void FakeClient::run()
 	else 
 	{
 		IOStream::Instance() << "Successfully connected" << endl;
-		
-		conn=new NetworkConnection(Entities,ServerSocket,Drop);
 
+		ChunkPermissions cp_any(MATCH_ALL);
+		conn=new NetworkConnection(Entities,ServerSocket,Drop,cp_any);
 		boost::thread recvthread(Receive);
 		Sleep(100);
 		IOStream::Instance() << BootMessage << "Waiting for Player ID" <<endl;
@@ -162,4 +162,12 @@ bool FakeEntityUpdateManager::NewPlayerID( UINT32 ID )
 {
 	g_fake->SetPlayerID(ID);
 	return true;
+}
+
+void FakeEntityUpdateManager::NewClientStatus( bool IsMasterClient )
+{
+	if(IsMasterClient)
+		IOStream::Instance() << GameMessage << "Received Master Client!"<<endl;
+	else
+		IOStream::Instance() << GameMessage<<"Received Passive Client!"<<endl;
 }

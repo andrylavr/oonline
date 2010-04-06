@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef WIN32
 #define errno WSAGetLastError()
 #endif
-NetworkConnection::NetworkConnection( EntityManager *manager,SOCKET tcp,boost::function<void (NetworkConnection *)> callback):sendlock(),
-	recvlock(),tcpsock(tcp),mgr(manager),activechunk(0),chunks(0)
+NetworkConnection::NetworkConnection( EntityManager *manager,SOCKET tcp,boost::function<void (NetworkConnection *)> callback,ChunkPermissions permissions):sendlock(),
+	recvlock(),tcpsock(tcp),mgr(manager),activechunk(0),chunks(0),_permissions(permissions)
 {
 	recvtcp = NetworkBufferManager::Instance().GetNew();
 	sendtcp = NetworkBufferManager::Instance().GetNew();
@@ -152,6 +152,8 @@ char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 	assert(size <= sendtcp->remaining());
 	char *retval=sendtcp->GetWrite();
 	sendtcp->IncrementWrite(size);
+	activechunk++;
+	chunks++;
 	return retval;
 }
 

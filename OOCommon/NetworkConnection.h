@@ -30,7 +30,7 @@ class NetworkConnection
 	boost::condition_variable readytosend;
 //	SOCKET udpsock;
 	SOCKET tcpsock;
-	ChunkPermissions permissions;
+	ChunkPermissions _permissions;
 	int activechunk; // Number of active chunks, must be zero
 	int chunks;
 	const char * ParseInput(const char *data,int datasize);
@@ -42,13 +42,14 @@ class NetworkConnection
 	}
 public:
 	boost::signals2::signal<void(NetworkConnection*) > OnDisconnect;
-	NetworkConnection(EntityManager *mgr,SOCKET tcp,boost::function<void (NetworkConnection *)>);
+	NetworkConnection(EntityManager *mgr,SOCKET tcp,boost::function<void (NetworkConnection *)>,ChunkPermissions permissions=ChunkPermissions(MATCH_NONE));
 	~NetworkConnection(void);
 	SOCKET GetTCPSocket() { return tcpsock;} //for using Select() syscall
  	char *GetChunkSpace(bool Reliable,unsigned int size); // Only to be called from chunk constructor.
 	void ChunkFinish();
 	bool Process(); // Mostly poll and destroy if connection was dropped.
-	const ChunkPermissions &GetPermissions() const {return permissions;}
+	const ChunkPermissions &GetPermissions() const {return _permissions;}
+	void SetPermissions(const ChunkPermissions &other) {_permissions = other;}
 };
 class BadProtocolException :public  std::runtime_error
 {

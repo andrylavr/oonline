@@ -267,14 +267,6 @@
 				RelativePath=".\Packets.h"
 				>
 			</File>
-			<Filter
-				Name="ChunkHandler"
-				>
-			</Filter>
-			<Filter
-				Name="NetSend"
-				>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="lua"

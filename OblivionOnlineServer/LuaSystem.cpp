@@ -16,6 +16,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <boost/filesystem.hpp>
 #include "LuaSystem.h"
 #include "DefaultSettings.h"
 #include "ModuleManager.h"
@@ -75,8 +76,13 @@ LuaSystem::~LuaSystem(void)
 }
 bool LuaSystem::RunStartupScripts(std::string Name)
 {
+	IOStream::Instance() << BootMessage << "Working directory for startup scripts:" << boost::filesystem::current_path().string() << endl;
 	DefaultSettings();
-	return luaL_dofile(m_Lua,Name.c_str());
+	if(luaL_dofile(m_Lua,Name.c_str()))
+	{
+		IOStream::Instance() << FatalError << "LUA ERROR:"<< lua_tostring(m_Lua, -1)<<endl;
+		throw std::runtime_error("Couldn't run startup script!");
+	}
 }
 bool LuaSystem::RunScriptLine(std::string Line)
 {
@@ -113,7 +119,7 @@ lua_CFunction LuaSystem::GetFunction(std::string Name)
 	if(!lua_gettop(m_Lua))
 	{
 		m_GS->GetIO() << Warning << "LUA:Invalid Function variable  " << Name << " accessed. Returning default &(abort)."
-			<< "This will most likely crash the server AND all other multiplexed instances; and that is the best way"<<endl;
+			<< "This will most likely crash the server AND all other multiplexed instances; and that is the best way!"<<endl;
 		//TODO: this allows a single multiple server instance to crash all multiple instances... properly handle the exception
 		//TODO: implement lua_functions/panic which will safely abort the program without abusing the stack frame
 		lua_pushcfunction(m_Lua,(lua_CFunction)&abort);

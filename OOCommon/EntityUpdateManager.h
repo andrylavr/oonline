@@ -48,4 +48,5 @@ public:
 	OO_API virtual void OnAnimationUpdate(Entity *ent,bool Inbound )= 0;
 	OO_API virtual void Chat(Entity *ent,std::string Message,bool Inbound )= 0;
 	OO_API virtual bool NewPlayerID(UINT32 ID)=0; // New incoming player ID
+	OO_API virtual void NewClientStatus(bool IsMasterClient) = 0;
 };

@@ -161,3 +161,8 @@ OO_API  bool ServerEntityUpdateManager::NewPlayerID( UINT32 ID )
 {
 	throw std::runtime_error("Illicit PlayerID chunk sent to server!");
 }
+
+OO_API  void ServerEntityUpdateManager::NewClientStatus( bool IsMasterClient )
+{
+	throw std::runtime_error("Illicit ClientType chunk sent to server!");
+}

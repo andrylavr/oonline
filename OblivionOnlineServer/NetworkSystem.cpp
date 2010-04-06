@@ -35,7 +35,9 @@ using namespace boost;
 NetworkSystem::~NetworkSystem(void)
 {
 }
-NetworkSystem::NetworkSystem( GameServer *Server ) :m_GS(Server), _work(false),_work_notify(),_listlock(), _tcp(boost::bind<void>(&NetworkSystem::AcceptThread,ref(*this)))
+NetworkSystem::NetworkSystem( GameServer *Server ) :m_GS(Server), _work(false),_work_notify(),_listlock(), 
+	_tcp(boost::bind<void>(&NetworkSystem::AcceptThread,ref(*this))),
+	_playerdefault(MATCH_NONE)
 {
 }
 void NetworkSystem::AcceptThread() // Run accept and listen on a TCP socket

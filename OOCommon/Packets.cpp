@@ -241,7 +241,7 @@ void raw::Animation::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ClientType == header.ChunkType);
-	assert(0); // Not implemented
+	manager->GetUpdateMgr()->NewClientStatus(IsMaster);
 	return sizeof(*this);
 }
 

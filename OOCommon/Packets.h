@@ -364,15 +364,15 @@ size_t HandleChunk(NetworkConnection *net,EntityManager *ent,const raw::Chunk *c
 
 struct ChunkPermissions
 {
-	EntityPermission AV;
+	EntityPermission AVMod;
 	EntityPermission Position;
 	EntityPermission other;
 	bool Match(UINT32 id,PkgChunk t) const 
 	{
 		switch (t)
 		{
-		case pkg_ActorValue:
-			return AV == id;
+		case pkg_ActorValueMod:
+			return AVMod == id;
 		case pkg_Position:
 		case pkg_Animation:
 			return Position == id;
@@ -384,7 +384,9 @@ struct ChunkPermissions
 	{
 		return Match(ID->RefID(),t);
 	}
-	ChunkPermissions(): AV(0,1),Position(0,1),other(0,1) // Keine schreibrechte 
+	ChunkPermissions(): AVMod(MATCH_NONE),Position(MATCH_NONE),other(MATCH_NONE) // Keine schreibrechte 
 	{
 	}
+	ChunkPermissions(UINT32 Mask,UINT32 Match):AVMod(Mask,Match),Position(Mask,Match),other(Mask,Match)
+	{}
 };

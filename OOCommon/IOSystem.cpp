@@ -54,12 +54,7 @@ bool IOSystem::DoOutput( LogLevel Level,const std::string & Message )
 
 IOSystem::~IOSystem( void )
 {
-	for(std::list<IOProvider *>::iterator  iter = m_providers.begin(); iter != m_providers.end(); iter++)
-	{
-		delete (*iter);
-	}
-	m_providers.clear();
-	delete[] m_buf;
+	delete m_buf;
 }
 
 int IOSystem::sync( void )
