@@ -44,7 +44,7 @@ NetworkBufferManager::NetworkBufferManager():_inuse(),_free(),_queuelock()
 
 NetworkBufferManager::~NetworkBufferManager( void )
 {
-	assert(_inuse.empty());
+//	assert(_inuse.empty());
 	BOOST_FOREACH(NetworkBuffer *buf,_free)
 		delete buf;
 }

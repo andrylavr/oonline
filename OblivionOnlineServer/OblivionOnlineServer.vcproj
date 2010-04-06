@@ -240,22 +240,6 @@
 			Name="Entity"
 			>
 			<File
-				RelativePath=".\Player.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Player.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PlayerManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ServerEntityUpdateManager.cpp"
 				>
 			</File>
@@ -266,6 +250,22 @@
 			<Filter
 				Name="PlayerManager"
 				>
+				<File
+					RelativePath=".\Player.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PlayerManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PlayerManager.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -275,30 +275,6 @@
 				Name="lua"
 				>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Extendibility"
-			>
-			<File
-				RelativePath=".\ExternInterface.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Module.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Module.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="RemoteAdmin"
@@ -371,6 +347,30 @@
 				RelativePath=".\EventSystem.h"
 				>
 			</File>
+			<Filter
+				Name="Extendibility"
+				>
+				<File
+					RelativePath=".\ExternInterface.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Module.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Module.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ModuleManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ModuleManager.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\ChangeLog.txt"

@@ -121,7 +121,7 @@ void ServerEntityUpdateManager::OnCellChange( Entity *ent,UINT32 OldID,bool Inbo
 	{
 		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
 		{
-			Position::Send(*p,ent);
+			CellID::Send(*p,ent);
 		}
 	}
 }

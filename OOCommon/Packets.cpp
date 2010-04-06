@@ -44,7 +44,7 @@ size_t raw::Position::Handle( NetworkConnection *who,EntityManager *manager,cons
 	assert(pkg_Position ==  header.ChunkType);
 	Entity *ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->Move(PosX,PosY,PosZ,true);
+	ent->MoveNRot(PosX,PosY,PosZ,RotX,RotY,RotZ,true);
 	return sizeof(*this);
 }
 
@@ -138,7 +138,7 @@ size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,co
 	assert(pkg_ActorValue== header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->SetActorValue(code,Value);
+	ent->SetActorValue(code,Value,true);
 	return sizeof(*this);
 }
 
@@ -156,7 +156,7 @@ size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager
 	assert(pkg_ActorValueMod == header.ChunkType);
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
-	ent->SetActorValueMod(code,Value);
+	ent->SetActorValueMod(code,Value,true);
 	return sizeof(*this);
 }
 

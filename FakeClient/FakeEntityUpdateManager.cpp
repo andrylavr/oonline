@@ -71,7 +71,7 @@ void FakeEntityUpdateManager::OnCellChange(Entity *ent,UINT32 OldCell,bool Inbou
 		if(!g_plot)
 			return;
 		m_mgr->GetIO() << GameMessage << "Object"<< 
-			ent->RefID() << "("<<ent->Name() << ")Cell: " << ent->CellID() <<endl;
+			ent->RefID() << "("<<ent->Name() << ")Cell: " << ent->CellID() << "Worldspace:" << ent->WorldID() <<endl;
 	}
 }
 void FakeEntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
