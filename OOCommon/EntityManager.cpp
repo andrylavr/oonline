@@ -69,9 +69,14 @@ Entity *EntityManager::GetOrCreateEntity(UINT32 RefID )
 	Entity * retval = GetEntity(RefID);
 	if(!retval)
 	{
-		retval = new Entity(this,RefID);
+		retval = CreateEntity(RefID);
 		if(!retval)
 			throw std::runtime_error("Out of Memory");
 	}
 	return retval;
+}
+
+Entity * EntityManager::CreateEntity( UINT32 RefID )
+{
+	return new Entity(this,RefID);
 }

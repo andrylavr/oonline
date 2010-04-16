@@ -45,7 +45,7 @@ bool Cmd_MPGetAddItemCommand_Execute(COMMAND_ARGS)
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =GetEntityFromRefID(thisObj->refID);
 	*refres= ent->GetNextAddItem();
 	ent->AddEquipItem(*refres);
 	return true;
@@ -55,7 +55,7 @@ bool Cmd_MPGetRemoveItemCommand_Execute(COMMAND_ARGS)
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*refres= ent->GetNextRemoveItem();
 	return true;
 }
@@ -64,7 +64,7 @@ bool Cmd_MPGetEquipItemCommand_Execute(COMMAND_ARGS)
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*refres= ent->GetNextEquipItem();
 	return true;
 }
@@ -73,7 +73,7 @@ bool Cmd_MPGetUnEquipItemCommand_Execute(COMMAND_ARGS)
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*refres= ent->GetNextUnequipItem();
 	ent->AddRemoveItem(*refres);
 	return true;

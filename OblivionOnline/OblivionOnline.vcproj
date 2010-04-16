@@ -355,10 +355,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OOFunctions.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\obse\obse\ParamInfos.h"
 				>
 			</File>
@@ -368,40 +364,8 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Headers"
-			>
-			<File
-				RelativePath=".\ClientEntity.h"
-				>
-			</File>
-			<File
-				RelativePath=".\main.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OBSEFunctions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OOFunctions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UserInterface.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="NetCode"
 			>
-			<File
-				RelativePath=".\HandleChatChunk.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\HandleMiscChunk.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Commands"
@@ -436,10 +400,6 @@
 			</File>
 			<File
 				RelativePath=".\QueueManagementCommands.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SendActorCommands.cpp"
 				>
 			</File>
 		</Filter>
@@ -554,10 +514,6 @@
 		<Filter
 			Name="Externals"
 			>
-			<File
-				RelativePath=".\SpawnCommands.cpp"
-				>
-			</File>
 			<Filter
 				Name="XFIRE"
 				>
@@ -1051,6 +1007,30 @@
 				</File>
 				<File
 					RelativePath="..\obse\obse\Utilities.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Headers"
+				>
+				<File
+					RelativePath=".\ClientEntity.h"
+					>
+				</File>
+				<File
+					RelativePath=".\main.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OBSEFunctions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OOFunctions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UserInterface.h"
 					>
 				</File>
 			</Filter>

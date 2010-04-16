@@ -38,6 +38,7 @@ forward this exception.
 */
 #include <deque>
 #include <iostream>
+#include <unordered_set>
 #include "IOSystem.h"
 #include "ClientEntityManager.h"
 class OutPacketStream;
@@ -47,23 +48,19 @@ class GameClient
 {
 private:
 	std::deque<Entity *> UpdateQueue;
-	// Prototypes
-	IOSystem *IOSys;
-	IOStream *IO;
+
+	NetworkConnection *conn;
 	ClientEntityManager *Entities;
 	bool bIsConnected; //TCP / IP connection exists
 	bool bIsMasterClient; // We have "write rigths" to the server entities
 	bool bIsInitialized; // We received a player ID
-	bool bPlayersConnected[MAXCLIENTS];
 	
 	UINT32 LocalPlayer;
 	UINT32 TotalPlayers;
 
 	HANDLE hRecvThread;
 	SOCKET ServerSocket;
-
-	UInt32 SpawnID[MAXCLIENTS];
-	OutPacketStream * outnet;
+	std::tr1::unordered_set<UINT32> ignore;
 	char ServerIP[15];
 public:
 	GameClient(void);
@@ -71,18 +68,10 @@ public:
 	int Initialize();
 	int Deinitialize();
 	bool Connect();
-	bool Disconnect();
-	IOStream &GetIO() 
-	{
-		return *IO;
-	}
-	EntityManager *GetEntities()
+	void Disconnect();
+	ClientEntityManager *GetEntities()
 	{
 		return Entities;
-	}
-	UINT32 GetTotalPlayers()
-	{
-		return TotalPlayers;
 	}
 	UINT32 GetLocalPlayer()
 	{
@@ -101,39 +90,17 @@ public:
 	{
 		return bIsMasterClient;
 	}
-	bool GetIsPlayerConnected(UINT32 ID)
-	{
-		return bPlayersConnected[ID];
-	}
 	std::deque<Entity *> *GetUpdateQueue()
 	{
 		return &UpdateQueue;
 	}
-	void SetPlayerID(UINT32 Value)
-	{
-		LocalPlayer = Value;
-		bIsInitialized = true;
-	}
+	void SetPlayerID(UINT32 Value);
 	void SetIsMasterClient(bool Value)
 	{
 		bIsMasterClient = Value;
 	}
-	SOCKET &GetSocket()
-	{
-		return ServerSocket;
-	}
-	UINT32 GetSpawnRefID(UINT32 PlayerID)
-	{
-		return SpawnID[PlayerID];
-	}
-	void SetSpawnID(UINT32 PlayerID,UINT32 Value)
-	{
-		SpawnID[PlayerID] = Value;
-	}
-	OutPacketStream *GetServerStream()
-	{
-		return outnet;
-	}
+	void IgnoreRefID(UINT32 Value);// to register OO pure ref IDs;
+	bool IsRefIDIgnore(UINT32 Value);
 	bool SetRenderGUI(bool Value)
 	{
 		return g_bRenderGUI = Value;
@@ -142,8 +109,13 @@ public:
 	{
 		return g_bRenderGUI;
 	}
+
+	NetworkConnection &GetConnection()
+	{
+		return *conn;
+	}
 	//Returns invalid pointer if entity does not exist
-	ClientEntity *LocalFormIDGetEntity(UINT32 RefID);
 	bool RunFrame();
+	bool EmptyPlayerCell();
 };
 

@@ -4,7 +4,7 @@ ClientEntityManager::~ClientEntityManager(void)
 {
 }
 
-ClientEntity * ClientEntityManager::CreateEntity( BYTE Status,UINT32 RefID )
+ClientEntity * ClientEntityManager::CreateEntity( UINT32 RefID )
 {
-	return new ClientEntity(this,RefID,Status);
+	return new ClientEntity(this,RefID);
 }

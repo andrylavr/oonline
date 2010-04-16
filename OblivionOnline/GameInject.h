@@ -23,7 +23,7 @@ class ClientEntity;
 TESObjectREFR *GetRefrFromEntity(ClientEntity * ent);
 bool InjectActorValue(ClientEntity *ent,BYTE slot, INT16 value);
 bool InjectEquip(ClientEntity *ent,BYTE slot,UINT32 formid);
-bool InjectAnimation(ClientEntity  *ent,BYTE slot,bool Playing);
+bool InjectAnimation(ClientEntity  *ent,BYTE slot);
 inline void SafeAddUpdateQueue(Entity * ent)
 {	
 	if(!gClient->GetUpdateQueue()->empty())

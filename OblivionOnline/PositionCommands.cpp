@@ -45,7 +45,7 @@ bool Cmd_MPGetPosX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosX");
 		return true;
 	}
-	ClientEntity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =  GetEntityFromRefID(thisObj->refID);
 	*result = ent->PosX();
 	return true;
 }
@@ -59,7 +59,7 @@ bool Cmd_MPGetPosY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosY");
 		return true;
 	}
-	ClientEntity *ent =  gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =  GetEntityFromRefID(thisObj->refID);
 	*result = ent->PosY();
 	return true;
 }
@@ -73,7 +73,7 @@ bool Cmd_MPGetPosZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetPosZ");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*result = ent->PosZ();
 	return true;
 }
@@ -87,7 +87,7 @@ bool Cmd_MPGetRotZ_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotZ");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*result = ent->RotZ();
 	return true;
 }
@@ -100,7 +100,7 @@ bool Cmd_MPGetRotY_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotY");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*result = ent->RotY();
 	return true;
 }
@@ -113,11 +113,11 @@ bool Cmd_MPGetRotX_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetRotX");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*result = ent->RotX();
 	return true;
 }
-bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
+bool Cmd_MPGetWorldspace (COMMAND_ARGS)
 {
 	UINT32 * refres = (UINT32 *) result;
 	if(!gClient->GetIsInitialized())
@@ -127,15 +127,11 @@ bool Cmd_MPGetIsInInterior_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetIsInterior");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =  GetEntityFromRefID(thisObj->refID);
 	if(!ent)
 		return true;
 	//TESObjectCELL *obj = (TESObjectCELL *)Oblivion_DynamicCast(LookupFormByID(ent->CellID),0,RTTI_TESForm,RTTI_TESObjectCELL,0);	
-	if(ent->IsInInterior())
-		*result = 1;
-	else
-		*result = 0;
-	//*refres = ent->IsInInterior() ? 0 : 1;
+	*refres = ent->WorldID();
 	return true;
 }
 bool Cmd_MPGetParentCellOrWS_Execute (COMMAND_ARGS)
@@ -163,21 +159,21 @@ bool Cmd_MPGetCell_Execute (COMMAND_ARGS)
 		Console_Print("Error, no reference given for MPGetCell");
 		return true;
 	}
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent =GetEntityFromRefID(thisObj->refID);
 	*refres = ent->CellID();
 	return true;
 }
 
-CommandInfo kMPGetIsInInteriorCommand =
+CommandInfo kMPGetWorldspaceCommand =
 {
-	"MPGetIsInInterior",
-	"MPGIII",
+	"MPGetWorldspace",
+	"MPGW",
 	0,
-	"Get IsInterior of an objects supposed parent cell",
+	"Get worldspace",
 	0,		// requires parent obj
 	0,		// doesn't have params
 	NULL,	// no param table
-	Cmd_MPGetIsInInterior_Execute
+	Cmd_MPGetWorldspace
 };
 
 CommandInfo kMPGetPosXCommand =

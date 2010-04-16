@@ -41,40 +41,12 @@ This file is part of OblivionOnline.
 #include "GameClient.h"
 #include "../OOCommon/Packets.h"
 extern void RunScriptLine(const char *buf, bool IsTemp);
-extern UINT32 GetPlayerNumberFromRefID(UInt32 refID);
 extern GameClient * gClient;
-inline int GetPlayerNumberFromSpawnNumber(USHORT SpawnNumber) 
+inline ClientEntity * GetEntityFromRefID(UINT32 RefID)
 {
-	return ((SpawnNumber < gClient->GetLocalPlayer()) ? SpawnNumber : (SpawnNumber +1 ));
-};
-
-inline USHORT GetSpawnIDFromPlayerID(USHORT  PlayerID) // retrieves a player number from a refID in spawn
-{
-	return ((gClient->GetLocalPlayer() > PlayerID) ? PlayerID : (PlayerID -1));
-};
-
-inline UINT32 GetPlayerFormID(UINT32 PlayerID)
-{
-	if(PlayerID == gClient->GetLocalPlayer())
-		return (*g_thePlayer)  ->refID;
+	if((*g_thePlayer)->refID==RefID)
+		return (ClientEntity*)gClient->GetEntities()->GetOrCreateEntity(gClient->GetLocalPlayer());
 	else
-		return gClient->GetSpawnRefID(gClient->GetLocalPlayer() > PlayerID ? PlayerID : (PlayerID -1)); // TODO: Revamp this
-}
-inline bool IsPlayerSpawn(UINT32 RefID)
-{
-	for(int i = 0;i < MAXCLIENTS;i++)
-	{
-		if(gClient->GetSpawnRefID(i) == RefID)
-			return true;
-	}
-	return false;
-}
-inline BYTE GetStatus(TESObjectREFR *refr)
-{
-	if(!refr->IsActor())
-		return STATUS_OBJECT;
-	if(IsPlayerSpawn(refr->refID))
-		return STATUS_PLAYER;
-	return STATUS_NPC;
+		return (ClientEntity*)gClient->GetEntities()->GetOrCreateEntity(RefID);
 }
 #endif

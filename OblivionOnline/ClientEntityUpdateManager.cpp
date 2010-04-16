@@ -18,27 +18,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 #include "main.h"
-#include "../OOCommon/NetSend.h"
 #include "GameInject.h"
 #include "ClientEntityUpdateManager.h"
-void ClientEntityUpdateManager::OnAnimationUpdate(Entity *ent,unsigned char AnimationID,bool Inbound)
+#include "Packets.h"
+void ClientEntityUpdateManager::OnAnimationUpdate(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
-		NetSendAnimation(gClient->GetServerStream(),ent->RefID(),ent->Status(),AnimationID,ent->AnimationStatus(AnimationID));
+		raw::Animation::Send(gClient->GetConnection(),ent);
 	else
-		InjectAnimation((ClientEntity *)ent,AnimationID,ent->AnimationStatus(AnimationID));
+		InjectAnimation((ClientEntity *)ent,ent->AnimationStatus());
 }
 void ClientEntityUpdateManager::OnAVUpdate(Entity *ent,unsigned char AVCode,bool Inbound)
 {
 	if(!Inbound)
-		NetSendActorValue(gClient->GetServerStream(),ent->RefID(),ent->Status(),AVCode,ent->BaseActorValue(AVCode));
+		raw::ActorValue::Send(gClient->GetConnection(),ent,AVCode);
 	else
 		InjectActorValue((ClientEntity *)ent,AVCode,(UINT32)ent->BaseActorValue(AVCode));// This causes C++ to raw re-interpret the data
 }
 void ClientEntityUpdateManager::OnCellChange(Entity *ent,UINT32 OldCell,bool Inbound)
 {
+	if( (ent->RefID() == gClient->GetLocalPlayer())	 && !gClient->GetIsMasterClient() )
+		gClient->EmptyPlayerCell();
 	if(!Inbound)
-		NetSendCellID(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->CellID(),ent->IsInInterior());
+		raw::CellID::Send(gClient->GetConnection(),ent);
 	else
 	{
 		SafeAddUpdateQueue(ent);
@@ -51,12 +53,9 @@ void ClientEntityUpdateManager::OnClassUpdate(Entity *ent,bool Inbound)
 void ClientEntityUpdateManager::OnEquipUdate(Entity *ent,unsigned char slot,bool Inbound)
 {
 	if(!Inbound)
-		NetSendEquip(gClient->GetServerStream(),ent->RefID(),ent->Status(),slot,ent->Equip(slot));
+		raw::Equip::Send(gClient->GetConnection(),ent,slot);
 	else
 		InjectEquip((ClientEntity *)ent,slot,ent->Equip(slot));
-}
-void ClientEntityUpdateManager::OnGenderUpdate(Entity *ent,bool Inbound)
-{
 }
 void ClientEntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
 {
@@ -64,8 +63,7 @@ void ClientEntityUpdateManager::OnNameUpdate(Entity *ent,bool Inbound)
 void ClientEntityUpdateManager::OnPositionUpdate(Entity *ent,bool Inbound)
 {
 	if(!Inbound)
-		NetSendPosition(gClient->GetServerStream(),ent->RefID(),ent->Status(),ent->PosX(),ent->PosY()
-		,ent->PosZ(),ent->RotX(),ent->RotY(),ent->RotZ());
+		raw::Position::Send(gClient->GetConnection(),ent);
 	else
 		SafeAddUpdateQueue(ent);
 }
@@ -73,9 +71,25 @@ void ClientEntityUpdateManager::OnRaceUpdate(Entity *ent,bool Inbound)
 {
 
 }
+void ClientEntityUpdateManager::OnAVModUpdate( Entity *ent,unsigned char AVCode,bool Inbound )
+{
+	if(!Inbound)
+		raw::ActorValueMod::Send(gClient->GetConnection(),ent,AVCode);
+	else
+		SafeAddUpdateQueue(ent);
+}
 void ClientEntityUpdateManager::Chat(Entity *ent,std::string Message,bool Inbound )
 {}
 void ClientEntityUpdateManager::GlobalSend(Entity *ent, bool Inbound)
-{
+{}
 
+bool ClientEntityUpdateManager::NewPlayerID( UINT32 ID )
+{
+	gClient->SetPlayerID(ID);
+	return true;
+}
+
+void ClientEntityUpdateManager::NewClientStatus( bool IsMasterClient )
+{
+	gClient->SetIsMasterClient(IsMasterClient);
 }

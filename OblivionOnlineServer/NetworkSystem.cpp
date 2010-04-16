@@ -85,6 +85,7 @@ void NetworkSystem::AcceptThread() // Run accept and listen on a TCP socket
 			SOCKET sock = accept(acceptSocket,(SOCKADDR *)&addr,&addr_size);
 			try
 			{
+				IOStream::Instance() << GameMessage << "New game connection from "<< inet_ntoa(addr.sin_addr) <<endl;
 				AddPlayer(sock);
 			}
 			catch (std::exception e)

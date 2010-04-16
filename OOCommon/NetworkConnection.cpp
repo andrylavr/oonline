@@ -159,10 +159,13 @@ char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 
 void NetworkConnection::ChunkFinish()
 {
-	boost::lock_guard<boost::mutex> guard(sendlock);
-	assert(activechunk>0);
-	assert(chunks>0);
-	if(--activechunk == 0) readytosend.notify_all();
+	{
+		boost::lock_guard<boost::mutex> guard(sendlock);
+		assert(activechunk>0);
+		assert(chunks>0);
+		--activechunk;
+	}
+	if(activechunk <= 0) readytosend.notify_all();
 }
 bool NetworkConnection::Send()
 {

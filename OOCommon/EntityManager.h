@@ -30,6 +30,7 @@ typedef std::pair<UINT32,Entity *> IDEntityPair;
  class EntityManager
 {	
 protected:
+	virtual Entity * CreateEntity(UINT32 RefID);
 	boost::mutex lock;
 	std::map<UINT32,Entity *> m_entities;
 	IOStream *m_IO;

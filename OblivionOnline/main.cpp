@@ -38,11 +38,9 @@ This file is part of OblivionOnline.
 #include "main.h"
 #include "UserInterface.h"
 #include "D3Dhook.h"
-#include "InPacket.h"
 #include "Commands.h"
 #include "ClientEntity.h"
 #include "LogIOProvider.h"
-#include "../OOCommon/InPacket.h"
 #include "GameClient.h"
 // Global variables
 extern "C" HINSTANCE OODll;
@@ -75,7 +73,7 @@ DWORD WINAPI UDPThread(LPVOID Params)
 	InPacket * pkg;
 	if(udpsock == -1)
 	{
-		gClient->GetIO()<< FatalError << "Couldn't create UDP socket "<<endl;
+		IOStream::Instance()<< FatalError << "Couldn't create UDP socket "<<endl;
 	}
 	memset(&addr,0,sizeof(addr));
 	addr.sin_port =htons();
@@ -85,33 +83,12 @@ DWORD WINAPI UDPThread(LPVOID Params)
 	{
 		int fromlen = sizeof remoteaddr;
 		rc=recvfrom(udpsock,buf,PACKET_SIZE,0,(sockaddr *)&remoteaddr,&fromlen);
-		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *) buf,rc);
+		pkg = new InPacket(gClient->GetEntities(),&IOStream::Instance(),(BYTE *) buf,rc);
 		pkg->HandlePacket();
 		delete pkg;
 	}
 } 
 #endif
-DWORD WINAPI RecvThread(LPVOID Params)
-{
-	char buf[PACKET_SIZE];
-	int rc;
-	InPacket * pkg;
-	gClient->GetIO() << "Receive thread started" <<endl;
-	while(gClient->GetIsConnected())
-	{
-		rc = recv(gClient->GetSocket(),buf,PACKET_SIZE,0); //TODO: Doesn't receive  UDP
-		if(rc == SOCKET_ERROR)
-		{
-			SetConnectionMessage("Server dropped connection");
-			gClient->GetIO() << "Server dropped connection" << endl;
-			gClient->Disconnect();
-		}
-		pkg = new InPacket(gClient->GetEntities(),&gClient->GetIO(),(BYTE *)buf,rc);
-		pkg->HandlePacket();
-		delete pkg;
-	}
-	return 0;
-}
 
 extern "C" {
 static void OO_LoadCallback(void * reserved)
@@ -169,7 +146,6 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 	
 
 	//Data sending
-	obse->RegisterCommand(&kMPSendActorCommand);
 	obse->RegisterCommand(&kMPSendChatCommand);
 
 
@@ -181,16 +157,11 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 	obse->RegisterCommand(&kMPGetRotYCommand);
 	obse->RegisterCommand(&kMPGetRotXCommand);
 	obse->RegisterCommand(&kMPGetCellCommand);
-	obse->RegisterCommand(&kMPGetIsInInteriorCommand);
+	obse->RegisterCommand(&kMPGetWorldspaceCommand);
 	//Debug
 	obse->RegisterCommand(&kMPGetDebugDataCommand);
 
-	//Misc.
-	obse->RegisterCommand(&kMPGetSpawnedRefCommand);
-	obse->RegisterCommand(&kMPSpawnedCommand);
-	obse->RegisterCommand(&kMPTotalPlayersCommand);
 	obse->RegisterCommand(&kMPDisconnectCommand);
-	obse->RegisterCommand(&kMPClearSpawnCommand);
 
 	//Equipment
 	obse->RegisterCommand(&kMPGetAddItemCommand);
@@ -200,11 +171,11 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 
 
 	obse->RegisterCommand(&kMPGetNewObjectCommand);
-	obse->RegisterCommand(&kMPGetMyIDCommand);
 	
 	obse->RegisterCommand(&kMPShowGUICommand);
 	obse->RegisterCommand(&kMPGetParentCellOrWSCommand);
 	obse->RegisterCommand(&kMPGetAnimationCommand);
+	obse->RegisterCommand(&kMPIgnoreObjectCommand);
 	//_MESSAGE("Done loading OO Commands");
 	if(!obse->isEditor)
 	{

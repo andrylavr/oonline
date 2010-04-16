@@ -37,7 +37,6 @@ forward this exception.
 */
 extern CommandInfo kMPGetParentCellOrWSCommand;
 extern CommandInfo kMPConnectCommand;
-extern CommandInfo kMPSendActorCommand;
 extern CommandInfo kMPSendChatCommand;
 extern CommandInfo kMPGetPosXCommand;
 extern CommandInfo kMPGetPosYCommand;
@@ -47,18 +46,14 @@ extern CommandInfo kMPGetRotYCommand;
 extern CommandInfo kMPGetRotXCommand;
 extern CommandInfo kMPGetCellCommand;
 
-extern CommandInfo kMPGetIsInInteriorCommand;
+extern CommandInfo kMPGetWorldspaceCommand;
 
 //Debug
 extern CommandInfo kMPGetDebugDataCommand;
 
 //Misc.
-extern CommandInfo kMPGetSpawnedRefCommand;
-extern CommandInfo kMPSpawnedCommand;
-extern CommandInfo kMPTotalPlayersCommand;
+extern CommandInfo kMPIgnoreObjectCommand;
 extern CommandInfo kMPDisconnectCommand;
-extern CommandInfo kMPClearSpawnCommand;
-
 //Equipment
 extern CommandInfo kMPGetAddItemCommand;
 extern CommandInfo kMPGetRemoveItemCommand;
@@ -66,7 +61,6 @@ extern CommandInfo kMPGetEquipItemCommand;
 extern CommandInfo kMPGetUnEquipItemCommand;
 
 
-extern CommandInfo kMPGetMyIDCommand;
 extern CommandInfo kMPGetNewObjectCommand;
 
 extern CommandInfo kMPShowGUICommand;

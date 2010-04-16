@@ -110,7 +110,7 @@ struct ANSIString
 	}
 	std::string GetData(const char *end) const
 	{
-		return string(data,max(end-data,strlen));
+		return string(data,MAX(end-data,strlen));
 	}
 	void Write(const std::string &Message)
 	{
@@ -118,6 +118,7 @@ struct ANSIString
 		memcpy(data,Message.c_str(),strlen);
 	}
 };
+#undef MAX(x,y)
 struct Position
 {
 	raw::Chunk header;

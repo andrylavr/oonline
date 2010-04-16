@@ -38,6 +38,7 @@ Player * PlayerManager::GetPlayer( SOCKET connection )
 	_playerIDs.pop();
 	insert(retval);
 	raw::PlayerID::Send(*retval,retval,retval->RefID());
+	IOStream::Instance() << "Sent new player ID "<<retval->RefID()<< " - We now have "<<size()<< " Players"<<endl;
 	if(!m_MasterClient)
 	{
 		ChunkPermissions permissions(MATCH_ALL);

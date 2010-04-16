@@ -40,9 +40,10 @@ forward this exception.
 #include "LogIOProvider.h"
 #include "UserInterface.h"
 #include "OutPacketStream.h"
-#include "NetSend.h"
 #include "OBSEFunctions.h"
 #include "ClientEntityUpdateManager.h"
+#include "NetworkConnection.h"
+#include "boost/foreach.hpp"
 #define MOVE_THRESHOLD 0.2
 bool g_bRenderGUI = true;
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
@@ -59,20 +60,18 @@ static void SendActorPosition(TESObjectREFR *act,ClientEntity *ent)
 		ent->MoveNRot(act->posX,act->posY,act->posZ,act->rotX,act->rotY,act->rotZ);
 	}
 }
-static void SendActorHealthOnly(Actor *act,ClientEntity *ent)
+static void SendActorValueMod(Actor *act,ClientEntity *ent)
 {
 	for(BYTE i = 8;i <= 10;i++) // Only 8;9;10
 	{
-		ent->SetActorValue(i,act->GetActorValue(i));
+		ent->SetActorValueMod(i,(short)act->GetActorValue(i)- (short)act->GetBaseActorValue(i));
 	}
 }
 static void SendActorValues(Actor *act,ClientEntity *ent)
 {
-	/*ASSERT(ent);
-	ASSERT(act);*/
-	ent->SetActorValue(8,act->GetActorValue(8));
-	ent->SetActorValue(9,act->GetActorValue(9));
-	ent->SetActorValue(10,act->GetActorValue(10));
+	ent->SetActorValue(8,act->GetBaseActorValue(8));
+	ent->SetActorValue(9,act->GetBaseActorValue(9));
+	ent->SetActorValue(10,act->GetBaseActorValue(10));
 }
 static void SendActorEquip(Actor *act,ClientEntity *ent)
 {
@@ -105,12 +104,10 @@ GameClient::GameClient(void) : UpdateQueue()
 	1 IO
 	2 Network
 	3 ClientEntity
-	*/
-	IOSys = new IOSystem();
-	IO = new IOStream(IOSys);
-	IOSys->RegisterIOProvider(new LogIOProvider(IOSys,LogLevel::BootMessage,"OblivionOnline.log"));
-	*IO << BootMessage << "Initializing game client: IO running" <<endl;
-	Entities = new ClientEntityManager(IO);
+		*/
+	IOSystem::Instance().RegisterIOProvider(new LogIOProvider(&IOSystem::Instance(),LogLevel::BootMessage,"OblivionOnline.log"));
+	IOStream::Instance() << BootMessage << "Initializing game client: IO running" <<endl;
+	Entities = new ClientEntityManager(&IOStream::Instance());
 	Entities->SetUpdateManager(new ClientEntityUpdateManager(Entities));
 	bIsConnected = false;
 	bIsMasterClient = false;
@@ -120,8 +117,6 @@ GameClient::GameClient(void) : UpdateQueue()
 GameClient::~GameClient(void)
 {
 	delete Entities;
-	delete IO;
-	delete IOSys;
 }
 
 int GameClient::Initialize()
@@ -130,36 +125,25 @@ int GameClient::Initialize()
 	WSADATA wsa;
 	rc = WSAStartup(MAKEWORD(2,0),&wsa);
 	ServerSocket = socket(AF_INET,SOCK_STREAM,0);
-	*IO << "OblivionOnline connecting" <<endl;
-	*IO <<"Initializing GUI" <<endl;
+	IOStream::Instance() << BootMessage<< "OblivionOnline connecting" <<endl;
+	IOStream::Instance() <<BootMessage<<"Initializing GUI" <<endl;
 	//InitialiseUI();
 	bIsInitialized = false;
 	//Entities->DeleteEntities();
 	TotalPlayers = 0;
 	LocalPlayer = MAXCLIENTS;
-	for(int i=0; i<MAXCLIENTS; i++)
-	{
-		bPlayersConnected[i] = false;
-		SetSpawnID(i,0);
-	}
 	return rc;
 }
 
 int GameClient::Deinitialize()
 {
-	for(int i=0; i<MAXCLIENTS; i++)
-	{
-		bPlayersConnected[i] = false;
-	}
 	bIsInitialized = false;
 	TotalPlayers = 0;
-	gClient->GetEntities()->DeleteEntities();
+	GetEntities()->DeleteEntities();
 	closesocket(ServerSocket);
 	ServerSocket = INVALID_SOCKET;
 	WSACleanup();
 	DeinitialiseUI();
-	TerminateThread(hRecvThread, 0);
-	CloseHandle(hRecvThread);
 	//D3DHookDeInit();
 
 	return 1;
@@ -174,13 +158,13 @@ bool GameClient::Connect()
 	long rc = 0;
 	if(!bIsConnected)
 	{
-		*IO << BootMessage << "Initializing Connection" <<endl; 
+		IOStream::Instance() << BootMessage << "Initializing Connection" <<endl; 
 		Initialize();
 
 		FILE *Realmlist = fopen("realmlist.wth","r");
 		if(!Realmlist)
 		{
-			*IO << Error << "File realmlist.wth could not be found" << endl;
+			IOStream::Instance() << Error << "File realmlist.wth could not be found" << endl;
 			return false;
 		}
 		while(!feof(Realmlist))
@@ -188,7 +172,7 @@ bool GameClient::Connect()
 			fscanf(Realmlist,"%14s",IP);
 			if(!fscanf(Realmlist,"%hu",&ClientPort))
 				ClientPort = 41805;
-			*IO << BootMessage << "Trying to connect to "<<IP << " : "<<ClientPort <<endl;
+			IOStream::Instance() << BootMessage << "Trying to connect to "<<IP << " : "<<ClientPort <<endl;
 			memset(&ServerAddr,NULL,sizeof(SOCKADDR_IN));
 			ServerAddr.sin_addr.s_addr = inet_addr(IP);
 			ServerAddr.sin_port = htons(ClientPort);
@@ -196,18 +180,16 @@ bool GameClient::Connect()
 			rc = connect(ServerSocket,(SOCKADDR *)&ServerAddr,sizeof(SOCKADDR));
 			if(rc == SOCKET_ERROR)
 			{
-				*IO << "Error" << WSAGetLastError() << " establishing connection " <<endl;
+				IOStream::Instance() << "Error" << WSAGetLastError() << " establishing connection " <<endl;
 				continue;
 			}
 			else 
 			{
-				*IO << "Successfully connected" << endl;
-				
-				outnet = new OutPacketStream(GetSocket(),ServerAddr,IO);			
-
-				hRecvThread = CreateThread(NULL,NULL,RecvThread,NULL,NULL,NULL);
-				//hPredictionEngine = CreateThread(NULL,NULL,PredictionEngine,NULL,NULL,NULL);
-				*IO << BootMessage << "Waiting for Player ID" <<endl;
+				ChunkPermissions all(MATCH_ALL);
+				IOStream::Instance() << "Successfully connected" << endl;
+				conn = new NetworkConnection(GetEntities(),ServerSocket,boost::bind<>(&GameClient::Disconnect,boost::ref(*this)) );		
+				conn->SetPermissions(all);
+				IOStream::Instance() << BootMessage << "Waiting for Player ID" <<endl;
 				bIsConnected = true;
 				break;
 			}
@@ -217,25 +199,24 @@ bool GameClient::Connect()
 	return true;
 }
 
-bool GameClient::Disconnect()
+void GameClient::Disconnect()
 {
 	if(bIsConnected)
 	{
 		Deinitialize();
 		bIsConnected = false;
-		*IO << BootMessage << "Successfully disconnect" << endl;
+		IOStream::Instance() << BootMessage << "Successfully disconnect" << endl;
 	}else{
-		*IO << BootMessage << " You are not connected" << endl;
+		IOStream::Instance() << BootMessage << " You are not connected" << endl;
 	}
-	return true;
 }
 bool GameClient::RunFrame()
 {
 	ClientEntity * ent;  
 	Actor  * actor = NULL;
 	BYTE Status;
-	if(!gClient->GetIsInitialized() )
-		return true;
+	if(!gClient->GetIsConnected())
+		return false;
 	//Check if Menu Mode:
 
 	InterfaceManager* intfc = InterfaceManager::GetSingleton();
@@ -244,116 +225,98 @@ bool GameClient::RunFrame()
 	else
 		g_bRenderGUI = true;
 
+	if(!gClient->GetIsInitialized() )
+	{
+		gClient->GetConnection().Process();//Poll connection until a player id is received
+		return true;
+	}
 	// A heavy command xD
 	// 1 - send local player data up .
 	// 2 - send health magicka and fatigue  + equip up.
 	// if MC :
 	// 2 - send up position , stat equip , etc of NPCs
 	//(*g_thePlayer) is ignored
-	ent = (ClientEntity *)gClient->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,gClient->GetLocalPlayer());
+	ent = (ClientEntity *)gClient->GetEntities()->GetOrCreateEntity(gClient->GetLocalPlayer());
 	//gClient->GetServerStream()->Send(); // Prevent Lag
 	SendActorPosition(*g_thePlayer,ent);
 	SendActorValues(*g_thePlayer,ent);
 	SendActorEquip(*g_thePlayer,ent);
 	SendActorAnimation(*g_thePlayer,ent);
-	//Health of the other players
-	for(int i = 0;i < MAXCLIENTS ;i++)
-	{
-		if(gClient->GetSpawnRefID(i) != 0 && i!=LocalPlayer)
-		{			
-
-			if(! ( actor = (Actor *)LookupFormByID(gClient->GetSpawnRefID(i))  ) )
-				continue; 
-			ent =  (ClientEntity *)gClient->GetEntities()->GetOrCreateEntity(STATUS_PLAYER,i);
-			if(!ent)
-			{
-				gClient->GetIO() << Error << __FILE__ << " (line:)" << __LINE__ << " : Out of memory or allocation error. Continuing."<<endl;
-				continue; // This means an ClientEntity was missed
-			}
-			//SendActorHealthOnly(actor,ent);
-			SendActorValues(actor,ent); 
-		}
-	}
-	if(gClient->GetIsMasterClient())
-	{
-		//rewritten
-		//Just check up on the cells all other players are in
-		std::list <TESObjectCELL *> CellStack;
-		CellStack.push_back((*g_thePlayer)->parentCell);
-		for(int i = 0 ; i < MAXCLIENTS;i++)
+		//Find all cells any "ignored objects" are in. these are mostly players.
+		std::set<TESObjectCELL *> cells;
+		cells.insert((*g_thePlayer)->parentCell);
+		BOOST_FOREACH(UINT32 i,ignore)
 		{
-			bool bInsert = true;
-			if(gClient->GetSpawnRefID(i))
-			{
-				TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(gClient->GetSpawnRefID(i));
-				if(!form)
-					continue;
-				// Look through the list
-				std::list <TESObjectCELL *>::iterator it = CellStack.begin();
-				std::list <TESObjectCELL *>::iterator end = CellStack.end();
-				for(;it != end; ++it)
-				{
-					//if( (*it)->Compare(form->parentCell) )
-					if(!form->parentCell ||  (*it)->refID == form->parentCell->refID )
-					{
-						bInsert = false;
-						break;
-					}
-				}
-				if(bInsert)
-					CellStack.push_back(form->parentCell);
-			}
+			TESObjectREFR *form = (TESObjectREFR *)LookupFormByID(i);
+			if(!form)
+				continue;
+			if(!form->parentCell) continue;
+
+			if(cells.find(form->parentCell)  == cells.end())//Not present
+				cells.insert(form->parentCell);
 		}
 		//now we process each cell...
-		for(std::list <TESObjectCELL *>::iterator i = CellStack.begin();i != CellStack.end(); i++)
+		BOOST_FOREACH(TESObjectCELL *Cell,cells)
 		{
-			BYTE Status;
-			TESObjectCELL * Cell = *i;
 			TESObjectCELL::ObjectListEntry * ListIterator = &Cell->objectList;		
 
-			while(ListIterator) // Iterate the loopds
+			while(ListIterator) // Iterate the entities
 			{
-				if(ListIterator->refr->IsActor())
-					Status = STATUS_NPC; // We ignore player objects - so
-				else
+				if(IsRefIDIgnore(ListIterator->refr->refID)) // Do not synchronize objects used by OblivionOnline
 				{
-					ListIterator = ListIterator->next; //TODO: Add syncing for non-actor objects
-					continue;
-				}
-
-				if(GetPlayerNumberFromRefID(ListIterator->refr->refID) == -1) // Do not synchronise objects used by OblivionOnline
-				{
-					ent = (ClientEntity *) gClient->GetEntities()->GetOrCreateEntity(Status,ListIterator->refr->refID);
-
-					//Sync that object too
-					/*
-					if(ListIterator->refr->parentCell->refID != ent->CellID)
-					{
-					ent->CellID = ListIterator->refr->parentCell->refID;
-					NetSendCellID(ListIterator->refr->refID,Status,ent->CellID);
-					} */
-					SendActorPosition(ListIterator->refr,ent);					
-					if(Status == STATUS_NPC)
+					ent = (ClientEntity *) gClient->GetEntities()->GetOrCreateEntity(ListIterator->refr->refID);
+					if(GetIsMasterClient())
+						SendActorPosition(ListIterator->refr,ent);					
+					if(ListIterator->Info()->IsActor())
 					{
 						Actor * actor = (Actor *)LookupFormByID(ListIterator->refr->refID);
-						SendActorValues(actor,ent);
-						SendActorEquip(actor,ent);
-						SendActorAnimation(actor,ent);						
+						{
+							if(GetIsMasterClient())
+							{
+								SendActorValues(actor,ent);
+								SendActorEquip(actor,ent);
+								SendActorAnimation(actor,ent);		
+							}
+							SendActorValueMod(actor,ent);
+						}				
 					}
 				}
 				ListIterator = ListIterator->next;
 			}
 		}
-	}
-	gClient->GetServerStream()->Send();
+	gClient->GetConnection().Process();
 	return true;
 }
 
-ClientEntity * GameClient::LocalFormIDGetEntity(UINT32 RefID)
+bool GameClient::EmptyPlayerCell()
 {
-	UINT32 playerid = GetPlayerNumberFromRefID(RefID); //TODO: this can be optimized
-	if(playerid == -1)
-		return (ClientEntity *) GetEntities()->GetEntity(STATUS_OBJECT,RefID);
-	else
-		return (ClientEntity *) GetEntities()->GetEntity(STATUS_PLAYER,playerid);
+	const UINT32 storagecell = 98410; // marked "Testdungeon"
+	TESObjectCELL::ObjectListEntry * iter = &(*g_thePlayer)->parentCell->objectList; //TODO: WIPE worldspace!
+	while(iter)
+	{
+		if(iter->Info()->refID == (*g_thePlayer)->refID) { iter= iter->next;  continue;}
+		Entity * ent = gClient->GetEntities()->GetOrCreateEntity(iter->Info()->refID);
+		assert(ent);
+		ent->SetCell(storagecell,0,true); // Fake a network wipe!
+		iter = iter->next;
+	}
+	return true;
+}
+
+void GameClient::IgnoreRefID(UINT32 val) /* to register OO pure ref IDs */
+{
+	if(ignore.find(val) == ignore.end())
+		ignore.insert(val);
+}
+
+bool GameClient::IsRefIDIgnore(UINT32 val)
+{
+	return ignore.find(val) == ignore.end();
+}
+
+void GameClient::SetPlayerID( UINT32 Value )
+{
+	LocalPlayer = Value;
+	bIsInitialized = true;
+	Console_Print("Received Player ID %u",Value);
 }

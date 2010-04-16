@@ -28,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 TESObjectREFR * GetRefrFromEntity( ClientEntity * ent )
 {
-	if(ent->Status() != STATUS_PLAYER)
-		return (TESObjectREFR * )LookupFormByID(ent->RefID());
+	if(ent->RefID() == gClient->GetLocalPlayer())
+		return (TESObjectREFR * )(*g_thePlayer);
 	else
-		return (TESObjectREFR * )LookupFormByID(gClient->GetSpawnRefID(GetSpawnIDFromPlayerID(ent->RefID())));
+		return (TESObjectREFR * )LookupFormByID(ent->RefID());
 }
 bool InjectActorValue(ClientEntity *ent,BYTE slot, INT16 value)
 {
@@ -79,6 +79,7 @@ void InjectEquip_Handlebacklog()
 extern bool FindEquipped(TESObjectREFR* thisObj, UInt32 slotIdx, FoundEquipped* foundEquippedFunctor, double* result);
 bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 {
+	return true;
 	if(!ent)
 		return false;
 	TESObjectREFR * refr = GetRefrFromEntity(ent);
@@ -123,17 +124,13 @@ bool InjectEquip( ClientEntity *ent,BYTE slot,UINT32 formid )
 	return true;
 }
 
-bool InjectAnimation( ClientEntity *ent,BYTE slot,bool Playing )
+bool InjectAnimation( ClientEntity *ent,BYTE slot )
 {
 	TESObjectREFR * refr = GetRefrFromEntity(ent);
 	if(!refr || !refr->IsActor())
 		return false;
 	else
 	{
-		if(!Playing)
-		{
-			slot = 0;
-		}
 		ent->InjectAnim(slot);
 #if 0
 		//TODO: See CallCommandGeneric

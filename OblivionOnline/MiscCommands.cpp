@@ -38,7 +38,7 @@ forward this exception.
 */
 #include "main.h"
 #include "UserInterface.h"
-#include "NetSend.h"
+#include "Packets.h"
 #include "OutPacketStream.h"
 bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 {
@@ -48,9 +48,7 @@ bool Cmd_MPSendChat_Execute (COMMAND_ARGS)
 	}
 	char message[512] = "\0";
 	if (!ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &message)) return true;
-	gClient->GetServerStream()->Send();
-	NetSendChat(gClient->GetServerStream(),gClient->GetLocalPlayer(),STATUS_PLAYER,(BYTE *)message,strlen(message));
-	gClient->GetServerStream()->Send();
+	raw::Chat::Send(gClient->GetConnection(),gClient->GetEntities()->GetOrCreateEntity(gClient->GetLocalPlayer()),std::string(message));
 	return true;
 }
 
@@ -62,20 +60,10 @@ bool Cmd_MPGetDebugData_Execute (COMMAND_ARGS)
 
 bool Cmd_MPTotalPlayers_Execute (COMMAND_ARGS)
 {
-	*result = (float)gClient->GetTotalPlayers();
+	*result = -1;
+	Console_Print("Deprecated function called!");
 	return true;
 }
-bool Cmd_MPGetMyID_Execute (COMMAND_ARGS)
-{
-	if (!thisObj)
-	{
-		Console_Print("Error, no reference given for MPGetMyID");
-		return true;
-	}
-	*(UINT32 *)result = GetPlayerNumberFromRefID(thisObj->refID);
-	return true;
-}
-
 bool Cmd_MPShowGUI_Execute(COMMAND_ARGS)
 {
 	if(!bUIInitialized)
@@ -93,6 +81,15 @@ bool Cmd_GetParentCell_Execute(COMMAND_ARGS)
 	}
 	*(UINT32 *)result = thisObj->parentCell->refID;
 	return true;
+}
+bool Cmd_MPIgnoreObject_Execute(COMMAND_ARGS)
+{
+	if(!thisObj)
+	{
+		Console_Print("Error no reference given for MPIgnoreObject.");
+		return true;
+	}
+
 }
 CommandInfo kMPSendChatCommand =
 {
@@ -122,17 +119,6 @@ CommandInfo kMPGetDebugDataCommand =
 
 
 
-CommandInfo kMPGetMyIDCommand =
-{
-	"MPGetMyID",
-	"MPGMID",
-	0,
-	"Get's the player ID of the calling NPC (other player)",
-	0,		// requires parent obj
-	0,		// no params
-	NULL,	// no param table
-	Cmd_MPGetMyID_Execute
-};
 
 CommandInfo kMPShowGUICommand =
 {
@@ -146,14 +132,14 @@ CommandInfo kMPShowGUICommand =
 	Cmd_MPShowGUI_Execute
 };
 
-CommandInfo kMPTotalPlayersCommand =
+CommandInfo kMPIgnoreObjectCommand =
 {
-	"MPTotalPlayers",
-	"MPTPS",
+	"MPIgnoreObject",
+	"MPIGN",
 	0,
-	"Returns number of players connected",
+	"Ignored the object given",
 	0,		// requires parent obj
 	0,		// doesn't have params
 	NULL,	// no param table
-	Cmd_MPTotalPlayers_Execute
+	Cmd_MPIgnoreObject_Execute
 };

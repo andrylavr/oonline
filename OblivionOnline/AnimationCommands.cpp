@@ -42,7 +42,7 @@ bool Cmd_MPGetAnimation_Execute (COMMAND_ARGS)
 	UINT32 *refres = (UINT32*) result;
 	if(!thisObj)
 		return true;
-	ClientEntity *ent = gClient->LocalFormIDGetEntity(thisObj->refID);
+	ClientEntity *ent = GetEntityFromRefID(thisObj->refID);
 	*refres= ent->GetNextAnim();
 	return true;
 }

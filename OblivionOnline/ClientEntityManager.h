@@ -5,7 +5,7 @@ class ClientEntityManager :
 	public EntityManager
 {
 protected:
-	virtual ClientEntity * CreateEntity(BYTE Status,UINT32 RefID);
+	virtual ClientEntity * CreateEntity(UINT32 RefID);
 public:
 	ClientEntityManager(IOStream *io) : EntityManager(io) {};
 	~ClientEntityManager(void);
