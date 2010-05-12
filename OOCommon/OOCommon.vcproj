@@ -263,6 +263,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\threadpool.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\threadpool\detail\worker_thread.hpp"
 					>
 				</File>
