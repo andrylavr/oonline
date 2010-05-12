@@ -101,7 +101,7 @@ public:
 		if(i==m_custom.end())
 			return 0;
 		else
-			i->second;
+			return i->second;
 	}
 	inline std::string Name()
 	{
