@@ -215,6 +215,58 @@
 				RelativePath=".\TaskHandler.h"
 				>
 			</File>
+			<Filter
+				Name="threadpool"
+				>
+				<File
+					RelativePath=".\threadpool\detail\future.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\future.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\detail\locking_ptr.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\pool.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\pool_adaptors.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\detail\pool_core.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\scheduling_policies.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\detail\scope_guard.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\shutdown_policies.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\size_policies.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\task_adaptors.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\threadpool\detail\worker_thread.hpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Netcode"
