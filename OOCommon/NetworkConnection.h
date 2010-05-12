@@ -27,7 +27,6 @@ class NetworkConnection
 	EntityManager *mgr;
 	NetworkBuffer *recvtcp;
 	NetworkBuffer *sendtcp;
-	boost::condition_variable readytosend;
 //	SOCKET udpsock;
 	SOCKET tcpsock;
 	ChunkPermissions _permissions;
@@ -41,7 +40,7 @@ class NetworkConnection
 		throw std::logic_error("NetworkConnection noncopiable");
 	}
 public:
-	boost::signals2::signal<void(NetworkConnection*) > OnDisconnect;
+	boost::signals2::signal<void(NetworkConnection*) > OnDisconnect; 
 	NetworkConnection(EntityManager *mgr,SOCKET tcp,boost::function<void (NetworkConnection *)>,ChunkPermissions permissions=ChunkPermissions(MATCH_NONE));
 	~NetworkConnection(void);
 	SOCKET GetTCPSocket() { return tcpsock;} //for using Select() syscall

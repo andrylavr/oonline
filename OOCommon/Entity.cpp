@@ -233,7 +233,7 @@ Entity::~Entity()
 
 Entity::Entity( EntityManager *mgr,UINT32 refID, bool TriggerEvents /*= false*/,bool GlobalSynch/*= false*/, float posX /*= 0 */, float posY /*= 0 */, float posZ /*= 0*/,UINT32 CellID /*= 0*/,UINT32 WorldID /*=0*/, float rotX /*= 0 */, float rotY /*= 0 */, float rotZ /*= 0*/,short health /*= 0*/,short magicka /*= 0 */, short fatigue /*= 0 */, bool female /*= false*/,UINT32 race /*= 0*/,std::string name /*= std::string("Unnamed")*/,std::string classname /*= std::string("")*/ ) :
 lock(),m_Name(name),m_Animation(0),EventChat(),EventFatigueEmpty(),EventFatigue(),EventMagicka(),EventMagickaEmpty(),EventDeath(),
-EventLifeChange()		//,m_Class(classname)
+EventLifeChange(),m_custom()		//,m_Class(classname)
 {
 	lock.lock();
 	m_mgr = mgr;
@@ -260,6 +260,21 @@ EventLifeChange()		//,m_Class(classname)
 void Entity::_SetActorValueMod( BYTE ActorValue,short Mod )
 {
 	m_ActorValueMod[ActorValue] = Mod;
+}
+
+void Entity::SetCustom( UINT32 id,INT32 val,bool Inbound )
+{
+	std::map<UINT32,INT32>::iterator i = m_custom.find(id);
+	if(m_custom.end()==i)
+	{
+		if(val != 0) m_custom.insert(std::pair<UINT32,INT32>(id,val));
+	}
+	else
+	{
+		if(!val) m_custom.erase(i);
+		else i->second=val;
+	}
+	m_mgr->GetUpdateMgr()->OnCustomUpdate(this,id,Inbound);
 }
 bool EntityPermission::operator==( Entity *ent ) const
 {

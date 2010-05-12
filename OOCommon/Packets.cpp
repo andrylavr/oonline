@@ -42,7 +42,8 @@ forward this exception.
 size_t raw::Position::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Position ==  header.ChunkType);
-	Entity *ent=manager->GetOrCreateEntity(header.formID);
+	if(DataEnd - (const char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
+ 	Entity *ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->MoveNRot(PosX,PosY,PosZ,RotX,RotY,RotZ,true);
 	return sizeof(*this);
@@ -64,6 +65,7 @@ void raw::Position::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::CellID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_CellID == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetCell(cellID,WorldID,true);
@@ -83,6 +85,7 @@ void raw::CellID::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::Race::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Race == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent= manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetRace(Value,true);
@@ -102,6 +105,7 @@ void raw::Race::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::Class::Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const
 {
 	assert(pkg_Class == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetClassName(Name.GetData(DataEnd),true);
@@ -119,6 +123,7 @@ void raw::Class::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::Name::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Name == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetName(Value.GetData(DataEnd),true);
@@ -136,6 +141,7 @@ void raw::Name::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::ActorValue::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ActorValue== header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetActorValue(code,Value,true);
@@ -154,6 +160,7 @@ void raw::ActorValue::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
 size_t raw::ActorValueMod::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ActorValueMod == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetActorValueMod(code,Value,true);
@@ -172,6 +179,7 @@ void raw::ActorValueMod::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
 size_t raw::Equip::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Equip == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetEquip(slot,Value,true);
@@ -190,6 +198,7 @@ void raw::Equip::Send( NetworkConnection &conn, Entity *ent,BYTE slot )
 size_t raw::Chat::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Chat == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	manager->GetUpdateMgr()->Chat(ent,Message.GetData(DataEnd),true);
@@ -208,6 +217,7 @@ void raw::Chat::Send( NetworkConnection &conn, Entity *ent, std::string Message 
 size_t raw::Auth::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Auth == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	return sizeof(*this);
 }
 
@@ -224,6 +234,7 @@ void raw::Auth::Send( NetworkConnection &conn, Entity *ent, BYTE *SHA512,std::st
 size_t raw::Animation::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Animation == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	Entity * ent=manager->GetOrCreateEntity(header.formID);
 	if(!ent) throw std::runtime_error("Could not create Entity");
 	ent->SetAnimation(AnimationGroup,true);
@@ -241,6 +252,7 @@ void raw::Animation::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::ClientType::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_ClientType == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	manager->GetUpdateMgr()->NewClientStatus(IsMaster);
 	return sizeof(*this);
 }
@@ -256,6 +268,7 @@ void raw::ClientType::Send( NetworkConnection &conn, UINT32 ent, BYTE IsMaster )
 size_t raw::Version::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_Version == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	if(super!=VERSION_SUPER|| minor!=VERSION_MINOR|| major!=VERSION_MAJOR) return NULL; // Drop if version missmatch
 	return sizeof(*this);
 }
@@ -274,6 +287,7 @@ void raw::Version::Send( NetworkConnection &conn, Entity *ent )
 size_t raw::PlayerID::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
 	assert(pkg_PlayerID == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	return manager->GetUpdateMgr()->NewPlayerID(ID)? sizeof(*this) : 0; //Drop if chunk is rejected
 }
 
@@ -287,14 +301,35 @@ void raw::PlayerID::Send( NetworkConnection &conn, Entity *ent,UINT32 ID )
 }
 size_t raw::RPCRequest::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd )const
 {
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	return NULL;
 }
 
 size_t raw::RPCReply::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd ) const
 {
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
 	return NULL;
 }
 
+
+void raw::Custom::Send( NetworkConnection &conn,Entity *ent,UINT32 index )
+{
+	raw::Custom * data = (raw::Custom *)conn.GetChunkSpace(Reliable,sizeof raw::Custom);
+	data->header.ChunkType = Type;
+	data->header.formID =ent->RefID();
+	data->Index = index;
+	data->Value = ent->GetCustom(index);
+	conn.ChunkFinish();
+}
+
+size_t raw::Custom::Handle( NetworkConnection *who,EntityManager *manager,const char *DataEnd ) const
+{
+	assert(pkg_Custom == header.ChunkType);
+	if(DataEnd - (char *)this < sizeof(*this)) return 0;  //Part of this chunk is missing
+	Entity * ent=manager->GetOrCreateEntity(header.formID);
+	if(!ent) throw std::runtime_error("Could not create Entity");
+	ent->SetCustom(Index,Value,true);
+}
 size_t HandleChunk( NetworkConnection *net,EntityManager *ent,const raw::Chunk *chunk,const char *end )
 {
 	if(!net->GetPermissions().Match(chunk->formID,chunk->ChunkType))
@@ -317,6 +352,8 @@ size_t HandleChunk( NetworkConnection *net,EntityManager *ent,const raw::Chunk *
 			return reinterpret_cast<const raw::Class*>(chunk)->Handle(net,ent,end);
 		case pkg_ClientType:
 			return reinterpret_cast<const raw::ClientType*>(chunk)->Handle(net,ent,end);
+		case pkg_Custom:
+			return reinterpret_cast<const raw::Custom*>(chunk)->Handle(net,ent,end);
 		case pkg_Equip:
 			return reinterpret_cast<const raw::Equip*>(chunk)->Handle(net,ent,end);
 		case pkg_Name:

@@ -141,7 +141,11 @@ void FakeClient::HandleCommand(char *String)
 		myself->SetEquip(CellID,Integer);
 		conn->Process();
 		break;
-	
+	case 'x': // Custom
+		sscanf(String,"x %u %d",&CellID,&Integer);
+		myself->SetCustom(CellID,Integer);
+		conn->Process();
+		break;
 	}
 }
 

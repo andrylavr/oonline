@@ -59,6 +59,7 @@ TYPE#	Description
 17		Version .	SUPER , MAJOR AND MINOR as bytes. BYTE: GameID
 18		PlayerID . UINT32 Player ID - sent only by server
 19		Animation. BYTE Animation Group BYTE IsPlaying
+20		Custom.		UINT32 Index, INT32 Value
 */
 #pragma pack(push,1)
 #define PAYLOAD_SIZE 3
@@ -82,6 +83,7 @@ enum PkgChunk
 	pkg_Version	= 17,
 	pkg_PlayerID = 18,
 	pkg_Animation = 19,
+	pkg_Custom = 20,
 	pkg_End
 };
 class ProtocolSecurityExcpetion : public std::runtime_error
@@ -281,6 +283,16 @@ struct RPCReply
 	UINT16 seqno; // Which element of the parameters this request entails
 	UINT16 seqsize;  //  Maximum number of requests 
 	ANSIString Results;
+};
+struct Custom
+{
+	raw::Chunk header;
+	static const bool Reliable=true;
+	size_t Handle(NetworkConnection *who,EntityManager *manager,const char *DataEnd)const;
+	static void Send(NetworkConnection &conn,Entity *ent,UINT32 index);
+	static const PkgChunk Type = pkg_Custom;
+	UINT32 Index;
+	INT32 Value;
 };
 }
 

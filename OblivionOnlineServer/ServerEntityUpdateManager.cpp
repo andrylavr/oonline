@@ -166,3 +166,14 @@ OO_API  void ServerEntityUpdateManager::NewClientStatus( bool IsMasterClient )
 {
 	throw std::runtime_error("Illicit ClientType chunk sent to server!");
 }
+
+OO_API  void ServerEntityUpdateManager::OnCustomUpdate( Entity *ent,UINT32 Index,bool Inbound )
+{
+	BOOST_FOREACH(Player *p,_players)
+	{
+		if(!Inbound || (p!=ent) ) // If this is sent from an entity concerning itself 
+		{
+			Custom::Send(*p,ent,Index);
+		}
+	}
+}

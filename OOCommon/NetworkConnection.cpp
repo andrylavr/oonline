@@ -66,6 +66,7 @@ bool NetworkConnection::Poll()
 	}
 	if(FD_ISSET(tcpsock,&writeSet))
 	{
+		boost::lock_guard<boost::mutex> guard(sendlock);
 		FD_CLR(tcpsock,&writeSet);
 		if(chunks>0 &&activechunk<=0) //absolutely lag free polling: efficiency vs responsiveness ( more responsive if we wait)
 		{
@@ -137,7 +138,7 @@ const char * NetworkConnection::ParseInput(const char *data,int datasize ) // re
 }
 char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 {
-	boost::unique_lock <boost::mutex> guard(sendlock);
+	sendlock.lock();
 	if(size > sendtcp->size())
 	{
 			return NULL;
@@ -145,8 +146,7 @@ char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 	if(size > sendtcp->remaining())
 	{
 		assert(chunks>0);
-		while(activechunk > 0)
-			readytosend.wait(guard);
+		assert(activechunk<=0);
 		Send();
 	}
 	assert(size <= sendtcp->remaining());
@@ -160,19 +160,18 @@ char * NetworkConnection::GetChunkSpace( bool Reliable,unsigned int size )
 void NetworkConnection::ChunkFinish()
 {
 	{
-		boost::lock_guard<boost::mutex> guard(sendlock);
 		assert(activechunk>0);
 		assert(chunks>0);
 		--activechunk;
+		sendlock.unlock();
 	}
-	if(activechunk <= 0) readytosend.notify_all();
 }
 bool NetworkConnection::Send()
+//This procedure is not thread safe!
 {
 	//Send Data
 	assert(activechunk<=0);
 	assert(chunks>0);
-	boost::lock_guard<boost::mutex> guard(sendlock);
 	ptrdiff_t outsiz = sendtcp->GetWrite() - sendtcp->GetData();
 	sendtcp->SetWrite(0); // Write is now the read pointer
 	int rc = 0;

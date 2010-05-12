@@ -65,6 +65,7 @@ private:
 	bool m_Actor,m_GlobalSynch,m_Female;//Player : is a player , Actor: is an actor , GlobalSynch: Is important for quests and must therefore always be synced
 	bool m_TriggerEvents;
 	std::string m_Name; // A std::string should not waste TOO much space 
+	std::map<UINT32,INT32> m_custom;
 	//std::string m_Class;
 	void _Move(float PosX,float PosY,float PosZ);
 	void _SetRotation(float RotX,float RotY,float RotZ);
@@ -93,6 +94,15 @@ public:
 	void SetActorValue(BYTE ActorValue,short Value,bool Inbound = false);
 	void SetActorValueMod(BYTE ActorValue,short Mod,bool Inbound = false);
 	void SetAnimation(BYTE AnimationNo,bool Inbound = false);
+	void SetCustom(UINT32 id,INT32 val,bool Inbound = false);
+	inline INT32 GetCustom(UINT32 id)
+	{
+		std::map<UINT32,INT32>::iterator i = m_custom.find(id);
+		if(i==m_custom.end())
+			return 0;
+		else
+			i->second;
+	}
 	inline std::string Name()
 	{
 		return m_Name;

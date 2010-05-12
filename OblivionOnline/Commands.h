@@ -67,3 +67,6 @@ extern CommandInfo kMPShowGUICommand;
 
 extern CommandInfo kGetParentCellCommand;
 extern CommandInfo kMPGetAnimationCommand ;
+
+extern CommandInfo kMPGetCustomCommand;
+extern CommandInfo kMPSetCustomCommand;

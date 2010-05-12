@@ -93,3 +93,11 @@ void ClientEntityUpdateManager::NewClientStatus( bool IsMasterClient )
 {
 	gClient->SetIsMasterClient(IsMasterClient);
 }
+
+void ClientEntityUpdateManager::OnCustomUpdate( Entity *ent,UINT32 Index,bool Inbound )
+{
+	if(!Inbound)
+		raw::Custom::Send(gClient->GetConnection(),ent,Index);
+	else
+		SafeAddUpdateQueue(ent);
+}

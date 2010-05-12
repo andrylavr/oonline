@@ -148,3 +148,10 @@ void FakeEntityUpdateManager::GlobalSend(Entity *ent, bool Inbound)
 void FakeEntityUpdateManager::Chat(Entity *ent, std::string Message, bool Inbound)
 {
 }
+void FakeEntityUpdateManager::OnCustomUpdate( Entity *ent,UINT32 Index,bool Inbound )
+{
+	if(!Inbound)
+		Custom::Send(*conn,ent,Index);
+	else
+		IOStream::Instance() << GameMessage << "Custom attribute " << Index << "Value: " << ent->GetCustom(Index)<<endl;
+}

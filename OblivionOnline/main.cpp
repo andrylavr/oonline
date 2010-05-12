@@ -175,7 +175,9 @@ bool OBSEPlugin_Load(const OBSEInterface * obse)
 	obse->RegisterCommand(&kMPShowGUICommand);
 	obse->RegisterCommand(&kMPGetParentCellOrWSCommand);
 	obse->RegisterCommand(&kMPGetAnimationCommand);
-	obse->RegisterCommand(&kMPIgnoreObjectCommand);
+
+	obse->RegisterCommand(&kMPGetCustomCommand);
+	obse->RegisterCommand(&kMPSetCustomCommand);
 	//_MESSAGE("Done loading OO Commands");
 	if(!obse->isEditor)
 	{

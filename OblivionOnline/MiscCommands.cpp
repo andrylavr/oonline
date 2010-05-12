@@ -82,15 +82,63 @@ bool Cmd_GetParentCell_Execute(COMMAND_ARGS)
 	*(UINT32 *)result = thisObj->parentCell->refID;
 	return true;
 }
-bool Cmd_MPIgnoreObject_Execute(COMMAND_ARGS)
+bool Cmd_MPSetCustom_Execute(COMMAND_ARGS)
 {
+	int Index,Value;
 	if(!thisObj)
 	{
-		Console_Print("Error no reference given for MPIgnoreObject.");
+		Console_Print("Error, no reference given for SetCustom");
 		return true;
 	}
-
+	if (!(ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &Index,&Value)))
+	{
+		Console_Print ("No parameter given for SetCustom");
+		return true;
+	}
+	Entity *ent=GetEntityFromRefID(thisObj->refID);
+	ent->SetCustom(Index,Value);
+	return true;
 }
+bool Cmd_MPGetCustom_Execute(COMMAND_ARGS)
+{
+	int Index;
+	if(!thisObj)
+	{
+		Console_Print("Error, no reference given for GetCustom");
+		return true;
+	}
+	if (!(ExtractArgs(paramInfo, arg1, opcodeOffsetPtr, thisObj, arg3, scriptObj, eventList, &Index)))
+	{
+		Console_Print ("No parameter given for GetCustom");
+		return true;
+	}
+	Entity *ent=GetEntityFromRefID(thisObj->refID);
+	*result = ent->GetCustom(Index);
+	return true;
+}
+CommandInfo kMPGetCustomCommand =
+{
+	"MPGetCustom",
+	"MPGC",
+	0,
+	"Retrieves a custom attribute",
+	0,
+	1,
+	kParams_OneInt,
+	Cmd_MPGetCustom_Execute
+};
+CommandInfo kMPSetCustomCommand =
+{
+	"MPSetCustom",
+	"MPSC",
+	0,
+	"Sets a custom attribute",
+	0,
+	2,
+	kParams_TwoInts,
+	Cmd_MPSetCustom_Execute
+};
+
 CommandInfo kMPSendChatCommand =
 {
 	"MPSendChat",
@@ -130,16 +178,4 @@ CommandInfo kMPShowGUICommand =
 	0,		// 1 param
 	0,	// one string
 	Cmd_MPShowGUI_Execute
-};
-
-CommandInfo kMPIgnoreObjectCommand =
-{
-	"MPIgnoreObject",
-	"MPIGN",
-	0,
-	"Ignored the object given",
-	0,		// requires parent obj
-	0,		// doesn't have params
-	NULL,	// no param table
-	Cmd_MPIgnoreObject_Execute
 };

@@ -35,6 +35,7 @@ public:
 	OO_API virtual void OnRaceUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void OnAnimationUpdate(Entity *ent,bool Inbound );
 	OO_API virtual void Chat(Entity *ent,std::string Message,bool Inbound );
+	OO_API virtual void OnCustomUpdate(Entity *ent,UINT32 Index,bool Inbound);
 	virtual bool NewPlayerID(UINT32 ID);
 	virtual void NewClientStatus(bool IsMasterClient);
 };
