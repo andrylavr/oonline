@@ -1,0 +1,2 @@
+OblivionOnline allows you to play the popular Oblivion RPG game with many players.Migration from Sourceforge for copyrigth ( and TOS problems).
+Server licenced under the GPLv3 compatible GNU Affero GPL.
